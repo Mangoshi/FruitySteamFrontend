@@ -1,0 +1,6 @@
+# Auto-generated stuff
+\node_modules
+\.idea
+
+# Prviate stuff
+.env
