@@ -4,8 +4,8 @@ import {useEffect, useState} from 'react';
 import GameCardDetailed from "../../components/GameCardDetailed";
 
 const Show = () => {
-	const {id} = useParams();
-	const [game, setGame] = useState(null);
+	const { id } = useParams();
+	const [ game, setGame ] = useState(null);
 
 	useEffect(() => {
 		axios.get(`https://fruity-steam.vercel.app/api/games/?by=_id&query=${id}`,
@@ -29,7 +29,6 @@ const Show = () => {
 
 	return (
 		<>
-			<h2>{game.Name}</h2>
 			<GameCardDetailed game={game} />
 		</>
 	);
