@@ -8,7 +8,7 @@ import GamesIndex from './pages/games/Index';
 import GamesShow from './pages/games/Show';
 
 // Pick React95 theme
-import original from 'react95/dist/themes/original';
+import raspberry from 'react95/dist/themes/raspberry';
 
 // Import original Windows 95 font
 import ms_sans_serif from 'react95/dist/fonts/ms_sans_serif.woff2';
@@ -35,6 +35,7 @@ const GlobalStyles = createGlobalStyle`
 
 	body, input, select, textarea {
 		font-family: 'ms_sans_serif', sans-serif;
+		background-color: rgb(1,130,129);
 	}
 	${styleReset}
 `;
@@ -43,11 +44,11 @@ const App = () => {
 	return (
 		<Router>
 			<GlobalStyles />
-			<ThemeProvider theme={original}>
+			<ThemeProvider theme={raspberry}>
 				<Navbar/>
 				<Routes>
 					<Route path="/" element={<Home/>}/>
-					<Route path="/games/:page" element={<GamesIndex/>}/>
+					<Route path="/games/" element={<GamesIndex/>}/>
 					<Route path="/game/:id" element={<GamesShow/>}/>
 					<Route path="*" element={<Home />}/>
 				</Routes>
