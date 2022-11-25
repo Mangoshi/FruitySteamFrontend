@@ -22,6 +22,10 @@ const Index = () => {
 	const {page} = useParams();
 	// TODO: Query builder! eg. if(bySelected){query+&by=by) [for each query type]
 	// TODO: Update page based on currentPage, perhaps use more than back/forward?
+	// TODO: Use "Notes" field to make NSFW filter [will need to update server too]
+	//  - Server will need second field in find() to filter by Notes having content
+	//  - Server's user schema will need DOB & showAdultContent bool
+	//  - NSFW filter will toggle based on bool, somehow
 	useEffect(() => {
 		axios.get(`https://fruity-steam.vercel.app/api/games/names?page=${currentPage}`)
 			.then((response) => {
@@ -105,6 +109,7 @@ const Index = () => {
 							{/* Current page */}
 							<Button size='sm' active>{currentPage}</Button>
 
+							{/* TODO: Ternary to hide these as you approach page 633 */}
 							{/* 2 after */}
 							<Button size='sm' onClick={() => setPage(currentPage + 1)}>{currentPage + 1}</Button>
 							<Button size='sm' onClick={() => setPage(currentPage + 2)}>{currentPage + 2}</Button>
