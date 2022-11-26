@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import {Anchor, Button, Frame, TableDataCell, TableRow, Toolbar, Window, WindowContent, WindowHeader} from 'react95';
+import {Anchor, TableDataCell, TableRow} from 'react95';
 
 const GameCard = (props) => {
     return (
