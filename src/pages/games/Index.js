@@ -56,89 +56,87 @@ const Index = () => {
 
 	return (
 		<>
-			<br/>
-			<Window style={{width: "auto"}}>
-				<WindowHeader>Games.exe</WindowHeader>
-				<WindowContent>
-					<div style={{ display: 'flex', marginBottom: '1rem' }}>
-						<TextInput
-
-							placeholder='Type here...'
-
-							fullWidth
-						/>
-						<Select
-							defaultValue={"Name"}
-							width={250}
-							options={searchByOptions}
-							onChange={e => console.log('change', e)}
-							onOpen={e => console.log('open', e)}
-							onClose={e => console.log('close', e)}
-							onBlur={e => console.log('blur', e)}
-							onFocus={e => console.log('focus', e)}
-						/>
-						<Button onClick={e => console.log('click', e)} style={{ marginLeft: 4 }}>
-							Search
-						</Button>
-					</div>
-					<div style={{display: 'flex', justifyContent: 'space-between'}}>
-
-						{/* Previous Block*/}
-						<div>
-							{/* If page is greater than 1, activate back button */}
-							{currentPage > 1 ? (
-								<Button size='sm' onClick={() => setPage(currentPage - 1)}> {"<<"} </Button>
-							) : (
-								<Button size='sm' disabled> {"<<"} </Button>
-							)
-							}
+			<div style={{display: "flex", justifyContent: 'center'}}>
+				<Window style={{width: "auto"}}>
+					<WindowHeader>Games.exe</WindowHeader>
+					<WindowContent>
+						{/* Search div */}
+						<div style={{ display: 'flex', marginBottom: '1rem' }}>
+							<TextInput
+								placeholder='Type here...'
+								fullWidth
+							/>
+							<Select
+								defaultValue={"Name"}
+								width={250}
+								options={searchByOptions}
+								onChange={e => console.log('change', e)}
+								onOpen={e => console.log('open', e)}
+								onClose={e => console.log('close', e)}
+								onBlur={e => console.log('blur', e)}
+								onFocus={e => console.log('focus', e)}
+							/>
+							<Button onClick={e => console.log('click', e)} style={{ marginLeft: 4 }}>
+								Search
+							</Button>
 						</div>
-
-						{/* Numeric Block*/}
-						<div>
-							{/* 2 before */}
-							{currentPage === 2 &&
-								<Button size='sm' onClick={() => setPage(currentPage - 1)}>{currentPage - 1}</Button>
-							}
-							{currentPage > 2 &&
-								<>
-									<Button size='sm' onClick={() => setPage(currentPage - 2)}>{currentPage - 2}</Button>
+						{/* Pagination div */}
+						<div style={{display: 'flex', justifyContent: 'space-between'}}>
+							{/* Previous Block*/}
+							<div>
+								{/* If page is greater than 1, activate back button */}
+								{currentPage > 1 ? (
+									<Button size='sm' onClick={() => setPage(currentPage - 1)}> {"<<"} </Button>
+									) : (
+									<Button size='sm' disabled> {"<<"} </Button>
+									)
+								}
+							</div>
+							{/* Numeric Block*/}
+							<div>
+								{/* 2 before */}
+								{currentPage === 2 &&
 									<Button size='sm' onClick={() => setPage(currentPage - 1)}>{currentPage - 1}</Button>
-								</>
-							}
-							{/* Current page */}
-							<Button size='sm' active>{currentPage}</Button>
+								}
+								{currentPage > 2 &&
+									<>
+										<Button size='sm' onClick={() => setPage(currentPage - 2)}>{currentPage - 2}</Button>
+										<Button size='sm' onClick={() => setPage(currentPage - 1)}>{currentPage - 1}</Button>
+									</>
+								}
+								{/* Current page */}
+								<Button size='sm' active>{currentPage}</Button>
 
-							{/* TODO: Ternary to hide these as you approach page 633 */}
-							{/* 2 after */}
-							<Button size='sm' onClick={() => setPage(currentPage + 1)}>{currentPage + 1}</Button>
-							<Button size='sm' onClick={() => setPage(currentPage + 2)}>{currentPage + 2}</Button>
+								{/* TODO: Ternary to hide these as you approach page 633 */}
+								{/* 2 after */}
+								<Button size='sm' onClick={() => setPage(currentPage + 1)}>{currentPage + 1}</Button>
+								<Button size='sm' onClick={() => setPage(currentPage + 2)}>{currentPage + 2}</Button>
+							</div>
+							{/* Next Block */}
+							<div>
+								{/* If page is less than 633, activate forward button */}
+								{currentPage < 633 ? (
+									<Button size='sm' onClick={() => setPage(currentPage + 1)}> {">>"} </Button>
+									) : (
+									<Button size='sm' disabled> {">>"} </Button>
+									)
+								}
+							</div>
 						</div>
-
-						{/* Next Block */}
-						<div>
-							{/* If page is less than 633, activate forward button */}
-							{currentPage < 633 ? (
-								<Button size='sm' onClick={() => setPage(currentPage + 1)}> {">>"} </Button>
-							) : (
-								<Button size='sm' disabled> {">>"} </Button>
-							)
-							}
-						</div>
-					</div>
-					<Table>
-						<TableHead>
-							<TableRow>
-								<TableHeadCell>Name</TableHeadCell>
-								<TableHeadCell>Link</TableHeadCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{gamesList}
-						</TableBody>
-					</Table>
-				</WindowContent>
-			</Window>
+						<Table>
+							<TableHead>
+								<TableRow>
+									<TableHeadCell>Name</TableHeadCell>
+									<TableHeadCell>Link</TableHeadCell>
+								</TableRow>
+							</TableHead>
+							<TableBody>
+								{gamesList}
+							</TableBody>
+						</Table>
+					</WindowContent>
+				</Window>
+			</div>
 		</>
 	);
 };
