@@ -21,7 +21,6 @@ const Show = () => {
 			.catch((err) => {
 				console.error(err);
 				console.log(err.response.data.message);
-
 			});
 	}, [id]);
 

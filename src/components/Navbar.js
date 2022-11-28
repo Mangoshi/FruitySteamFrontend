@@ -1,17 +1,37 @@
-import {Link, useLocation} from 'react-router-dom';
-import {AppBar, Button, Frame, Toolbar} from 'react95';
-import {useState} from "react";
+import { Link, useLocation} from 'react-router-dom';
+import { AppBar, Button, Frame, Toolbar} from 'react95';
+import { useContext, useState} from "react";
+import { GameContext } from "../GameContext";
+import Clock from 'react-live-clock';
+
 import ic_mangows from "./icons/ic_mangows.png"
 import ic_computer from "./icons/ic_computer.ico"
 import ic_msdos from "./icons/ic_msdos.ico"
-import Clock from 'react-live-clock';
+import ic_folder_exe from "./icons/ic_folder_exe.ico"
 
-const Navbar = () => {
-	const [open, setOpen] = useState(false);
+// TODO: Start menu with website settings (user account, theme, etc)
+const Navbar = ({ gameState }) => {
+
+	// State for start menu
+	const [ open, setOpen ] = useState(false);
+
+	// Using GameContext to update viewed game tab
+	const { game } = useContext(GameContext)
+
+	// Limiting game title to 20 characters in length
+	let limitedTitle = game
+	if (game && game.length > 20){
+		limitedTitle = game.substring(0, 20) + "..."
+	}
+
+	// useLocation to reveal Router data
 	const location = useLocation()
 	// console.log("Current location = ", location.pathname)
-	let betweenSlashes = location.pathname.split('/')[1]
-	// console.log(betweenSlashes)
+
+	// gameViewActive boolean to tell if viewing game or not
+	let gameViewActive = location.pathname.includes('/game/')
+	// console.log(gameViewActive)
+
 	return (
 		<AppBar position="sticky" style={{zIndex: 100, marginBottom: '1rem'}}>
 			<Toolbar style={{position: 'relative', justifyContent: 'space-between'}}>
@@ -50,7 +70,7 @@ const Navbar = () => {
 							style={{marginRight: '0.5rem'}}
 						>
 							<img
-							src={ic_msdos}
+							src={ic_folder_exe}
 							alt='mangows95 logo'
 							style={{height: '24px', marginRight: 4}}
 							/>
@@ -58,9 +78,9 @@ const Navbar = () => {
 						</Button>
 					</Link>
 					{
-						betweenSlashes==='game' &&
+						gameViewActive &&
 						<Button
-							active={betweenSlashes==='game'}
+							active={gameViewActive}
 							size="lg"
 						>
 							<img
@@ -68,7 +88,7 @@ const Navbar = () => {
 								alt='mangows95 logo'
 								style={{height: '24px', marginRight: 4}}
 							/>
-							Game Name
+							{game && gameViewActive ? limitedTitle : 'Game Name'}
 						</Button>
 					}
 				</div>
