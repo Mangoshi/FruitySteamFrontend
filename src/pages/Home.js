@@ -7,7 +7,7 @@ const Home = () => {
         <div style={{display: "flex", justifyContent: 'center', marginBottom: '1rem'}}>
             <Window style={{width: "auto"}}>
                 <WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
-                    <span>Home.exe</span>
+                    <span style={{marginLeft: '0.2rem'}}>Home.exe</span>
                     <Button style={{marginTop: '0.2rem'}}>X</Button>
                 </WindowHeader>
                 <WindowContent>

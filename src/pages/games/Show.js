@@ -2,6 +2,7 @@ import {useParams} from 'react-router-dom';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import GameCardDetailed from "../../components/GameCardDetailed";
+import {Button, Hourglass, Window, WindowContent, WindowHeader} from "react95";
 
 const Show = () => {
 	const { id } = useParams();
@@ -24,7 +25,22 @@ const Show = () => {
 			});
 	}, [id]);
 
-	if(!game) return 'Loading...';
+	if(!game) return (
+		<div style={{display: "flex", justifyContent: 'center'}}>
+			<Window style={{width: "250px"}}>
+				<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
+					<span style={{marginLeft: '0.2rem'}}>Game.exe</span>
+					<Button style={{marginTop: '0.2rem'}}>X</Button>
+				</WindowHeader>
+				<WindowContent>
+					<div style={{display: "flex", flexDirection: "column", justifyContent: 'center', alignItems: 'center'}}>
+						<p style={{fontSize: '1.5rem'}}>Loading...</p>
+						<Hourglass size={48} style={{ margin: 20 }}/>
+					</div>
+				</WindowContent>
+			</Window>
+		</div>
+	)
 
 	return (
 		<>

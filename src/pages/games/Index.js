@@ -3,7 +3,7 @@ import {useState, useEffect} from 'react';
 import GameCard from '../../components/GameCard';
 import {useParams} from "react-router-dom";
 import {
-	Button,
+	Button, Hourglass,
 	Select,
 	Table,
 	TableBody,
@@ -38,7 +38,22 @@ const Index = () => {
 			});
 	}, [currentPage]);
 
-	if (!games) return 'Loading...';
+	if (!games) return (
+		<div style={{display: "flex", justifyContent: 'center'}}>
+			<Window style={{width: "250px"}}>
+				<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
+					<span style={{marginLeft: '0.2rem'}}>Games.exe</span>
+					<Button style={{marginTop: '0.2rem'}}>X</Button>
+				</WindowHeader>
+				<WindowContent>
+				<div style={{display: "flex", flexDirection: "column", justifyContent: 'center', alignItems: 'center'}}>
+					<p style={{fontSize: '1.5rem'}}>Loading...</p>
+					<Hourglass size={48} style={{ margin: 20 }}/>
+				</div>
+				</WindowContent>
+			</Window>
+		</div>
+	)
 
 	const gamesList = games.map((game) => {
 		return <GameCard game={game} key={game._id}/>;
@@ -58,7 +73,10 @@ const Index = () => {
 		<>
 			<div style={{display: "flex", justifyContent: 'center'}}>
 				<Window style={{width: "auto"}}>
-					<WindowHeader>Games.exe</WindowHeader>
+					<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
+						<span style={{marginLeft: '0.2rem'}}>Games.exe</span>
+						<Button style={{marginTop: '0.2rem'}}>X</Button>
+					</WindowHeader>
 					<WindowContent>
 						{/* Search div */}
 						<div style={{ display: 'flex', marginBottom: '1rem' }}>
