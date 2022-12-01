@@ -45,6 +45,7 @@ const Index = () => {
 			<Window style={{width: "250px"}}>
 				<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
 					<span style={{marginLeft: '0.2rem'}}>Games.exe</span>
+					{/* TODO: Actually returns you to previous page */}
 					<Button style={{marginTop: '0.2rem'}}>X</Button>
 				</WindowHeader>
 				<WindowContent>

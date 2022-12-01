@@ -13,8 +13,7 @@ import ic_settings from "./icons/ic_settings.ico"
 import ic_auth from "./icons/ic_auth.ico"
 import {useAuth} from "../useAuth";
 
-// TODO: Start menu with website settings (user account, theme, etc)
-const Navbar = ({gameState}) => {
+const Navbar = () => {
 	const { logout } = useAuth()
 	// State for start menu
 	const [open, setOpen] = useState(false);
@@ -36,6 +35,8 @@ const Navbar = ({gameState}) => {
 	let gameViewActive = location.pathname.includes('/game/')
 	// console.log(gameViewActive)
 
+	// TODO: Settings start menu option goes to theme settings somehow?
+	// TODO: User start menu option goes to api/users/me
 	return (
 		<AppBar position="sticky" style={{zIndex: 100, marginBottom: '1rem'}}>
 			<Toolbar style={{position: 'relative', justifyContent: 'space-between'}}>

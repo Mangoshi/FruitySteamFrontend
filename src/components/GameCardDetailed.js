@@ -23,6 +23,7 @@ const GameCard = (props) => {
 	formattedLanguages = " "+formattedLanguages
 	// console.log(formattedLanguages)
 
+	// TODO: Add ALL game data!
 	return (
 		<div style={{display: "flex", justifyContent: 'center', marginBottom: '1rem'}}>
 			<Window style={{width: "600px"}}>

@@ -17,6 +17,7 @@ const Home = () => {
                     <Window style={{width: "auto"}}>
                         <WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
                             <span style={{marginLeft: '0.2rem'}}>Home.exe</span>
+                            {/* TODO: Inactive button style since you shouldn't close it?  */}
                             <Button style={{marginTop: '0.2rem'}}>X</Button>
                         </WindowHeader>
                         <WindowContent>

@@ -10,6 +10,7 @@ const GameCard = (props) => {
     // importing updateGameState function from useGame
     const { updateGameState } = useGame()
 
+    // TODO: Game covers in table? (Server will need updating)
     let viewButton
     if(token){
         viewButton = (

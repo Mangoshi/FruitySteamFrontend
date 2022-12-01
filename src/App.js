@@ -10,6 +10,7 @@ import {AuthContext} from "./AuthContext";
 import { styleReset } from 'react95';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 
+// TODO: Theme selector!
 // Pick React95 theme
 import raspberry from 'react95/dist/themes/raspberry';
 
