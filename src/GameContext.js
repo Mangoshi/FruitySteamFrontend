@@ -1,9 +1,9 @@
 import { createContext } from 'react';
 
-// Initialise GameContext
+// Initialise global game context
 export const GameContext = createContext({
     // game starts as null
     game: null,
-    // setGame allows game property to be updated
+    // setGame allows game state to be updated
     setGame: () => {}
 });

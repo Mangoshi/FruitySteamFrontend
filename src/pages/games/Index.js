@@ -1,5 +1,6 @@
 import axios from 'axios';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
+import {AuthContext} from "../../AuthContext";
 import GameCard from '../../components/GameCard';
 import {useParams} from "react-router-dom";
 import {
@@ -17,6 +18,7 @@ import {
 } from "react95";
 
 const Index = () => {
+	const {token} = useContext(AuthContext)
 	const [games, setGames] = useState(null);
 	const [currentPage, setPage] = useState(1);
 	const {page} = useParams();
@@ -69,6 +71,26 @@ const Index = () => {
 		searchByOptions.push(optionObject)
 	}
 
+	let unauthenticatedMessage
+	if(!token){
+		unauthenticatedMessage = (
+			<>
+				<div style={{display: "flex", justifyContent: 'center', marginBottom: '1rem'}}>
+					<p>Note: You have to log in to see more than just game names!</p>
+				</div>
+			</>
+		)
+	}
+
+	let authenticatedTableHeaders
+	if(token){
+		authenticatedTableHeaders = (
+			<>
+				<TableHeadCell>Link</TableHeadCell>
+			</>
+		)
+	}
+
 	return (
 		<>
 			<div style={{display: "flex", justifyContent: 'center'}}>
@@ -78,6 +100,7 @@ const Index = () => {
 						<Button style={{marginTop: '0.2rem'}}>X</Button>
 					</WindowHeader>
 					<WindowContent>
+						{ unauthenticatedMessage }
 						{/* Search div */}
 						<div style={{ display: 'flex', marginBottom: '1rem' }}>
 							<TextInput
@@ -145,7 +168,7 @@ const Index = () => {
 							<TableHead>
 								<TableRow>
 									<TableHeadCell>Name</TableHeadCell>
-									<TableHeadCell>Link</TableHeadCell>
+									{ authenticatedTableHeaders }
 								</TableRow>
 							</TableHead>
 							<TableBody>

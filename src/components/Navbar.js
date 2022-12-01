@@ -11,10 +11,11 @@ import ic_folder_exe from "./icons/ic_folder_exe.ico"
 import ic_user from "./icons/ic_user.ico"
 import ic_settings from "./icons/ic_settings.ico"
 import ic_auth from "./icons/ic_auth.ico"
+import {useAuth} from "../useAuth";
 
 // TODO: Start menu with website settings (user account, theme, etc)
 const Navbar = ({gameState}) => {
-
+	const { logout } = useAuth()
 	// State for start menu
 	const [open, setOpen] = useState(false);
 
@@ -78,7 +79,9 @@ const Navbar = ({gameState}) => {
 								Settings
 							</MenuListItem>
 							<Separator/>
-							<MenuListItem>
+							<MenuListItem
+								onClick={logout}
+							>
 								<img
 									src={ic_auth}
 									alt='mangows95 logo'

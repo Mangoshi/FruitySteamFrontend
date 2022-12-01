@@ -1,9 +1,10 @@
 // Import React Router stuff
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 
-// Import React state stuff
+// Import state stuff
 import {useState} from "react";
 import {GameContext} from "./GameContext";
+import {AuthContext} from "./AuthContext";
 
 // Import React95 bits
 import { styleReset } from 'react95';
@@ -49,25 +50,41 @@ const GlobalStyles = createGlobalStyle`
 
 const App = () => {
 
+	// Initialising token state logic
+	const [token, setToken] = useState(null)
+	// console.log(token)
+
+	// Defining routes that will only be included in the router if a token exists
+	let protectedRoutes
+	if(token){
+		protectedRoutes = (
+			<>
+				<Route path="/game/:id" element={<GamesShow/>}/>
+			</>
+		)
+	}
+
+	// Initialising game state logic
 	const [game, setGame] = useState(null);
 
 	return (
-		<GameContext.Provider value={{
-			game, setGame
-		}}>
-			<Router>
-				<GlobalStyles />
-				<ThemeProvider theme={raspberry}>
-					<Navbar/>
-					<Routes>
-						<Route path="/" element={<Home/>}/>
-						<Route path="/games/" element={<GamesIndex/>}/>
-						<Route path="/game/:id" element={<GamesShow/>}/>
-						<Route path="*" element={<Home />}/>
-					</Routes>
-				</ThemeProvider>
-			</Router>
-		</GameContext.Provider>
+		<AuthContext.Provider value={{ token, setToken}}>
+			<GameContext.Provider value={{ game, setGame }}>
+				<Router>
+					<GlobalStyles />
+					<ThemeProvider theme={raspberry}>
+						<Navbar/>
+						<Routes>
+							<Route path="/" element={<Home/>}/>
+							<Route path="/games/" element={<GamesIndex/>}/>
+							{protectedRoutes}
+							{/* Catch-all redirect */}
+							<Route path="*" element={<Home />}/>
+						</Routes>
+					</ThemeProvider>
+				</Router>
+			</GameContext.Provider>
+		</AuthContext.Provider>
 	);
 };
 
