@@ -8,13 +8,6 @@ const LoginRegisterForm = () => {
 	// Importing login & register from useAuth
 	const { login, register } = useAuth()
 
-	// Initialising form state as an empty form
-	const [form, setForm] = useState({
-		username: "",
-		email: "",
-		password: ""
-	});
-
 	// Initialising error message state
 	// TODO: Get errors from stateful login/register functions
 	const [errorMessage, setErrorMessage] = useState("");
@@ -24,6 +17,13 @@ const LoginRegisterForm = () => {
 
 	// Defining error message CSS style
 	const errorStyle = { color: "red", backgroundColor:"white" };
+
+	// Initialising form state as an empty form
+	const [form, setForm] = useState({
+		username: "",
+		email: "",
+		password: ""
+	});
 
 	// Ensuring that typing in the form sets state in realtime
 	const handleForm = (e) => {

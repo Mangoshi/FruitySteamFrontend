@@ -12,7 +12,7 @@ import { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 // TODO: Theme selector!
 // Pick React95 theme
-import raspberry from 'react95/dist/themes/raspberry';
+import themes from 'react95/dist/themes';
 
 // Import original Windows 95 font
 import ms_sans_serif from 'react95/dist/fonts/ms_sans_serif.woff2';
@@ -73,7 +73,7 @@ const App = () => {
 			<GameContext.Provider value={{ game, setGame }}>
 				<Router>
 					<GlobalStyles />
-					<ThemeProvider theme={raspberry}>
+					<ThemeProvider theme={themes.raspberry}>
 						<Navbar/>
 						<Routes>
 							<Route path="/" element={<Home/>}/>

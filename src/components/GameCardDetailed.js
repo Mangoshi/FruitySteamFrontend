@@ -1,4 +1,5 @@
 import {Button, Frame, GroupBox, Window, WindowContent, WindowHeader} from 'react95';
+import {Link} from "react-router-dom";
 
 
 const GameCard = (props) => {
@@ -29,11 +30,15 @@ const GameCard = (props) => {
 			<Window style={{width: "600px"}}>
 				<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
 					<span style={{marginLeft: '0.2rem'}}>{props.game.Name}.exe</span>
-					<Button style={{marginTop: '0.2rem'}}>X</Button>
+					<Link to='/games/'>
+						<Button style={{marginTop: '0.2rem'}}>X</Button>
+					</Link>
 				</WindowHeader>
 				<WindowContent>
 					<Frame variant='inside' style={{ margin: '1rem', padding: '1rem', width: '94%'}}>
-						<img src={props.game['Header image']} alt='Game header' width='100%'/>
+						<a href={`https://store.steampowered.com/app/${props.game['AppID']}`}>
+							<img src={props.game['Header image']} alt='Game header' width='100%'/>
+						</a>
 					</Frame>
 					<Frame variant='inside' style={{ margin: '1rem', padding: '1rem' }}>
 						<GroupBox label='Release date' style={{marginBottom: '1rem'}}>

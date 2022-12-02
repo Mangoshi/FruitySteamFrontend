@@ -1,4 +1,4 @@
-import {useParams} from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import GameCardDetailed from "../../components/GameCardDetailed";
@@ -30,8 +30,9 @@ const Show = () => {
 			<Window style={{width: "250px"}}>
 				<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
 					<span style={{marginLeft: '0.2rem'}}>Game.exe</span>
-					{/* TODO: Actually returns you to previous page */}
-					<Button style={{marginTop: '0.2rem'}}>X</Button>
+					<Link to='/games/'>
+						<Button style={{marginTop: '0.2rem'}}>X</Button>
+					</Link>
 				</WindowHeader>
 				<WindowContent>
 					<div style={{display: "flex", flexDirection: "column", justifyContent: 'center', alignItems: 'center'}}>
