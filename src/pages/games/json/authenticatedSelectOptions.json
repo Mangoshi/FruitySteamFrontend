@@ -1,0 +1,146 @@
+[
+	{
+		"value": "AppID",
+		"label": "AppID"
+	},
+	{
+		"value": "Name",
+		"label": "Name"
+	},
+	{
+		"value": "Release date",
+		"label": "Release date"
+	},
+	{
+		"value": "Estimated owners",
+		"label": "Estimated owners"
+	},
+	{
+		"value": "Peak CCU",
+		"label": "Peak CCU"
+	},
+	{
+		"value": "Required age",
+		"label": "Required age"
+	},
+	{
+		"value": "Price",
+		"label": "Price"
+	},
+	{
+		"value": "DLC count",
+		"label": "DLC count"
+	},
+	{
+		"value": "About the game",
+		"label": "About the game"
+	},
+	{
+		"value": "Supported languages",
+		"label": "Supported languages"
+	},
+	{
+		"value": "Full audio languages",
+		"label": "Full audio languages"
+	},
+	{
+		"value": "Reviews",
+		"label": "Reviews"
+	},
+	{
+		"value": "Header image",
+		"label": "Header image"
+	},
+	{
+		"value": "Website",
+		"label": "Website"
+	},
+	{
+		"value": "Support url",
+		"label": "Support url"
+	},
+	{
+		"value": "Support email",
+		"label": "Support email"
+	},
+	{
+		"value": "Metacritic score",
+		"label": "Metacritic score"
+	},
+	{
+		"value": "Metacritic url",
+		"label": "Metacritic url"
+	},
+	{
+		"value": "User score",
+		"label": "User score"
+	},
+	{
+		"value": "Positive",
+		"label": "Positive"
+	},
+	{
+		"value": "Negative",
+		"label": "Negative"
+	},
+	{
+		"value": "Score rank",
+		"label": "Score rank"
+	},
+	{
+		"value": "Achievements",
+		"label": "Achievements"
+	},
+	{
+		"value": "Recommendations",
+		"label": "Recommendations"
+	},
+	{
+		"value": "Notes",
+		"label": "Notes"
+	},
+	{
+		"value": "Average playtime forever",
+		"label": "Average playtime forever"
+	},
+	{
+		"value": "Average playtime two weeks",
+		"label": "Average playtime two weeks"
+	},
+	{
+		"value": "Median playtime forever",
+		"label": "Median playtime forever"
+	},
+	{
+		"value": "Median playtime two weeks",
+		"label": "Median playtime two weeks"
+	},
+	{
+		"value": "Developers",
+		"label": "Developers"
+	},
+	{
+		"value": "Publishers",
+		"label": "Publishers"
+	},
+	{
+		"value": "Categories",
+		"label": "Categories"
+	},
+	{
+		"value": "Genres",
+		"label": "Genres"
+	},
+	{
+		"value": "Tags",
+		"label": "Tags"
+	},
+	{
+		"value": "Screenshots",
+		"label": "Screenshots"
+	},
+	{
+		"value": "Movies",
+		"label": "Movies"
+	}
+]
