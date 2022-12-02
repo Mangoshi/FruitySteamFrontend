@@ -2,9 +2,11 @@ import axios from 'axios';
 import {useState, useEffect, useContext} from 'react';
 import {AuthContext} from "../../AuthContext";
 import GameCard from '../../components/GameCard';
-import {json, Link, useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {
-	Button, Hourglass,
+	Button,
+	GroupBox,
+	Hourglass,
 	Select,
 	Table,
 	TableBody,
@@ -17,13 +19,12 @@ import {
 	WindowHeader
 } from "react95";
 
-import authenticatedOptions from './json/authenticatedSelectOptions.json'
-import unauthenticatedOptions from './json/unauthenticatedSelectOptions.json'
+import authenticatedOptions from './json/authenticatedOptions.json'
+import unauthenticatedOptions from './json/unauthenticatedOptions.json'
 
 const Index = () => {
 	// TODO: Figure out a way of allowing user to select specific page
 	// TODO: Allow user to specify page limit
-	// TODO: Allow user to remove NSFW filter (require age confirmation?)
 	const {page} = useParams();
 	const {token} = useContext(AuthContext)
 	const [games, setGames] = useState(null);
@@ -31,6 +32,11 @@ const Index = () => {
 	const [filterActive, setFilterActive] = useState(false)
 	const [searchBy, setSearchBy] = useState("Name")
 	const [searchQuery, setSearchQuery] = useState({query: ""})
+	const [sortBy, setSortBy] = useState("AppID")
+	const [sortDirection, setSortDirection] = useState("Ascending")
+	const [adultFilter, setAdultFilter] = useState(true)
+	const [searchError, setSearchError] = useState(null)
+
 	const handleSearch = (e) => {
 		let name = e.target.name;
 		let value = e.target.value;
@@ -41,7 +47,7 @@ const Index = () => {
 		}));
 	};
 
-	let URL, authHeaders, builtQuery
+	let URL, authHeaders, builtSearchQuery, builtSortQuery
 
 	if(token){
 		URL = 'https://fruity-steam.vercel.app/api/games'
@@ -52,18 +58,18 @@ const Index = () => {
 	}
 
 	if(filterActive){
-		builtQuery = `&by=${searchBy}&query=${searchQuery.query}`
+		builtSearchQuery = `&by=${searchBy}&query=${searchQuery.query}`
+		builtSortQuery = `&sort=${sortBy}&direction=${sortDirection}`
 	} else {
-		builtQuery = ''
+		builtSearchQuery = ''
+		builtSortQuery = ''
 	}
 
-	let nsfwFilter = true
-
 	useEffect(() => {
-		axios.get(`${URL}?page=${currentPage}${builtQuery}`, authHeaders)
+		axios.get(`${URL}?page=${currentPage}${builtSearchQuery}${builtSortQuery}`, authHeaders)
 			.then((response) => {
 				let data = response.data.data
-				if(nsfwFilter){
+				if(adultFilter){
 /*
 					if(data.filter(game => game.Notes).length > 0) {
 						let count = 0
@@ -85,12 +91,15 @@ const Index = () => {
 					setGames(data);
 					console.log(data);
 				}
+				setSearchError(null)
 				// setPage(Number(page))
 			})
 			.catch((err) => {
 				console.error(err);
+				console.log("ERROR: ", err.response.data.msg)
+				setSearchError(err.response.data.msg)
 			});
-	}, [URL, currentPage, builtQuery]);
+	}, [URL, currentPage, builtSearchQuery, builtSortQuery, adultFilter]);
 
 	if (!games) return (
 		<div style={{display: "flex", justifyContent: 'center'}}>
@@ -116,12 +125,25 @@ const Index = () => {
 	});
 
 	// Creating list of options for select box
-	let searchByOptions = []
+	let searchByOptions, sortByOptions
 	if(token){
 		searchByOptions = authenticatedOptions
+		sortByOptions = authenticatedOptions
 	} else {
 		searchByOptions = unauthenticatedOptions
+		sortByOptions = unauthenticatedOptions
 	}
+
+	let sortDirectionOptions = [
+		{
+			"value" : "Ascending",
+			"label" : "Ascending"
+		},
+		{
+			"value" : "Descending",
+			"label" : "Descending"
+		}
+	]
 
 	let unauthenticatedMessage
 	if(!token){
@@ -141,6 +163,17 @@ const Index = () => {
 				<TableHeadCell>Link</TableHeadCell>
 			</>
 		)
+	}
+
+	const adultFilterConfirm = () => {
+		if(adultFilter){
+			if (window.confirm("Do you confirm that you are over 18 years of age?") === true){
+				setAdultFilter(!adultFilter)
+			}
+		}
+		else {
+			setAdultFilter(!adultFilter)
+		}
 	}
 
 	return (
@@ -165,78 +198,124 @@ const Index = () => {
 						</Button>
 						{/* Search div */}
 						{filterActive &&
-							<div style={{ display: 'flex', marginBottom: '1rem' }}>
-								<TextInput
-									placeholder='Type here...'
-									fullWidth
-									type="text"
-									name="query"
-									onChange={handleSearch}
-									value={searchQuery.query}
-								/>
-								<Select
-									defaultValue={"Name"}
-									width={250}
-									menuMaxHeight={200}
-									options={searchByOptions}
-									onChange={e => setSearchBy(e.value)}
-								/>
-							</div>
+							<>
+								<GroupBox label='Search' style={{display: 'flex', marginBottom: '1rem'}}>
+									<TextInput
+										placeholder='Type here...'
+										fullWidth
+										type="text"
+										name="query"
+										onChange={handleSearch}
+										value={searchQuery.query}
+									/>
+									<Select
+										defaultValue={"Name"}
+										width={250}
+										menuMaxHeight={200}
+										options={searchByOptions}
+										onChange={e => setSearchBy(e.value)}
+									/>
+								</GroupBox>
+								<GroupBox label='Sort' style={{display: 'flex', marginBottom: '1rem'}}>
+									<Select
+										defaultValue={"AppID"}
+										width={'100%'}
+										menuMaxHeight={200}
+										options={sortByOptions}
+										onChange={e => setSortBy(e.value)}
+									/>
+									<Select
+										defaultValue={"Ascending"}
+										width={250}
+										menuMaxHeight={200}
+										options={sortDirectionOptions}
+										onChange={e => setSortDirection(e.value)}
+									/>
+								</GroupBox>
+								{/* TODO: Limit & Page Selector Here! */}
+								<GroupBox label='Adult Content Filter' style={{width: '40%', display: 'flex', justifyContent: 'space-between', marginBottom: '1rem'}}>
+									{adultFilter ? (
+										<p style={{fontSize: '1.2rem', marginTop: '0.2rem'}}>Filter Is Enabled</p>
+									) : (
+										<p style={{fontSize: '1.2rem', marginTop: '0.2rem'}}>Filter Is Disabled</p>
+									)}
+									<Button
+										onClick={adultFilterConfirm}
+										active={adultFilter}
+										square
+									>
+										{adultFilter ? (
+											<p>✔</p>
+										) : (
+											<p>X</p>
+										)}
+									</Button>
+								</GroupBox>
+							</>
 						}
-						{/* Pagination div */}
-						<div style={{display: 'flex', justifyContent: 'space-between'}}>
-							{/* Previous Block*/}
-							<div>
-								{/* If page is greater than 1, activate back button */}
-								{currentPage > 1 ? (
-									<Button size='sm' onClick={() => setPage(currentPage - 1)}> {"<<"} </Button>
+						{!searchError ? (
+						<>
+							{/* Pagination div */}
+							<div style={{display: 'flex', justifyContent: 'space-between'}}>
+								{/* Previous Block*/}
+								<div>
+									{/* If page is greater than 1, activate back button */}
+									{currentPage > 1 ? (
+										<Button size='sm' onClick={() => setPage(currentPage - 1)}> {"<<"} </Button>
 									) : (
-									<Button size='sm' disabled> {"<<"} </Button>
+										<Button size='sm' disabled> {"<<"} </Button>
 									)
-								}
-							</div>
-							{/* Numeric Block*/}
-							<div>
-								{/* 2 before */}
-								{currentPage === 2 &&
-									<Button size='sm' onClick={() => setPage(currentPage - 1)}>{currentPage - 1}</Button>
-								}
-								{currentPage > 2 &&
-									<>
-										<Button size='sm' onClick={() => setPage(currentPage - 2)}>{currentPage - 2}</Button>
+									}
+								</div>
+								{/* Numeric Block*/}
+								<div>
+									{/* 2 before */}
+									{currentPage === 2 &&
 										<Button size='sm' onClick={() => setPage(currentPage - 1)}>{currentPage - 1}</Button>
-									</>
-								}
-								{/* Current page */}
-								<Button size='sm' active>{currentPage}</Button>
+									}
+									{currentPage > 2 &&
+										<>
+											<Button size='sm' onClick={() => setPage(currentPage - 2)}>{currentPage - 2}</Button>
+											<Button size='sm' onClick={() => setPage(currentPage - 1)}>{currentPage - 1}</Button>
+										</>
+									}
+									{/* Current page */}
+									<Button size='sm' active>{currentPage}</Button>
 
-								{/* TODO: Ternary to hide these as you approach page 633 */}
-								{/* 2 after */}
-								<Button size='sm' onClick={() => setPage(currentPage + 1)}>{currentPage + 1}</Button>
-								<Button size='sm' onClick={() => setPage(currentPage + 2)}>{currentPage + 2}</Button>
-							</div>
-							{/* Next Block */}
-							<div>
-								{/* If page is less than 633, activate forward button */}
-								{currentPage < 633 ? (
-									<Button size='sm' onClick={() => setPage(currentPage + 1)}> {">>"} </Button>
+									{/* TODO: Ternary to hide these as you approach page 633 */}
+									{/* 2 after */}
+									<Button size='sm' onClick={() => setPage(currentPage + 1)}>{currentPage + 1}</Button>
+									<Button size='sm' onClick={() => setPage(currentPage + 2)}>{currentPage + 2}</Button>
+								</div>
+								{/* Next Block */}
+								<div>
+									{/* If page is less than 633, activate forward button */}
+									{currentPage < 633 ? (
+										<Button size='sm' onClick={() => setPage(currentPage + 1)}> {">>"} </Button>
 									) : (
-									<Button size='sm' disabled> {">>"} </Button>
+										<Button size='sm' disabled> {">>"} </Button>
 									)
-								}
+									}
+								</div>
 							</div>
-						</div>
-						<Table>
-							<TableHead>
-								<TableRow>
-									<TableHeadCell>Name</TableHeadCell>
-									{ authenticatedTableHeaders }
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{gamesList}
-							</TableBody>
-						</Table>
+							<Table>
+								<TableHead>
+									<TableRow>
+										<TableHeadCell>Name</TableHeadCell>
+										{ authenticatedTableHeaders }
+									</TableRow>
+								</TableHead>
+								<TableBody>
+									{gamesList}
+								</TableBody>
+							</Table>
+						</>
+						) : (
+							<div style={{display: 'flex', justifyContent: 'center'}}>
+								<p style={{fontSize: '2rem'}}>{searchError}!</p>
+							</div>
+						)}
+
 					</WindowContent>
 				</Window>
 			</div>
