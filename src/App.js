@@ -53,23 +53,26 @@ const App = () => {
 
 	// Initialising token state logic
 	const [token, setToken] = useState(null)
-	// console.log(token)
+	// Initialising role state logic
+	const [role, setRole] = useState(null)
 
 	// Defining routes that will only be included in the router if a token exists
-	let protectedRoutes
+	let authenticatedRoutes
 	if(token){
-		protectedRoutes = (
+		authenticatedRoutes = (
 			<>
 				<Route path="/game/:id" element={<GamesShow/>}/>
 			</>
 		)
 	}
 
+	// TODO: Admin routes (users, user/:id)
+
 	// Initialising game state logic
 	const [game, setGame] = useState(null);
 
 	return (
-		<AuthContext.Provider value={{ token, setToken}}>
+		<AuthContext.Provider value={{ token, setToken, role, setRole}}>
 			<GameContext.Provider value={{ game, setGame }}>
 				<Router>
 					<GlobalStyles />
@@ -78,7 +81,7 @@ const App = () => {
 						<Routes>
 							<Route path="/" element={<Home/>}/>
 							<Route path="/games/" element={<GamesIndex/>}/>
-							{protectedRoutes}
+							{authenticatedRoutes}
 							{/* Catch-all redirect */}
 							<Route path="*" element={<Home />}/>
 						</Routes>
