@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Button, TableDataCell, TableRow } from 'react95';
 import { useGame } from "../useGame";
-import {useContext} from "react";
-import {AuthContext} from "../AuthContext";
+import { useContext } from "react";
+import { AuthContext } from "../AuthContext";
 
 const GameCard = (props) => {
     // importing token context to check if logged-in
-    const {token} = useContext(AuthContext)
+    const { token, role } = useContext(AuthContext)
     // importing updateGameState function from useGame
     const { updateGameState } = useGame()
 
@@ -27,12 +27,35 @@ const GameCard = (props) => {
         )
     }
 
+    let adminButtons
+    if(role==='admin'){
+        adminButtons = (
+            <>
+                <TableDataCell style={{ textAlign: 'center' }}>
+                    <Link to={`/game/edit/${props.game._id}`}>
+                        {/* onClick: update game state with game's name */}
+                        <Button variant='flat' size='sm' onClick={() => updateGameState(props.game.Name)}>
+                            <p style={{marginBottom: '0.2rem'}}><span style={{fontSize: '1.25rem'}}>&#9998;</span></p>
+                        </Button>
+                    </Link>
+                </TableDataCell>
+                <TableDataCell style={{ textAlign: 'center' }}>
+                    {/* TODO: onClick: confirm delete game using game's id */}
+                    <Button variant='flat' size='sm' onClick={() => updateGameState(props.game.Name)}>
+                        <p style={{marginBottom: '0.2rem'}}><span style={{fontSize: '1.25rem'}}>&#10008;</span></p>
+                    </Button>
+                </TableDataCell>
+            </>
+            )
+    }
+
     return (
         <TableRow>
             <TableDataCell style={{width: '400px'}}>
                 <div style={{whiteSpace: 'break-spaces'}}>{props.game.Name}</div>
             </TableDataCell>
             {viewButton}
+            {adminButtons}
         </TableRow>
     );
 };

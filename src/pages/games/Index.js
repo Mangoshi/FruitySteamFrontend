@@ -25,8 +25,9 @@ import unauthenticatedOptions from './json/unauthenticatedOptions.json'
 const Index = () => {
 	// TODO: Figure out a way of allowing user to select specific page
 	// TODO: Allow user to specify page limit
+	// TODO: Set a delay for requests to be made (one-two seconds)
 	const {page} = useParams();
-	const {token} = useContext(AuthContext)
+	const {token, role} = useContext(AuthContext)
 	const [games, setGames] = useState(null);
 	const [currentPage, setPage] = useState(1);
 	const [filterActive, setFilterActive] = useState(false)
@@ -165,6 +166,16 @@ const Index = () => {
 		)
 	}
 
+	let adminTableHeaders
+	if(role==='admin'){
+		adminTableHeaders = (
+			<>
+				<TableHeadCell>Edit</TableHeadCell>
+				<TableHeadCell>Delete</TableHeadCell>
+			</>
+			)
+	}
+
 	const adultFilterConfirm = () => {
 		if(adultFilter){
 			if (window.confirm("Do you confirm that you are over 18 years of age?") === true){
@@ -187,6 +198,14 @@ const Index = () => {
 						</Link>
 					</WindowHeader>
 					<WindowContent>
+						{ role === 'admin' &&
+							<Button
+								style={{marginBottom: '1rem'}}
+								fullWidth
+							>
+								Add New Game
+							</Button>
+						}
 						{ unauthenticatedMessage }
 						<Button
 							style={{marginBottom: '1rem'}}
@@ -303,6 +322,7 @@ const Index = () => {
 									<TableRow>
 										<TableHeadCell>Name</TableHeadCell>
 										{ authenticatedTableHeaders }
+										{ adminTableHeaders }
 									</TableRow>
 								</TableHead>
 								<TableBody>

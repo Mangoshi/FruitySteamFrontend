@@ -1,9 +1,11 @@
 import {Link, useLocation} from 'react-router-dom';
-import {AppBar, Button, Frame, MenuList, MenuListItem, Separator, Toolbar} from 'react95';
 import {useContext, useState} from "react";
+import {useAuth} from "../useAuth";
 import {GameContext} from "../GameContext";
-import Clock from 'react-live-clock';
+import {AuthContext} from "../AuthContext";
 
+import Clock from 'react-live-clock';
+import {AppBar, Button, Frame, MenuList, MenuListItem, Separator, Toolbar} from 'react95';
 import ic_mangows from "./icons/ic_mangows.png"
 import ic_computer from "./icons/ic_computer.ico"
 import ic_msdos from "./icons/ic_msdos.ico"
@@ -11,12 +13,14 @@ import ic_folder_exe from "./icons/ic_folder_exe.ico"
 import ic_user from "./icons/ic_user.ico"
 import ic_settings from "./icons/ic_settings.ico"
 import ic_auth from "./icons/ic_auth.ico"
-import {useAuth} from "../useAuth";
 
 const Navbar = () => {
 	const { logout } = useAuth()
 	// State for start menu
 	const [open, setOpen] = useState(false);
+
+	// Using AuthContext to check if user is admin
+	const {role} = useContext(AuthContext)
 
 	// Using GameContext to update viewed game tab
 	const {game} = useContext(GameContext)
@@ -49,7 +53,7 @@ const Navbar = () => {
 					>
 						<img
 							src={ic_mangows}
-							alt='mangows95 logo'
+							alt='alt Windows 95 logo'
 							style={{height: '24px', marginRight: 4}}
 						/>
 						Start
@@ -66,7 +70,7 @@ const Navbar = () => {
 							<MenuListItem>
 								<img
 									src={ic_user}
-									alt='mangows95 logo'
+									alt='user icon'
 									style={{height: '24px', marginRight: 4}}
 								/>
 								Profile
@@ -74,7 +78,7 @@ const Navbar = () => {
 							<MenuListItem>
 								<img
 									src={ic_settings}
-									alt='mangows95 logo'
+									alt='settings icon'
 									style={{height: '24px', marginRight: 4}}
 								/>
 								Settings
@@ -85,7 +89,7 @@ const Navbar = () => {
 							>
 								<img
 									src={ic_auth}
-									alt='mangows95 logo'
+									alt='keys icon'
 									style={{height: '24px', marginRight: 4}}
 								/>
 								Logout
@@ -100,7 +104,7 @@ const Navbar = () => {
 						>
 							<img
 								src={ic_computer}
-								alt='mangows95 logo'
+								alt='computer icon'
 								style={{height: '24px', marginRight: 4}}
 							/>
 							Home
@@ -114,7 +118,7 @@ const Navbar = () => {
 						>
 							<img
 								src={ic_folder_exe}
-								alt='mangows95 logo'
+								alt='folder icon'
 								style={{height: '24px', marginRight: 4}}
 							/>
 							Games
@@ -128,12 +132,42 @@ const Navbar = () => {
 						>
 							<img
 								src={ic_msdos}
-								alt='mangows95 logo'
+								alt='ms-dos icon'
 								style={{height: '24px', marginRight: 4}}
 							/>
 							{game && gameViewActive ? limitedTitle : 'Game Name'}
 						</Button>
 					}
+					{role === 'admin' &&
+						<Link to='/users/'>
+							<Button
+								active={location.pathname === '/users/'}
+								size="lg"
+								style={{marginRight: '0.5rem'}}
+							>
+								<img
+									src={ic_user}
+									alt='user icon'
+									style={{height: '24px', marginRight: 4}}
+								/>
+								Users
+							</Button>
+						</Link>
+					}
+					{/*{
+						role === 'admin' && userViewActive &&
+						<Button
+							active={userViewActive}
+							size="lg"
+						>
+							<img
+								src={ic_user}
+								alt='user icon'
+								style={{height: '24px', marginRight: 4}}
+							/>
+							{user && userViewActive ? limitedTitle : 'User Name'}
+						</Button>
+					}*/}
 				</div>
 				<Frame variant='well' style={{marginRight: '0.5rem', padding: '0.2rem'}}>
 					<Clock format={'h:mm A'} ticking={true} interval={60}/>
