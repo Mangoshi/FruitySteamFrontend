@@ -26,6 +26,8 @@ const Index = () => {
 	// TODO: Figure out a way of allowing user to select specific page
 	// TODO: Allow user to specify page limit
 	// TODO: Set a delay for requests to be made (one-two seconds)
+	// TODO: Allow user to add/remove games to wishlist (server update needed)
+	//  - Allow them to view wishlist independently of their profile too?
 	const {page} = useParams();
 	const {token, role} = useContext(AuthContext)
 	const [games, setGames] = useState(null);

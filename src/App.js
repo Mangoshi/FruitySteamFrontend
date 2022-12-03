@@ -26,6 +26,7 @@ import GamesShow from './pages/games/Show';
 // Import components
 import Navbar from './components/Navbar';
 
+// TODO: Responsive styles, mobile-friendly
 // Reset global styles
 const GlobalStyles = createGlobalStyle`
 	@font-face {
