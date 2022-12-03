@@ -46,7 +46,7 @@ const Show = () => {
 
 	return (
 		<>
-			<GameCardDetailed game={game} />
+			<GameCardDetailed game={game} key={game.id} />
 		</>
 	);
 };

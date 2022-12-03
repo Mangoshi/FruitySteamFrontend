@@ -2,7 +2,7 @@ import {Button, Frame, GroupBox, Window, WindowContent, WindowHeader} from 'reac
 import {Link} from "react-router-dom";
 
 
-const GameCard = (props) => {
+const GameCardDetailed = (props) => {
 
 	// Initialising screenshots string array
 	let screenshots = props.game['Screenshots']
@@ -94,7 +94,7 @@ const GameCard = (props) => {
 						</GroupBox>
 						<GroupBox label='Screenshots' style={{marginBottom: '1rem'}}>
 							{screenshots_array.map((screenshot, i) => {
-								return <img src={screenshot} alt='Game screenshots' width='100%'/>
+								return <img src={screenshot} key={screenshot} alt='Game screenshots' width='100%'/>
 							})
 						}
 						</GroupBox>
@@ -105,4 +105,4 @@ const GameCard = (props) => {
 	);
 };
 
-export default GameCard;
+export default GameCardDetailed;
