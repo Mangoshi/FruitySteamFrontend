@@ -19,7 +19,11 @@ const GameCard = (props) => {
                     <Link to={`/game/${props.game._id}`}>
                         {/* onClick: update game state with game's name */}
                         <Button variant='flat' size='sm' onClick={() => updateGameState(props.game.Name)}>
-                            <p style={{marginBottom: '0.2rem'}}>View <span style={{fontSize: '1.25rem'}}>&#128065;</span></p>
+                            <p
+                                style={{marginBottom: '0.2rem', fontSize: '1.25rem',}}
+                            >
+                                &#128065;
+                            </p>
                         </Button>
                     </Link>
                 </TableDataCell>
@@ -35,14 +39,14 @@ const GameCard = (props) => {
                     <Link to={`/game/edit/${props.game._id}`}>
                         {/* onClick: update game state with game's name */}
                         <Button variant='flat' size='sm' onClick={() => updateGameState(props.game.Name)}>
-                            <p style={{marginBottom: '0.2rem'}}><span style={{fontSize: '1.25rem'}}>&#9998;</span></p>
+                            <p style={{marginBottom: '0.2rem', fontSize: '1.25rem'}}>&#9998;</p>
                         </Button>
                     </Link>
                 </TableDataCell>
                 <TableDataCell style={{ textAlign: 'center' }}>
                     {/* TODO: onClick: confirm delete game using game's id */}
                     <Button variant='flat' size='sm' onClick={() => updateGameState(props.game.Name)}>
-                        <p style={{marginBottom: '0.2rem'}}><span style={{fontSize: '1.25rem'}}>&#10008;</span></p>
+                        <p style={{marginBottom: '0.2rem', fontSize: '1.25rem'}}>&#10008;</p>
                     </Button>
                 </TableDataCell>
             </>

@@ -41,6 +41,7 @@ const Navbar = () => {
 
 	// TODO: Settings start menu option goes to theme settings somehow?
 	// TODO: User start menu option goes to api/users/me
+	// TODO: Collapse nav when too small?
 	return (
 		<AppBar position="sticky" style={{zIndex: 100, marginBottom: '1rem'}}>
 			<Toolbar style={{position: 'relative', justifyContent: 'space-between'}}>
@@ -129,6 +130,7 @@ const Navbar = () => {
 						<Button
 							active={gameViewActive}
 							size="lg"
+							style={{marginRight: '0.5rem'}}
 						>
 							<img
 								src={ic_msdos}

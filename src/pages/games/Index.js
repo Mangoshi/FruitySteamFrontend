@@ -163,7 +163,7 @@ const Index = () => {
 	if(token){
 		authenticatedTableHeaders = (
 			<>
-				<TableHeadCell>Link</TableHeadCell>
+				<TableHeadCell>View</TableHeadCell>
 			</>
 		)
 	}
