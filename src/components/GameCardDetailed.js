@@ -183,7 +183,7 @@ const GameCardDetailed = (props) => {
 	return (
 		<div style={{display: "flex", justifyContent: 'center', marginBottom: '1rem'}}>
 			<ResponsiveWrapper>
-				<Window>
+				<Window style={{width: '100%'}}>
 					<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
 						<span style={{marginLeft: '0.2rem'}}>{props.game.Name}.exe</span>
 						<Link to='/games/'>
@@ -198,7 +198,8 @@ const GameCardDetailed = (props) => {
 						</Frame>
 						<Frame variant='inside' style={{
 							margin: '1rem',
-							padding: '1rem'
+							padding: '1rem',
+							width: '94%'
 						}}>
 							<GroupBox label='Screenshots' style={{marginBottom: '1rem'}}>
 								{screenshot_slider}

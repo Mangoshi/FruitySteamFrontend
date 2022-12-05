@@ -1,8 +1,22 @@
-import {Anchor, Button, Frame, GroupBox, NumberInput, TextInput, Window, WindowContent, WindowHeader} from 'react95';
-import {Link} from "react-router-dom";
+import {
+	Anchor,
+	Button,
+	Frame,
+	GroupBox,
+	NumberField,
+	NumberInput,
+	TextInput,
+	Window,
+	WindowContent,
+	WindowHeader
+} from 'react95';
+import {Link, useNavigate} from "react-router-dom";
 import Carousel from "nuka-carousel";
 import ReactPlayer from 'react-player'
 import styled from "styled-components";
+import {useContext, useState} from "react";
+import axios from "axios";
+import {AuthContext} from "../AuthContext";
 
 const GameForm = (props) => {
 
@@ -30,6 +44,9 @@ const GameForm = (props) => {
 		xl: 1200
 	}
 
+	// Having this wrapping everything causes re-rendering issues
+	// Have taken it out for now so I can type in the text fields
+	// Apparently defining it outside the component is the way to go...
 	const ResponsiveWrapper = styled.div`
 		@media (min-width: ${breakpoints.sm}px){
 			width: 90vw
@@ -45,128 +62,464 @@ const GameForm = (props) => {
 		}
 	`
 
+	const {token} = useContext(AuthContext)
+	const navigate = useNavigate();
+
+	const [form, setForm] = useState({
+		Name: '',
+		AppID: 2150000,
+		Price: 0,
+		"Release date": '',
+		"About the game": '',
+		Developers: '',
+		Publishers: '',
+		Website: '',
+		"Required age": '',
+		"Tags": '',
+		"Categories": '',
+		"Genres": '',
+		"DLC count": '',
+		"Achievements": '',
+		"Supported languages": '',
+		"Full audio languages": '',
+		"Metacritic score": '',
+		"Metacritic url": '',
+		"Support url": '',
+		"Support email": '',
+		"Header image": '',
+		"Screenshots": '',
+		"Movies": '',
+	})
+
+	const [errors, setErrors] = useState({
+		Name: '',
+		AppID: '',
+		Price: '',
+		"Release date": '',
+		"About the game": '',
+		Developers: '',
+		Publishers: '',
+		Website: '',
+		"Required age": '',
+		"Tags": '',
+		"Categories": '',
+		"Genres": '',
+		"DLC count": '',
+		"Achievements": '',
+		"Supported languages": '',
+		"Full audio languages": '',
+		"Metacritic score": '',
+		"Metacritic url": '',
+		"Support url": '',
+		"Support email": '',
+		"Header image": '',
+		"Screenshots": '',
+		"Movies": '',
+	});
+
+	const handleForm = (e) => {
+		console.log(e)
+		let name = e.target.name;
+		let value = e.target.value;
+
+		setForm(prevState => ({
+			...prevState,
+			[name]: value
+		}));
+	};
+
+	const isRequired = (fields) => {
+		let error = false;
+
+		fields.forEach(field => {
+			if(!form[field]){
+				error = true;
+				setErrors(prevState => ({
+					...prevState,
+					[field]: {
+						message: `${field} is required!`
+					}
+				}));
+			} else {
+				setErrors(prevState => ({
+					...prevState,
+					[field]: {
+						message: ''
+					}
+				}));
+			}
+		});
+
+		return error;
+	};
+
+	const submitForm = () => {
+		if(!isRequired(['Name', 'AppID', 'Price'])){
+			axios.post('https://fruity-steam.vercel.app/api/games', form, {
+				headers: {
+					"Authorization": `Bearer ${token}`
+				}
+			})
+				.then(response => {
+					console.log(response.data);
+					navigate('/games');
+				})
+				.catch(err => {
+					console.error(err);
+					console.log(err.response.data.msg)
+					setErrors(err.response.data.error);
+				});
+		}
+	};
+
 	// If there is no game props, it's an add form
 	if(!props.game){
 		return (
 			<div style={{display: "flex", justifyContent: 'center', marginBottom: '1rem'}}>
-				<ResponsiveWrapper>
-					<Window style={{width: '100%'}}>
-						<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
-							<span style={{marginLeft: '0.2rem'}}>Add.exe</span>
-							<Link to='/games/'>
-								<Button style={{marginTop: '0.2rem'}}>X</Button>
-							</Link>
-						</WindowHeader>
-						<WindowContent>
-							<Frame variant='inside' style={{margin: '1rem', padding: '1rem', width: '94%'}}>
-								<GroupBox label='Cover' style={{marginBottom: '1rem'}}>
-									<p>COVER UPLOAD</p>
+				<Window style={{width: '70vw'}}>
+					<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
+						<span style={{marginLeft: '0.2rem'}}>Add.exe</span>
+						<Link to='/games/'>
+							<Button style={{marginTop: '0.2rem'}}>X</Button>
+						</Link>
+					</WindowHeader>
+					<WindowContent>
+						<Frame variant='inside' style={{margin: '1rem', padding: '1rem', width: '94%'}}>
+							<div style={halfSizeGroupParent}>
+								<GroupBox label='Game Title *' style={halfSizeGroupLeft}>
+									<TextInput
+										placeholder={errors.Name.message ? errors.Name.message : 'Type here...'}
+										name="Name"
+										onChange={handleForm}
+										value={form.Name}
+										style={errors.Name.message ? {backgroundColor: "indianred"} : {backgroundColor: "white"}}
+									/>
 								</GroupBox>
-								<GroupBox label='Screenshots' style={{marginBottom: '1rem'}}>
-									<p>SCREENSHOT UPLOAD</p>
-								</GroupBox>
-								<GroupBox label='Movies' style={{marginBottom: '1rem'}}>
-									<p>VIDEO UPLOAD</p>
-								</GroupBox>
-								<div style={halfSizeGroupParent}>
-									<GroupBox label='Release date' style={halfSizeGroupLeft}>
-										<span style={{fontSize: '1.2rem'}}>
-											<input type={"date"} style={{
+								<GroupBox label='App ID *' style={halfSizeGroupRight}>
+									{/* Using regular input because React95 NumberInput is broken */}
+									<input
+										type="number"
+										placeholder={errors.AppID.message ? errors.AppID.message : 'Type here...'}
+										name="AppID"
+										onChange={handleForm}
+										value={form.AppID}
+										min={2140820}
+										max={9999999}
+										style={
+											errors.AppID.message ? {
+												backgroundColor: "indianred",
+												width: '95%',
+												height: '1.7rem',
+											} : {
 												backgroundColor: 'white',
-												scale: '1.5',
-												marginLeft: '1.5rem'
-											}}/>
-										</span>
-									</GroupBox>
-									<GroupBox label='Price ($)' style={halfSizeGroupRight}>
-										<span style={{fontSize: '1.2rem'}}>
-											<NumberInput></NumberInput>
-										</span>
-									</GroupBox>
-								</div>
-								<GroupBox label='About The Game' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1rem'}}>
-									<TextInput></TextInput>
-								</span>
+												width: '95%',
+												height: '1.7rem',
+											}
+										}
+									/>
 								</GroupBox>
-								<GroupBox label='Developers' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput></TextInput>
-								</span>
-								</GroupBox>
-								<GroupBox label='Publishers' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput></TextInput>
-								</span>
-								</GroupBox>
-								<GroupBox label='Website' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput></TextInput>
-								</span>
-								</GroupBox>
-								<GroupBox label='Required age' style={{marginBottom: '1rem'}}>
+							</div>
+							<GroupBox label='Cover' style={{marginBottom: '1rem'}}>
+								<p>COVER UPLOAD</p>
+							</GroupBox>
+							<GroupBox label='Screenshots' style={{marginBottom: '1rem'}}>
+								<p>SCREENSHOT UPLOAD</p>
+							</GroupBox>
+							<GroupBox label='Movies' style={{marginBottom: '1rem'}}>
+								<p>VIDEO UPLOAD</p>
+							</GroupBox>
+							<div style={halfSizeGroupParent}>
+								<GroupBox label='Price ($) *' style={halfSizeGroupLeft}>
 									<span style={{fontSize: '1.2rem'}}>
-										<TextInput></TextInput>
+										<input
+											type="number"
+											placeholder={errors.Price.message ? errors.Price.message : 'Type here...'}
+											name="Price"
+											onChange={handleForm}
+											value={form.Price}
+											style={
+												errors.Price.message ? {
+													backgroundColor: "indianred",
+													width: '95%',
+													height: '1.7rem',
+												} : {
+													backgroundColor: 'white',
+													width: '95%',
+													height: '1.7rem',
+												}
+											}
+										/>
 									</span>
 								</GroupBox>
-								<GroupBox label='Categories' style={{marginBottom: '1rem'}}>
+								<GroupBox label='Release Date' style={halfSizeGroupRight}>
+									<span style={{fontSize: '1.2rem'}}>
+										<input
+											type={"date"}
+											placeholder={errors['Release date'].message ? errors['Release date'].message : 'Type here...'}
+											style={
+												errors['Release date'].message ? {
+													backgroundColor: "indianred",
+													width: '95%',
+													height: '1.7rem',
+												} : {
+													backgroundColor: 'white',
+													width: '95%',
+													height: '1.7rem',
+												}
+											}
+											name="Release date"
+											onChange={handleForm}
+										/>
+									</span>
+								</GroupBox>
+							</div>
+							<GroupBox label='About The Game' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1rem'}}>
+								<TextInput
+									placeholder={errors['About the game'].message ? errors['About the game'].message : 'Type here...'}
+									style={
+										errors['About the game'].message ? {
+											backgroundColor: "indianred",
+											} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="About the game"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<GroupBox label='Developers' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1.2rem'}}>
+								<TextInput
+									placeholder={errors.Developers.message ? errors.Developers.message : 'Type here...'}
+									style={
+										errors.Developers.message ? {
+											backgroundColor: "indianred",
+											} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="Developers"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<GroupBox label='Publishers' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1.2rem'}}>
+								<TextInput
+									placeholder={errors.Publishers.message ? errors.Publishers.message : 'Type here...'}
+									style={
+										errors.Publishers.message ? {
+											backgroundColor: "indianred",
+										} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="Publishers"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<GroupBox label='Website' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1.2rem'}}>
+								<TextInput
+									placeholder={errors.Website.message ? errors.Website.message : 'Type here...'}
+									style={
+										errors.Website.message ? {
+											backgroundColor: "indianred",
+										} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="Website"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<GroupBox label='Required Age' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									<TextInput></TextInput>
+									<TextInput
+										placeholder={errors['Required age'].message ? errors['Required age'].message : 'Type here...'}
+										style={
+											errors['Required age'].message ? {
+												backgroundColor: "indianred",
+											} : {
+												backgroundColor: 'white',
+											}
+										}
+										name="Required age"
+										onChange={handleForm}
+									/>
 								</span>
-								</GroupBox>
-								<GroupBox label='Tags' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput></TextInput>
-								</span>
-								</GroupBox>
-								<GroupBox label='Genres' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput></TextInput>
-								</span>
-								</GroupBox>
-								<GroupBox label='DLC Count' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput></TextInput>
-								</span>
-								</GroupBox>
-								<GroupBox label='Achievements' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput></TextInput>
-								</span>
-								</GroupBox>
-								<GroupBox label='Supported Languages' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput></TextInput>
-								</span>
-								</GroupBox>
-								<GroupBox label='Full Audio Languages' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput></TextInput>
-								</span>
-								</GroupBox>
-								<GroupBox label='Metacritic Score' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem', display: "flex", justifyContent:'space-between'}}>
-									<TextInput></TextInput>
-								</span>
-								</GroupBox>
-								<GroupBox label='Support Link' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput></TextInput>
-								</span>
-								</GroupBox>
-								<GroupBox label='Support Email' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput></TextInput>
-								</span>
-								</GroupBox>
-								<div style={{display: 'flex', justifyContent:'space-evenly'}}>
-									<Button>CANCEL</Button>
-									<Button>SUBMIT</Button>
-								</div>
-							</Frame>
-						</WindowContent>
-					</Window>
-				</ResponsiveWrapper>
+							</GroupBox>
+							<GroupBox label='Categories' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1.2rem'}}>
+								<TextInput
+									placeholder={errors.Categories.message ? errors.Categories.message : 'Type here...'}
+									style={
+										errors.Categories.message ? {
+											backgroundColor: "indianred",
+										} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="Categories"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<GroupBox label='Tags' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1.2rem'}}>
+								<TextInput
+									placeholder={errors.Tags.message ? errors.Tags.message : 'Type here...'}
+									style={
+										errors.Tags.message ? {
+											backgroundColor: "indianred",
+										} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="Tags"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<GroupBox label='Genres' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1.2rem'}}>
+								<TextInput
+									placeholder={errors.Genres.message ? errors.Genres.message : 'Type here...'}
+									style={
+										errors.Genres.message ? {
+											backgroundColor: "indianred",
+										} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="Genres"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<GroupBox label='DLC Count' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1.2rem'}}>
+								<TextInput
+									placeholder={errors['DLC count'].message ? errors['DLC count'].message : 'Type here...'}
+									style={
+										errors['DLC count'].message ? {
+											backgroundColor: "indianred",
+										} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="DLC count"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<GroupBox label='Achievements' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1.2rem'}}>
+								<TextInput
+									placeholder={errors.Achievements.message ? errors.Achievements.message : 'Type here...'}
+									style={
+										errors.Achievements.message ? {
+											backgroundColor: "indianred",
+										} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="Achievements"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<GroupBox label='Supported Languages' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1.2rem'}}>
+								<TextInput
+									placeholder={errors['Supported languages'].message ? errors['Supported languages'].message : 'Type here...'}
+									style={
+										errors['Supported languages'].message ? {
+											backgroundColor: "indianred",
+										} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="Supported languages"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<GroupBox label='Full Audio Languages' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1.2rem'}}>
+								<TextInput
+									placeholder={errors['Full audio languages'].message ? errors['Full audio languages'].message : 'Type here...'}
+									style={
+										errors['Full audio languages'].message ? {
+											backgroundColor: "indianred",
+										} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="Full audio languages"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<GroupBox label='Metacritic Score' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1.2rem', display: "flex", justifyContent:'space-between'}}>
+								<TextInput
+									placeholder={errors['Metacritic score'].message ? errors['Metacritic score'].message : 'Type here...'}
+									style={
+										errors['Metacritic score'].message ? {
+											backgroundColor: "indianred",
+										} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="Metacritic score"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<GroupBox label='Support Link' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1.2rem'}}>
+								<TextInput
+									placeholder={errors['Support url'].message ? errors['Support url'].message : 'Type here...'}
+									style={
+										errors['Support url'].message ? {
+											backgroundColor: "indianred",
+										} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="Support url"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<GroupBox label='Support Email' style={{marginBottom: '1rem'}}>
+							<span style={{fontSize: '1.2rem'}}>
+								<TextInput
+									placeholder={errors['Support email'].message ? errors['Support email'].message : 'Type here...'}
+									style={
+										errors['Support email'].message ? {
+											backgroundColor: "indianred",
+										} : {
+											backgroundColor: 'white',
+										}
+									}
+									name="Support email"
+									onChange={handleForm}
+								/>
+							</span>
+							</GroupBox>
+							<div style={{display: 'flex', justifyContent:'space-evenly'}}>
+								<Button>CANCEL</Button>
+								<Button onClick={submitForm}>SUBMIT</Button>
+							</div>
+						</Frame>
+					</WindowContent>
+				</Window>
 			</div>
 		);
 	}
