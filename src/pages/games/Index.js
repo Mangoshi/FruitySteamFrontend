@@ -201,12 +201,14 @@ const Index = () => {
 					</WindowHeader>
 					<WindowContent>
 						{ role === 'admin' &&
-							<Button
-								style={{marginBottom: '1rem'}}
-								fullWidth
-							>
-								Add New Game
-							</Button>
+							<Link to='/games/add'>
+								<Button
+									style={{marginBottom: '1rem'}}
+									fullWidth
+								>
+									Add New Game
+								</Button>
+							</Link>
 						}
 						{ unauthenticatedMessage }
 						<Button

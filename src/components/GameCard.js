@@ -16,7 +16,7 @@ const GameCard = (props) => {
         viewButton = (
             <>
                 <TableDataCell style={{ textAlign: 'center' }}>
-                    <Link to={`/game/${props.game._id}`}>
+                    <Link to={`/games/${props.game._id}`}>
                         {/* onClick: update game state with game's name */}
                         <Button variant='flat' size='sm' onClick={() => updateGameState(props.game.Name)}>
                             <p
@@ -36,7 +36,7 @@ const GameCard = (props) => {
         adminButtons = (
             <>
                 <TableDataCell style={{ textAlign: 'center' }}>
-                    <Link to={`/game/edit/${props.game._id}`}>
+                    <Link to={`/games/edit/${props.game._id}`}>
                         {/* onClick: update game state with game's name */}
                         <Button variant='flat' size='sm' onClick={() => updateGameState(props.game.Name)}>
                             <p style={{marginBottom: '0.2rem', fontSize: '1.25rem'}}>&#9998;</p>

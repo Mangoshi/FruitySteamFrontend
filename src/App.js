@@ -22,6 +22,8 @@ import ms_sans_serif_bold from 'react95/dist/fonts/ms_sans_serif_bold.woff2';
 import Home from './pages/Home';
 import GamesIndex from './pages/games/Index';
 import GamesShow from './pages/games/Show';
+import GamesAdd from './pages/games/Add.js'
+import GamesEdit from './pages/games/Edit.js'
 
 // Import components
 import Navbar from './components/Navbar';
@@ -62,12 +64,21 @@ const App = () => {
 	if(token){
 		authenticatedRoutes = (
 			<>
-				<Route path="/game/:id" element={<GamesShow/>}/>
+				<Route path="/games/:id" element={<GamesShow/>}/>
 			</>
 		)
 	}
 
 	// TODO: Admin routes (users, user/:id)
+	let adminRoutes
+	if(token && role==='admin') {
+		adminRoutes = (
+			<>
+				<Route path="/games/add" element={<GamesAdd/>}/>
+				<Route path="/games/edit/:id" element={<GamesEdit/>}/>
+			</>
+		)
+	}
 
 	// Initialising game state logic
 	const [game, setGame] = useState(null);
@@ -83,6 +94,7 @@ const App = () => {
 							<Route path="/" element={<Home/>}/>
 							<Route path="/games/" element={<GamesIndex/>}/>
 							{authenticatedRoutes}
+							{adminRoutes}
 							{/* Catch-all redirect */}
 							<Route path="*" element={<Home />}/>
 						</Routes>
