@@ -1,12 +1,12 @@
 import axios from 'axios';
-import {useState, useEffect, useContext} from 'react';
+import {useState, useEffect, useContext, useRef} from 'react';
 import {AuthContext} from "../../AuthContext";
 import GameCard from '../../components/GameCard';
 import {Link, useParams} from "react-router-dom";
 import {
 	Button,
 	GroupBox,
-	Hourglass,
+	Hourglass, NumberInput,
 	Select,
 	Table,
 	TableBody,
@@ -23,15 +23,12 @@ import authenticatedOptions from './json/authenticatedOptions.json'
 import unauthenticatedOptions from './json/unauthenticatedOptions.json'
 
 const Index = () => {
-	// TODO: Figure out a way of allowing user to select specific page
-	// TODO: Allow user to specify page limit
-	// TODO: Set a delay for requests to be made (one-two seconds)
 	// TODO: Allow user to add/remove games to wishlist (server update needed)
 	//  - Allow them to view wishlist independently of their profile too?
 	const {page} = useParams();
 	const {token, role} = useContext(AuthContext)
 	const [games, setGames] = useState(null);
-	const [currentPage, setPage] = useState(1);
+	const [currentPage, setCurrentPage] = useState(1);
 	const [filterActive, setFilterActive] = useState(false)
 	const [searchBy, setSearchBy] = useState("Name")
 	const [searchQuery, setSearchQuery] = useState({query: ""})
@@ -39,6 +36,25 @@ const Index = () => {
 	const [sortDirection, setSortDirection] = useState("Ascending")
 	const [adultFilter, setAdultFilter] = useState(true)
 	const [searchError, setSearchError] = useState(null)
+	const [limit, setLimit] = useState(100)
+	const [totalGames, setTotalGames] = useState(0)
+	const [totalPages, setTotalPages] = useState(0)
+
+	const ref = useRef(null)
+
+	if(page){
+		setCurrentPage(Number(page))
+	}
+
+	const limitOptions = [
+		{value: 10, label: "10"},
+		{value: 25, label: "25"},
+		{value: 50, label: "50"},
+		{value: 100, label: "100"},
+		{value: 250, label: "250"},
+		{value: 500, label: "500"},
+		{value: 1000, label: "1000"},
+	]
 
 	const handleSearch = (e) => {
 		let name = e.target.name;
@@ -48,9 +64,15 @@ const Index = () => {
 			...prevState,
 			[name]: value
 		}));
+
+		// TODO: Reset page to 1 when search query is changed
+		//  - Currently doesn't change because using defaultValue instead of value
+		// setCurrentPage(1)
+		// document.getElementById("pageInput").value = 1
+		// console.log(document.getElementById("pageInput"))
 	};
 
-	let URL, authHeaders, builtSearchQuery, builtSortQuery
+	let URL, authHeaders, builtSearchQuery, builtSortQuery, builtLimitQuery, builtPageQuery
 
 	if(token){
 		URL = 'https://fruity-steam.vercel.app/api/games'
@@ -61,17 +83,33 @@ const Index = () => {
 	}
 
 	if(filterActive){
+		builtLimitQuery = `?limit=${limit}`
 		builtSearchQuery = `&by=${searchBy}&query=${searchQuery.query}`
 		builtSortQuery = `&sort=${sortBy}&direction=${sortDirection}`
+		builtPageQuery = `&page=${currentPage}`
 	} else {
+		builtLimitQuery = ''
 		builtSearchQuery = ''
 		builtSortQuery = ''
+		builtPageQuery = ''
 	}
 
+	// TODO: IMPORTANT!!! Set a delay for requests to be made (one-two seconds)
+	// TODO: Figure out fix / error message for when MongoDB memory limit reached
+	//  - Could also reduce available limits to 25ish max
 	useEffect(() => {
-		axios.get(`${URL}?page=${currentPage}${builtSearchQuery}${builtSortQuery}`, authHeaders)
+		console.log(`Built Query: ${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`)
+		axios.get(`${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`, authHeaders)
 			.then((response) => {
+				// TODO: While loading show hourglass animation
+				// console.log("Full response data: ",response.data)
 				let data = response.data.data
+				let totalGames = Number.parseInt(response.data.total)
+				console.log("Total games: ", totalGames)
+				console.log("Limit: ", limit)
+				console.log("Max pages: ", Math.ceil(totalGames/limit))
+				setTotalGames(totalGames)
+				setTotalPages(Math.ceil(totalGames/limit))
 				if(adultFilter){
 /*
 					if(data.filter(game => game.Notes).length > 0) {
@@ -102,7 +140,7 @@ const Index = () => {
 				console.log("ERROR: ", err.response.data.msg)
 				setSearchError(err.response.data.msg)
 			});
-	}, [URL, currentPage, builtSearchQuery, builtSortQuery, adultFilter]);
+	}, [URL, currentPage, builtSearchQuery, builtSortQuery, adultFilter, limit]);
 
 	if (!games) return (
 		<div style={{display: "flex", justifyContent: 'center'}}>
@@ -189,6 +227,30 @@ const Index = () => {
 		}
 	}
 
+	const halfSizeGroupParent = {
+		display: "flex",
+		justifyContent: 'space-between'
+	}
+
+	const halfSizeGroupLeft = {
+		marginBottom: '1rem',
+		marginRight: '0.5rem',
+		width: '100%'
+	}
+
+	const halfSizeGroupMiddle = {
+		marginBottom: '1rem',
+		marginRight: '0.25rem',
+		marginLeft: '0.25rem',
+		width: '100%'
+	}
+
+	const halfSizeGroupRight = {
+		marginBottom: '1rem',
+		marginLeft: '0.5rem',
+		width: '100%'
+	}
+
 	return (
 		<>
 			<div style={{display: "flex", justifyContent: 'center'}}>
@@ -232,7 +294,7 @@ const Index = () => {
 										value={searchQuery.query}
 									/>
 									<Select
-										defaultValue={"Name"}
+										defaultValue={searchBy}
 										width={250}
 										menuMaxHeight={200}
 										options={searchByOptions}
@@ -248,79 +310,114 @@ const Index = () => {
 										onChange={e => setSortBy(e.value)}
 									/>
 									<Select
-										defaultValue={"Ascending"}
+										defaultValue={sortDirection}
 										width={250}
 										menuMaxHeight={200}
 										options={sortDirectionOptions}
 										onChange={e => setSortDirection(e.value)}
 									/>
 								</GroupBox>
-								{/* TODO: Limit & Page Selector Here! */}
-								<GroupBox label='Adult Content Filter' style={{width: '40%', display: 'flex', justifyContent: 'space-between', marginBottom: '1rem'}}>
-									{adultFilter ? (
-										<p style={{fontSize: '1.2rem', marginTop: '0.2rem'}}>Filter Is Enabled</p>
-									) : (
-										<p style={{fontSize: '1.2rem', marginTop: '0.2rem'}}>Filter Is Disabled</p>
-									)}
-									<Button
-										onClick={adultFilterConfirm}
-										active={adultFilter}
-										square
-									>
-										{adultFilter ? (
-											<p>✔</p>
-										) : (
-											<p>X</p>
-										)}
-									</Button>
-								</GroupBox>
+								<div style={halfSizeGroupParent}>
+									<GroupBox label='Adult Content Filter' style={halfSizeGroupLeft}>
+										<div style={{display: 'flex', justifyContent: 'space-between'}}>
+											{adultFilter ? (
+												<p style={{fontSize: '1rem', marginTop: '0.4rem', color: "green"}}>Filter Enabled</p>
+											) : (
+												<p style={{fontSize: '1rem', marginTop: '0.4rem', color: "darkred"}}>Filter Disabled</p>
+											)}
+											<Button
+												onClick={adultFilterConfirm}
+												active={adultFilter}
+												square
+											>
+												{adultFilter ? (
+													<p>✔</p>
+												) : (
+													<p>X</p>
+												)}
+											</Button>
+										</div>
+									</GroupBox>
+									<GroupBox label={'Limit'} style={halfSizeGroupMiddle}>
+										<div style={{display: 'flex', justifyContent: 'space-between'}}>
+											<Select
+												defaultValue={limit}
+												menuMaxHeight={200}
+												width={150}
+												options={limitOptions}
+												onChange={e => setLimit(e.value)}
+											/>
+
+										</div>
+									</GroupBox>
+									<GroupBox label={'Page'} style={halfSizeGroupRight}>
+										<div style={{display: 'flex', justifyContent: 'space-between'}}>
+											<NumberInput
+												width={150}
+												defaultValue={currentPage}
+												ref={ref}
+												id={'pageInput'}
+												onChange={e => {setCurrentPage(e)}}
+												min={1}
+												max={totalPages}
+												/>
+										</div>
+									</GroupBox>
+								</div>
 							</>
 						}
+						<div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1rem'}}>
+							<p>Total games: {totalGames}</p>
+							<p>Total pages: {totalPages}</p>
+						</div>
+						{/* Pagination div */}
+						<div style={{display: 'flex', justifyContent: 'space-between'}}>
+							{/* Previous Block*/}
+							<div>
+								{/* If page is greater than 1, activate back button */}
+								{currentPage > 1 ? (
+									<Button size='sm' onClick={() => setCurrentPage(currentPage - 1)}> {"<<"} </Button>
+								) : (
+									<Button size='sm' disabled> {"<<"} </Button>
+								)
+								}
+							</div>
+							{/* Numeric Block*/}
+							<div>
+								{/* 2 before */}
+								{currentPage === 2 &&
+									<Button size='sm' onClick={() => setCurrentPage(currentPage - 1)}>{currentPage - 1}</Button>
+								}
+								{currentPage > 2 &&
+									<>
+										<Button size='sm' onClick={() => setCurrentPage(currentPage - 2)}>{currentPage - 2}</Button>
+										<Button size='sm' onClick={() => setCurrentPage(currentPage - 1)}>{currentPage - 1}</Button>
+									</>
+								}
+								{/* Current page */}
+								<Button size='sm' active>{currentPage}</Button>
+
+								{/* 2 after */}
+								{currentPage < totalPages &&
+									<Button size='sm' onClick={() => setCurrentPage(currentPage + 1)}>{currentPage + 1}</Button>
+								}
+								{currentPage < totalPages - 1 &&
+									<Button size='sm' onClick={() => setCurrentPage(currentPage + 2)}>{currentPage + 2}</Button>
+								}
+							</div>
+							{/* Next Block */}
+							<div>
+								{/* If page is less than total games / limit, activate forward button */}
+								{currentPage < totalPages ? (
+									<Button size='sm' onClick={() => setCurrentPage(currentPage + 1)}> {">>"} </Button>
+								) : (
+									<Button size='sm' disabled> {">>"} </Button>
+								)
+								}
+							</div>
+						</div>
 						{!searchError ? (
 						<>
-							{/* Pagination div */}
-							<div style={{display: 'flex', justifyContent: 'space-between'}}>
-								{/* Previous Block*/}
-								<div>
-									{/* If page is greater than 1, activate back button */}
-									{currentPage > 1 ? (
-										<Button size='sm' onClick={() => setPage(currentPage - 1)}> {"<<"} </Button>
-									) : (
-										<Button size='sm' disabled> {"<<"} </Button>
-									)
-									}
-								</div>
-								{/* Numeric Block*/}
-								<div>
-									{/* 2 before */}
-									{currentPage === 2 &&
-										<Button size='sm' onClick={() => setPage(currentPage - 1)}>{currentPage - 1}</Button>
-									}
-									{currentPage > 2 &&
-										<>
-											<Button size='sm' onClick={() => setPage(currentPage - 2)}>{currentPage - 2}</Button>
-											<Button size='sm' onClick={() => setPage(currentPage - 1)}>{currentPage - 1}</Button>
-										</>
-									}
-									{/* Current page */}
-									<Button size='sm' active>{currentPage}</Button>
-
-									{/* TODO: Ternary to hide these as you approach page 633 */}
-									{/* 2 after */}
-									<Button size='sm' onClick={() => setPage(currentPage + 1)}>{currentPage + 1}</Button>
-									<Button size='sm' onClick={() => setPage(currentPage + 2)}>{currentPage + 2}</Button>
-								</div>
-								{/* Next Block */}
-								<div>
-									{/* If page is less than 633, activate forward button */}
-									{currentPage < 633 ? (
-										<Button size='sm' onClick={() => setPage(currentPage + 1)}> {">>"} </Button>
-									) : (
-										<Button size='sm' disabled> {">>"} </Button>
-									)
-									}
-								</div>
-							</div>
 							<Table>
 								<TableHead>
 									<TableRow>
