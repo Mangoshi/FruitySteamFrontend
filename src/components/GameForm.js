@@ -3,8 +3,6 @@ import {
 	Button,
 	Frame,
 	GroupBox,
-	NumberField,
-	NumberInput,
 	TextInput,
 	Window,
 	WindowContent,
@@ -67,8 +65,8 @@ const GameForm = (props) => {
 
 	const [form, setForm] = useState({
 		Name: '',
-		AppID: 2150000,
-		Price: 0,
+		AppID: '',
+		Price: '',
 		"Release date": '',
 		"About the game": '',
 		Developers: '',
@@ -172,6 +170,36 @@ const GameForm = (props) => {
 		}
 	};
 
+	// Regular Expression function to enforce numbers only
+	const onlyAllowNumber = (input) => {
+		const regex = new RegExp("^[0-9]*$");
+		if (input.data != null && !regex.test(input.data))
+			input.preventDefault();
+	}
+
+	// Custom styles to mimic the Windows 95 input field
+	const numInputFrame = {
+		padding: 1,
+		width: '100%',
+		height: '2.2rem',
+	}
+	const inputBgReg = {
+		backgroundColor: 'white'
+	}
+	const inputBgErr = {
+		backgroundColor: 'indianred'
+	}
+	const numInputStyles = {
+		width: '90%',
+		height: '1.5rem',
+		marginTop: 1,
+		marginLeft: 8,
+		border: 'none',
+		outline: 'none',
+		fontSize: '1rem',
+		font: 'unset'
+	}
+
 	// If there is no game props, it's an add form
 	if(!props.game){
 		return (
@@ -188,35 +216,70 @@ const GameForm = (props) => {
 							<div style={halfSizeGroupParent}>
 								<GroupBox label='Game Title *' style={halfSizeGroupLeft}>
 									<TextInput
-										placeholder={errors.Name.message ? errors.Name.message : 'Type here...'}
+										placeholder={errors.Name.message ? errors.Name.message : 'Text here...'}
 										name="Name"
 										onChange={handleForm}
 										value={form.Name}
-										style={errors.Name.message ? {backgroundColor: "indianred"} : {backgroundColor: "white"}}
+										style={errors.Name.message ? inputBgErr : inputBgReg}
 									/>
 								</GroupBox>
 								<GroupBox label='App ID *' style={halfSizeGroupRight}>
+									<Frame variant={"field"} style={numInputFrame}>
 									{/* Using regular input because React95 NumberInput is broken */}
 									<input
 										type="number"
-										placeholder={errors.AppID.message ? errors.AppID.message : 'Type here...'}
+										placeholder={errors.AppID.message ? errors.AppID.message : 'Number here...'}
 										name="AppID"
 										onChange={handleForm}
+										onBeforeInput={onlyAllowNumber}
 										value={form.AppID}
-										min={2140820}
+										min={2140821}
 										max={9999999}
-										style={
-											errors.AppID.message ? {
-												backgroundColor: "indianred",
-												width: '95%',
-												height: '1.7rem',
-											} : {
-												backgroundColor: 'white',
-												width: '95%',
-												height: '1.7rem',
-											}
+										style={errors.AppID.message
+											?
+											Object.assign(numInputStyles, inputBgErr)
+											:
+											Object.assign(numInputStyles, inputBgReg)
 										}
 									/>
+									</Frame>
+								</GroupBox>
+							</div>
+							<div style={halfSizeGroupParent}>
+								<GroupBox label='Price ($) *' style={halfSizeGroupLeft}>
+									<Frame variant={"field"} style={numInputFrame}>
+										<input
+											type="number"
+											placeholder={errors.Price.message ? errors.Price.message : 'Number here...'}
+											name="Price"
+											onChange={handleForm}
+											onBeforeInput={onlyAllowNumber}
+											value={form.Price}
+											style={errors.Price.message
+												?
+												Object.assign(numInputStyles, inputBgErr)
+												:
+												Object.assign(numInputStyles, inputBgReg)
+											}
+										/>
+									</Frame>
+								</GroupBox>
+								<GroupBox label='Release Date' style={halfSizeGroupRight}>
+									<Frame variant={"field"} style={numInputFrame}>
+										<input
+											type={"date"}
+											placeholder={errors['Release date'].message ? errors['Release date'].message : 'Date here...'}
+											style={errors['Release date'].message
+												?
+												Object.assign(numInputStyles, inputBgErr)
+												:
+												Object.assign(numInputStyles, inputBgReg)
+											}
+											name="Release date"
+											onChange={handleForm}
+
+										/>
+									</Frame>
 								</GroupBox>
 							</div>
 							<GroupBox label='Cover' style={{marginBottom: '1rem'}}>
@@ -228,78 +291,23 @@ const GameForm = (props) => {
 							<GroupBox label='Movies' style={{marginBottom: '1rem'}}>
 								<p>VIDEO UPLOAD</p>
 							</GroupBox>
-							<div style={halfSizeGroupParent}>
-								<GroupBox label='Price ($) *' style={halfSizeGroupLeft}>
-									<span style={{fontSize: '1.2rem'}}>
-										<input
-											type="number"
-											placeholder={errors.Price.message ? errors.Price.message : 'Type here...'}
-											name="Price"
-											onChange={handleForm}
-											value={form.Price}
-											style={
-												errors.Price.message ? {
-													backgroundColor: "indianred",
-													width: '95%',
-													height: '1.7rem',
-												} : {
-													backgroundColor: 'white',
-													width: '95%',
-													height: '1.7rem',
-												}
-											}
-										/>
-									</span>
-								</GroupBox>
-								<GroupBox label='Release Date' style={halfSizeGroupRight}>
-									<span style={{fontSize: '1.2rem'}}>
-										<input
-											type={"date"}
-											placeholder={errors['Release date'].message ? errors['Release date'].message : 'Type here...'}
-											style={
-												errors['Release date'].message ? {
-													backgroundColor: "indianred",
-													width: '95%',
-													height: '1.7rem',
-												} : {
-													backgroundColor: 'white',
-													width: '95%',
-													height: '1.7rem',
-												}
-											}
-											name="Release date"
-											onChange={handleForm}
-										/>
-									</span>
-								</GroupBox>
-							</div>
 							<GroupBox label='About The Game' style={{marginBottom: '1rem'}}>
 							<span style={{fontSize: '1rem'}}>
 								<TextInput
-									placeholder={errors['About the game'].message ? errors['About the game'].message : 'Type here...'}
-									style={
-										errors['About the game'].message ? {
-											backgroundColor: "indianred",
-											} : {
-											backgroundColor: 'white',
-										}
-									}
+									placeholder={errors['About the game'].message ? errors['About the game'].message : 'Text here...'}
+									style={errors['About the game'].message ? inputBgErr : inputBgReg}
 									name="About the game"
 									onChange={handleForm}
+									multiline={true}
+
 								/>
 							</span>
 							</GroupBox>
 							<GroupBox label='Developers' style={{marginBottom: '1rem'}}>
 							<span style={{fontSize: '1.2rem'}}>
 								<TextInput
-									placeholder={errors.Developers.message ? errors.Developers.message : 'Type here...'}
-									style={
-										errors.Developers.message ? {
-											backgroundColor: "indianred",
-											} : {
-											backgroundColor: 'white',
-										}
-									}
+									placeholder={errors.Developers.message ? errors.Developers.message : 'Text here...'}
+									style={errors.Developers.message ? inputBgErr : inputBgReg}
 									name="Developers"
 									onChange={handleForm}
 								/>
@@ -308,14 +316,8 @@ const GameForm = (props) => {
 							<GroupBox label='Publishers' style={{marginBottom: '1rem'}}>
 							<span style={{fontSize: '1.2rem'}}>
 								<TextInput
-									placeholder={errors.Publishers.message ? errors.Publishers.message : 'Type here...'}
-									style={
-										errors.Publishers.message ? {
-											backgroundColor: "indianred",
-										} : {
-											backgroundColor: 'white',
-										}
-									}
+									placeholder={errors.Publishers.message ? errors.Publishers.message : 'Text here...'}
+									style={errors.Publishers.message ? inputBgErr : inputBgReg}
 									name="Publishers"
 									onChange={handleForm}
 								/>
@@ -324,46 +326,35 @@ const GameForm = (props) => {
 							<GroupBox label='Website' style={{marginBottom: '1rem'}}>
 							<span style={{fontSize: '1.2rem'}}>
 								<TextInput
-									placeholder={errors.Website.message ? errors.Website.message : 'Type here...'}
-									style={
-										errors.Website.message ? {
-											backgroundColor: "indianred",
-										} : {
-											backgroundColor: 'white',
-										}
-									}
+									placeholder={errors.Website.message ? errors.Website.message : 'Text here...'}
+									style={errors.Website.message ? inputBgErr : inputBgReg}
 									name="Website"
 									onChange={handleForm}
 								/>
 							</span>
 							</GroupBox>
 							<GroupBox label='Required Age' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput
-										placeholder={errors['Required age'].message ? errors['Required age'].message : 'Type here...'}
-										style={
-											errors['Required age'].message ? {
-												backgroundColor: "indianred",
-											} : {
-												backgroundColor: 'white',
-											}
+								<Frame variant={"field"} style={numInputFrame}>
+									<input
+										type={'number'}
+										placeholder={errors['Required age'].message ? errors['Required age'].message : 'Number here...'}
+										style={errors['Required age'].message
+											?
+											Object.assign(numInputStyles, inputBgErr)
+											:
+											Object.assign(numInputStyles, inputBgReg)
 										}
 										name="Required age"
 										onChange={handleForm}
+										onBeforeInput={onlyAllowNumber}
 									/>
-								</span>
+								</Frame>
 							</GroupBox>
 							<GroupBox label='Categories' style={{marginBottom: '1rem'}}>
 							<span style={{fontSize: '1.2rem'}}>
 								<TextInput
-									placeholder={errors.Categories.message ? errors.Categories.message : 'Type here...'}
-									style={
-										errors.Categories.message ? {
-											backgroundColor: "indianred",
-										} : {
-											backgroundColor: 'white',
-										}
-									}
+									placeholder={errors.Categories.message ? errors.Categories.message : 'Comma-seperated tags here...'}
+									style={errors.Categories.message ? inputBgErr : inputBgReg}
 									name="Categories"
 									onChange={handleForm}
 								/>
@@ -372,14 +363,8 @@ const GameForm = (props) => {
 							<GroupBox label='Tags' style={{marginBottom: '1rem'}}>
 							<span style={{fontSize: '1.2rem'}}>
 								<TextInput
-									placeholder={errors.Tags.message ? errors.Tags.message : 'Type here...'}
-									style={
-										errors.Tags.message ? {
-											backgroundColor: "indianred",
-										} : {
-											backgroundColor: 'white',
-										}
-									}
+									placeholder={errors.Tags.message ? errors.Tags.message : 'Comma-seperated tags here...'}
+									style={errors.Tags.message ? inputBgErr : inputBgReg}
 									name="Tags"
 									onChange={handleForm}
 								/>
@@ -388,62 +373,52 @@ const GameForm = (props) => {
 							<GroupBox label='Genres' style={{marginBottom: '1rem'}}>
 							<span style={{fontSize: '1.2rem'}}>
 								<TextInput
-									placeholder={errors.Genres.message ? errors.Genres.message : 'Type here...'}
-									style={
-										errors.Genres.message ? {
-											backgroundColor: "indianred",
-										} : {
-											backgroundColor: 'white',
-										}
-									}
+									placeholder={errors.Genres.message ? errors.Genres.message : 'Comma-seperated tags here...'}
+									style={errors.Genres.message ? inputBgErr : inputBgReg}
 									name="Genres"
 									onChange={handleForm}
 								/>
 							</span>
 							</GroupBox>
 							<GroupBox label='DLC Count' style={{marginBottom: '1rem'}}>
-							<span style={{fontSize: '1.2rem'}}>
-								<TextInput
-									placeholder={errors['DLC count'].message ? errors['DLC count'].message : 'Type here...'}
-									style={
-										errors['DLC count'].message ? {
-											backgroundColor: "indianred",
-										} : {
-											backgroundColor: 'white',
+								<Frame variant={"field"} style={numInputFrame}>
+									<input
+										type={'number'}
+										placeholder={errors['DLC count'].message ? errors['DLC count'].message : 'Number here...'}
+										style={errors['DLC count'].message
+											?
+											Object.assign(numInputStyles, inputBgErr)
+											:
+											Object.assign(numInputStyles, inputBgReg)
 										}
-									}
-									name="DLC count"
-									onChange={handleForm}
-								/>
-							</span>
+										name="DLC count"
+										onChange={handleForm}
+										onBeforeInput={onlyAllowNumber}
+									/>
+								</Frame>
 							</GroupBox>
 							<GroupBox label='Achievements' style={{marginBottom: '1rem'}}>
-							<span style={{fontSize: '1.2rem'}}>
-								<TextInput
-									placeholder={errors.Achievements.message ? errors.Achievements.message : 'Type here...'}
-									style={
-										errors.Achievements.message ? {
-											backgroundColor: "indianred",
-										} : {
-											backgroundColor: 'white',
+								<Frame variant={"field"} style={numInputFrame}>
+									<input
+										type={'number'}
+										placeholder={errors['Achievements'].message ? errors['Achievements'].message : 'Number here...'}
+										style={errors['Achievements'].message
+											?
+											Object.assign(numInputStyles, inputBgErr)
+											:
+											Object.assign(numInputStyles, inputBgReg)
 										}
-									}
-									name="Achievements"
-									onChange={handleForm}
-								/>
-							</span>
+										name="Achievements"
+										onChange={handleForm}
+										onBeforeInput={onlyAllowNumber}
+									/>
+								</Frame>
 							</GroupBox>
 							<GroupBox label='Supported Languages' style={{marginBottom: '1rem'}}>
 							<span style={{fontSize: '1.2rem'}}>
 								<TextInput
-									placeholder={errors['Supported languages'].message ? errors['Supported languages'].message : 'Type here...'}
-									style={
-										errors['Supported languages'].message ? {
-											backgroundColor: "indianred",
-										} : {
-											backgroundColor: 'white',
-										}
-									}
+									placeholder={errors['Supported languages'].message ? errors['Supported languages'].message : 'Comma-seperated tags here...'}
+									style={errors['Supported languages'].message ? inputBgErr : inputBgReg}
 									name="Supported languages"
 									onChange={handleForm}
 								/>
@@ -452,46 +427,36 @@ const GameForm = (props) => {
 							<GroupBox label='Full Audio Languages' style={{marginBottom: '1rem'}}>
 							<span style={{fontSize: '1.2rem'}}>
 								<TextInput
-									placeholder={errors['Full audio languages'].message ? errors['Full audio languages'].message : 'Type here...'}
+									placeholder={errors['Full audio languages'].message ? errors['Full audio languages'].message : 'Comma-seperated tags here...'}
 									style={
-										errors['Full audio languages'].message ? {
-											backgroundColor: "indianred",
-										} : {
-											backgroundColor: 'white',
-										}
-									}
+										errors['Full audio languages'].message ? inputBgErr : inputBgReg}
 									name="Full audio languages"
 									onChange={handleForm}
 								/>
 							</span>
 							</GroupBox>
 							<GroupBox label='Metacritic Score' style={{marginBottom: '1rem'}}>
-							<span style={{fontSize: '1.2rem', display: "flex", justifyContent:'space-between'}}>
-								<TextInput
-									placeholder={errors['Metacritic score'].message ? errors['Metacritic score'].message : 'Type here...'}
-									style={
-										errors['Metacritic score'].message ? {
-											backgroundColor: "indianred",
-										} : {
-											backgroundColor: 'white',
+								<Frame variant={"field"} style={numInputFrame}>
+									<input
+										type={'number'}
+										placeholder={errors['Metacritic score'].message ? errors['Metacritic score'].message : 'Number here...'}
+										style={errors['Metacritic score'].message
+											?
+											Object.assign(numInputStyles, inputBgErr)
+											:
+											Object.assign(numInputStyles, inputBgReg)
 										}
-									}
-									name="Metacritic score"
-									onChange={handleForm}
-								/>
-							</span>
+										name="Metacritic score"
+										onChange={handleForm}
+										onBeforeInput={onlyAllowNumber}
+									/>
+								</Frame>
 							</GroupBox>
 							<GroupBox label='Support Link' style={{marginBottom: '1rem'}}>
 							<span style={{fontSize: '1.2rem'}}>
 								<TextInput
-									placeholder={errors['Support url'].message ? errors['Support url'].message : 'Type here...'}
-									style={
-										errors['Support url'].message ? {
-											backgroundColor: "indianred",
-										} : {
-											backgroundColor: 'white',
-										}
-									}
+									placeholder={errors['Support url'].message ? errors['Support url'].message : 'Text here...'}
+									style={errors['Support url'].message ? inputBgErr : inputBgReg}
 									name="Support url"
 									onChange={handleForm}
 								/>
@@ -500,14 +465,8 @@ const GameForm = (props) => {
 							<GroupBox label='Support Email' style={{marginBottom: '1rem'}}>
 							<span style={{fontSize: '1.2rem'}}>
 								<TextInput
-									placeholder={errors['Support email'].message ? errors['Support email'].message : 'Type here...'}
-									style={
-										errors['Support email'].message ? {
-											backgroundColor: "indianred",
-										} : {
-											backgroundColor: 'white',
-										}
-									}
+									placeholder={errors['Support email'].message ? errors['Support email'].message : 'Text here...'}
+									style={errors['Support email'].message ? inputBgErr : inputBgReg}
 									name="Support email"
 									onChange={handleForm}
 								/>
