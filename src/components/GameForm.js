@@ -1,5 +1,4 @@
 import {
-	Anchor,
 	Button,
 	Frame,
 	GroupBox,
@@ -16,7 +15,7 @@ import {useContext, useState} from "react";
 import axios from "axios";
 import {AuthContext} from "../AuthContext";
 
-const GameForm = (props) => {
+const GameForm = ({game, setGame}) => {
 
 	const halfSizeGroupParent = {
 		display: "flex",
@@ -119,11 +118,17 @@ const GameForm = (props) => {
 		console.log(e)
 		let name = e.target.name;
 		let value = e.target.value;
-
-		setForm(prevState => ({
-			...prevState,
-			[name]: value
-		}));
+		if(!game){
+			setForm(prevState => ({
+				...prevState,
+				[name]: value
+			}));
+		} else {
+			setGame(prevState => ({
+				...prevState,
+				[name]: value
+			}));
+		}
 	};
 
 	const isRequired = (fields) => {
@@ -152,12 +157,12 @@ const GameForm = (props) => {
 	};
 
 	const submitForm = () => {
-		if(!isRequired(['Name', 'AppID', 'Price'])){
-			axios.post('https://fruity-steam.vercel.app/api/games', form, {
+		if(!game){
+			if(!isRequired(['Name', 'AppID', 'Price'])){
+				axios.post('https://fruity-steam.vercel.app/api/games', form, {
 				headers: {
 					"Authorization": `Bearer ${token}`
-				}
-			})
+				}})
 				.then(response => {
 					console.log(response.data);
 					navigate('/games');
@@ -166,6 +171,22 @@ const GameForm = (props) => {
 					console.error(err);
 					console.log(err.response.data.msg)
 					setErrors(err.response.data.error);
+				});
+			}
+		} else {
+			// TODO: Figure out why isRequired is not working here
+			axios.put(`https://fruity-steam.vercel.app/api/games/id/${game._id}`, game, {
+			headers: {
+				"Authorization": `Bearer ${token}`
+			}})
+			.then(response => {
+				console.log(response.data);
+				navigate('/games');
+			})
+			.catch(err => {
+				console.error(err);
+				console.log(err.response.data.msg)
+				setErrors(err.response.data.error);
 				});
 		}
 	};
@@ -200,8 +221,15 @@ const GameForm = (props) => {
 		font: 'unset'
 	}
 
+	const dateFormatted = (date) => {
+		if(date){
+			let dateObj = new Date(date);
+			return dateObj.toISOString().split('T')[0];
+		}
+	}
+
 	// If there is no game props, it's an add form
-	if(!props.game){
+	if(!game){
 		return (
 			<div style={{display: "flex", justifyContent: 'center', marginBottom: '1rem'}}>
 				<Window style={{width: '70vw'}}>
@@ -485,7 +513,7 @@ const GameForm = (props) => {
 
 	// If there is game props, it's an edit form
 	else{
-		let categories = props.game['Categories']
+		let categories = game['Categories']
 		// Split categories into an array based off the commas
 		let categories_array = categories.split(',')
 		// For each category
@@ -500,7 +528,7 @@ const GameForm = (props) => {
 			// console.log(categories_array[i])
 		}
 
-		let tags = props.game['Tags']
+		let tags = game['Tags']
 		// Split tags into an array based off the commas
 		let tags_array = tags.split(',')
 		// For each category
@@ -515,7 +543,7 @@ const GameForm = (props) => {
 			// console.log(tags_array[i])
 		}
 
-		let genres = props.game['Genres']
+		let genres = game['Genres']
 		// Split genres into an array based off the commas
 		let genres_array = genres.split(',')
 		// For each category
@@ -531,9 +559,9 @@ const GameForm = (props) => {
 		}
 
 		// Converting ISO date string to locale date string
-		let date = new Date(props.game['Release date']).toLocaleDateString()
+		let date = new Date(game['Release date']).toLocaleDateString()
 
-		let languages = props.game['Supported languages']
+		let languages = game['Supported languages']
 		// Remove all apostrophes
 		let formattedLanguages = languages.replace(/'/g, '')
 		// Remove the leading square bracket
@@ -553,7 +581,7 @@ const GameForm = (props) => {
 			// console.log(languages_array[i])
 		}
 
-		let audioLanguages = props.game['Full audio languages']
+		let audioLanguages = game['Full audio languages']
 			.replace('[','')
 			.replace(']','')
 
@@ -575,7 +603,7 @@ const GameForm = (props) => {
 		}
 
 		// Initialising screenshots string array
-		let screenshots = props.game['Screenshots']
+		let screenshots = game['Screenshots']
 		// Splitting screenshots by comma (making a proper array)
 		let screenshots_array = screenshots.split(',')
 		// console.log(screenshots_array)
@@ -601,7 +629,7 @@ const GameForm = (props) => {
 		);
 
 		// TODO: Figure out why videos completely break
-		let movies = props.game['Movies']
+		let movies = game['Movies']
 		let moviesArray = movies.split(',')
 		for(let i in moviesArray){
 			// console.log(moviesArray[i])
@@ -620,207 +648,295 @@ const GameForm = (props) => {
 		);
 		return (
 			<div style={{display: "flex", justifyContent: 'center', marginBottom: '1rem'}}>
-				<ResponsiveWrapper>
-					<Window>
-						<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
-							<span style={{marginLeft: '0.2rem'}}>{props.game.Name}.exe (Editing)</span>
-							<Link to='/games/'>
-								<Button style={{marginTop: '0.2rem'}}>X</Button>
-							</Link>
-						</WindowHeader>
-						<WindowContent>
-							<Frame variant='inside' style={{ margin: '1rem', padding: '1rem', width: '94%'}}>
-								<a href={`https://store.steampowered.com/app/${props.game['AppID']}`}>
-									<img src={props.game['Header image']} alt='Game header' width='100%'/>
-								</a>
-							</Frame>
-							<Frame variant='inside' style={{
-								margin: '1rem',
-								padding: '1rem'
-							}}>
-								<GroupBox label='Screenshots' style={{marginBottom: '1rem'}}>
-									{screenshot_slider}
+				<Window>
+					<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
+						<span style={{marginLeft: '0.2rem'}}>Edit.exe</span>
+						<Link to='/games/'>
+							<Button style={{marginTop: '0.2rem'}}>X</Button>
+						</Link>
+					</WindowHeader>
+					<WindowContent>
+						<Frame variant='inside' style={{margin: '1rem', padding: '1rem', width: '94%'}}>
+							<div style={halfSizeGroupParent}>
+								<GroupBox label='Game Title *' style={halfSizeGroupLeft}>
+									<TextInput
+										placeholder={errors.Name.message ? errors.Name.message : 'Text here...'}
+										name="Name"
+										onChange={handleForm}
+										value={game.Name}
+										style={errors.Name.message ? inputBgErr : inputBgReg}
+									/>
 								</GroupBox>
-								<GroupBox label='Movies' style={{marginBottom: '1rem'}}>
-									{movies_slider}
+								<GroupBox label='App ID *' style={halfSizeGroupRight}>
+									<Frame variant={"field"} style={numInputFrame}>
+										{/* Using regular input because React95 NumberInput is broken */}
+										<input
+											type="number"
+											placeholder={errors.AppID.message ? errors.AppID.message : 'Number here...'}
+											name="AppID"
+											onChange={handleForm}
+											onBeforeInput={onlyAllowNumber}
+											value={game.AppID}
+											min={2140821}
+											max={9999999}
+											style={errors.AppID.message
+												?
+												Object.assign(numInputStyles, inputBgErr)
+												:
+												Object.assign(numInputStyles, inputBgReg)
+											}
+										/>
+									</Frame>
 								</GroupBox>
-								<div style={halfSizeGroupParent}>
-									<GroupBox label='Release date' style={halfSizeGroupLeft}>
-								<span style={{fontSize: '1.2rem'}}>
-									{date}
-								</span>
-									</GroupBox>
-									<GroupBox label='Price' style={halfSizeGroupRight}>
-								<span style={{fontSize: '1.2rem'}}>
-									$ {props.game['Price']}
-								</span>
-									</GroupBox>
-								</div>
-								<GroupBox label='About The Game' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1rem'}}>
-									{props.game['About the game']}
-								</span>
+							</div>
+							<div style={halfSizeGroupParent}>
+								<GroupBox label='Price ($) *' style={halfSizeGroupLeft}>
+									<Frame variant={"field"} style={numInputFrame}>
+										<input
+											type="number"
+											placeholder={errors.Price.message ? errors.Price.message : 'Number here...'}
+											name="Price"
+											onChange={handleForm}
+											onBeforeInput={onlyAllowNumber}
+											value={game.Price}
+											style={errors.Price.message
+												?
+												Object.assign(numInputStyles, inputBgErr)
+												:
+												Object.assign(numInputStyles, inputBgReg)
+											}
+										/>
+									</Frame>
 								</GroupBox>
-								<GroupBox label='Developers' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Developers']}
-								</span>
+								<GroupBox label='Release Date' style={halfSizeGroupRight}>
+									<Frame variant={"field"} style={numInputFrame}>
+										<input
+											type={"date"}
+											placeholder={errors['Release date'].message ? errors['Release date'].message : 'Date here...'}
+											style={errors['Release date'].message
+												?
+												Object.assign(numInputStyles, inputBgErr)
+												:
+												Object.assign(numInputStyles, inputBgReg)
+											}
+											name="Release date"
+											onChange={handleForm}
+											value={dateFormatted(game['Release date'])}
+										/>
+									</Frame>
 								</GroupBox>
-								<GroupBox label='Publishers' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Publishers']}
-								</span>
-								</GroupBox>
-								<GroupBox label='Website' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<Anchor href={props.game['Website']}>{props.game['Website']}</Anchor>
-								</span>
-								</GroupBox>
-								{ props.game['Required age'] ? (
-									<GroupBox label='Required age' style={{marginBottom: '1rem'}}>
-									<span style={{fontSize: '1.2rem'}}>
-										{props.game['Required age']}
-									</span>
-									</GroupBox>
-								) : (
-									<GroupBox label='Required age' style={{marginBottom: '1rem'}}>
-									<span style={{fontSize: '1.2rem'}}>
-										Unknown
-									</span>
-									</GroupBox>
-								)}
-								<GroupBox label='Categories' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									{categories_array}
-								</span>
-								</GroupBox>
-								<GroupBox label='Tags' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									{tags_array}
-								</span>
-								</GroupBox>
-								<GroupBox label='Genres' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									{genres_array}
-								</span>
-								</GroupBox>
-								{ props.game['DLC Count'] ? (
-									<GroupBox label='DLC Count' style={{marginBottom: '1rem'}}>
-									<span style={{fontSize: '1.2rem'}}>
-										{props.game['DLC count']}
-									</span>
-									</GroupBox>
-								) : (
-									<GroupBox label='DLC Count' style={{marginBottom: '1rem'}}>
-									<span style={{fontSize: '1.2rem'}}>
-										None
-									</span>
-									</GroupBox>
-								)}
-								{ props.game['Achievements'] ? (
-									<GroupBox label='Achievements' style={{marginBottom: '1rem'}}>
-									<span style={{fontSize: '1.2rem'}}>
-										{props.game['Achievements']}
-									</span>
-									</GroupBox>
-								) : (
-									<GroupBox label='Achievements' style={{marginBottom: '1rem'}}>
-									<span style={{fontSize: '1.2rem'}}>
-										None
-									</span>
-									</GroupBox>
-								)}
-								<GroupBox label='Supported Languages' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									{languages_array}
-								</span>
-								</GroupBox>
-								<GroupBox label='Full Audio Languages' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									{ audioLanguagesArray ? ({audioLanguagesArray}) : ("None / Unknown") }
-								</span>
-								</GroupBox>
-								<GroupBox label='Metacritic Score' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem', display: "flex", justifyContent:'space-between'}}>
-									<Anchor href={props.game['Metacritic url']}>{props.game['Metacritic score']}</Anchor>
-								</span>
-								</GroupBox>
-								{/* TODO: Check if any game has a user score, if not, remove */}
-								<GroupBox label='User Score (Broken?)' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['User score'] ? (
-										props.game['User score']
-									) : (
-										"None"
-									)}
-								</span>
-								</GroupBox>
-								<div style={halfSizeGroupParent}>
-									<GroupBox label='Positive Reviews' style={halfSizeGroupLeft}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Positive']}
-								</span>
-									</GroupBox>
-									<GroupBox label='Negative Reviews' style={halfSizeGroupRight}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Negative']}
-								</span>
-									</GroupBox>
-								</div>
-								<GroupBox label='Curator Recommendations' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Recommendations']}
-								</span>
-								</GroupBox>
-								<GroupBox label='Estimated Owners' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Estimated owners']}
-								</span>
-								</GroupBox>
-								<GroupBox label='Peak CCU' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Peak CCU']}
-								</span>
-								</GroupBox>
-								<div style={halfSizeGroupParent}>
-									<GroupBox label='Average playtime (forever)' style={halfSizeGroupLeft}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Average playtime forever']} hours
-								</span>
-									</GroupBox>
-									<GroupBox label='Median playtime (forever)' style={halfSizeGroupRight}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Median playtime forever']} hours
-								</span>
-									</GroupBox>
-								</div>
-								<div style={halfSizeGroupParent}>
-									<GroupBox label='Average playtime (2 weeks)' style={halfSizeGroupLeft}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Average playtime two weeks']} hours
-								</span>
-									</GroupBox>
-									<GroupBox label='Median playtime (2 weeks)' style={halfSizeGroupRight}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Median playtime two weeks']} hours
-								</span>
-									</GroupBox>
-								</div>
-								<GroupBox label='Support Link' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<Anchor href={props.game['Support url']}>{props.game['Support url']}</Anchor>
-								</span>
-								</GroupBox>
-								<GroupBox label='Support Email' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Support email'] ? (props.game['Support email']) : ("N/A")}
-									<Anchor href={props.game['Support email']}>{props.game['Support email']}</Anchor>
-								</span>
-								</GroupBox>
-							</Frame>
-						</WindowContent>
-					</Window>
-				</ResponsiveWrapper>
+							</div>
+							<GroupBox label='Cover' style={{marginBottom: '1rem'}}>
+								<p>COVER UPLOAD</p>
+							</GroupBox>
+							<GroupBox label='Screenshots' style={{marginBottom: '1rem'}}>
+								<p>SCREENSHOT UPLOAD</p>
+							</GroupBox>
+							<GroupBox label='Movies' style={{marginBottom: '1rem'}}>
+								<p>VIDEO UPLOAD</p>
+							</GroupBox>
+							<GroupBox label='About The Game' style={{marginBottom: '1rem'}}>
+						<span style={{fontSize: '1rem'}}>
+							<TextInput
+								placeholder={errors['About the game'].message ? errors['About the game'].message : 'Text here...'}
+								style={errors['About the game'].message ? inputBgErr : inputBgReg}
+								name="About the game"
+								onChange={handleForm}
+								multiline={true}
+								value={game['About the game']}
+							/>
+						</span>
+							</GroupBox>
+							<GroupBox label='Developers' style={{marginBottom: '1rem'}}>
+						<span style={{fontSize: '1.2rem'}}>
+							<TextInput
+								placeholder={errors.Developers.message ? errors.Developers.message : 'Text here...'}
+								style={errors.Developers.message ? inputBgErr : inputBgReg}
+								name="Developers"
+								onChange={handleForm}
+								value={game.Developers}
+							/>
+						</span>
+							</GroupBox>
+							<GroupBox label='Publishers' style={{marginBottom: '1rem'}}>
+						<span style={{fontSize: '1.2rem'}}>
+							<TextInput
+								placeholder={errors.Publishers.message ? errors.Publishers.message : 'Text here...'}
+								style={errors.Publishers.message ? inputBgErr : inputBgReg}
+								name="Publishers"
+								onChange={handleForm}
+								value={game.Publishers}
+							/>
+						</span>
+							</GroupBox>
+							<GroupBox label='Website' style={{marginBottom: '1rem'}}>
+						<span style={{fontSize: '1.2rem'}}>
+							<TextInput
+								placeholder={errors.Website.message ? errors.Website.message : 'Text here...'}
+								style={errors.Website.message ? inputBgErr : inputBgReg}
+								name="Website"
+								onChange={handleForm}
+								value={game.Website}
+							/>
+						</span>
+							</GroupBox>
+							<GroupBox label='Required Age' style={{marginBottom: '1rem'}}>
+								<Frame variant={"field"} style={numInputFrame}>
+									<input
+										type={'number'}
+										placeholder={errors['Required age'].message ? errors['Required age'].message : 'Number here...'}
+										style={errors['Required age'].message
+											?
+											Object.assign(numInputStyles, inputBgErr)
+											:
+											Object.assign(numInputStyles, inputBgReg)
+										}
+										name="Required age"
+										onChange={handleForm}
+										onBeforeInput={onlyAllowNumber}
+										value={game['Required age']}
+									/>
+								</Frame>
+							</GroupBox>
+							<GroupBox label='Categories' style={{marginBottom: '1rem'}}>
+						<span style={{fontSize: '1.2rem'}}>
+							<TextInput
+								placeholder={errors.Categories.message ? errors.Categories.message : 'Comma-seperated tags here...'}
+								style={errors.Categories.message ? inputBgErr : inputBgReg}
+								name="Categories"
+								onChange={handleForm}
+								value={game.Categories}
+							/>
+						</span>
+							</GroupBox>
+							<GroupBox label='Tags' style={{marginBottom: '1rem'}}>
+						<span style={{fontSize: '1.2rem'}}>
+							<TextInput
+								placeholder={errors.Tags.message ? errors.Tags.message : 'Comma-seperated tags here...'}
+								style={errors.Tags.message ? inputBgErr : inputBgReg}
+								name="Tags"
+								onChange={handleForm}
+								value={game.Tags}
+							/>
+						</span>
+							</GroupBox>
+							<GroupBox label='Genres' style={{marginBottom: '1rem'}}>
+						<span style={{fontSize: '1.2rem'}}>
+							<TextInput
+								placeholder={errors.Genres.message ? errors.Genres.message : 'Comma-seperated tags here...'}
+								style={errors.Genres.message ? inputBgErr : inputBgReg}
+								name="Genres"
+								onChange={handleForm}
+								value={game.Genres}
+							/>
+						</span>
+							</GroupBox>
+							<GroupBox label='DLC Count' style={{marginBottom: '1rem'}}>
+								<Frame variant={"field"} style={numInputFrame}>
+									<input
+										type={'number'}
+										placeholder={errors['DLC count'].message ? errors['DLC count'].message : 'Number here...'}
+										style={errors['DLC count'].message
+											?
+											Object.assign(numInputStyles, inputBgErr)
+											:
+											Object.assign(numInputStyles, inputBgReg)
+										}
+										name="DLC count"
+										onChange={handleForm}
+										onBeforeInput={onlyAllowNumber}
+										value={game['DLC count']}
+									/>
+								</Frame>
+							</GroupBox>
+							<GroupBox label='Achievements' style={{marginBottom: '1rem'}}>
+								<Frame variant={"field"} style={numInputFrame}>
+									<input
+										type={'number'}
+										placeholder={errors['Achievements'].message ? errors['Achievements'].message : 'Number here...'}
+										style={errors['Achievements'].message
+											?
+											Object.assign(numInputStyles, inputBgErr)
+											:
+											Object.assign(numInputStyles, inputBgReg)
+										}
+										name="Achievements"
+										onChange={handleForm}
+										onBeforeInput={onlyAllowNumber}
+										value={game.Achievements}
+									/>
+								</Frame>
+							</GroupBox>
+							<GroupBox label='Supported Languages' style={{marginBottom: '1rem'}}>
+						<span style={{fontSize: '1.2rem'}}>
+							<TextInput
+								placeholder={errors['Supported languages'].message ? errors['Supported languages'].message : 'Comma-seperated tags here...'}
+								style={errors['Supported languages'].message ? inputBgErr : inputBgReg}
+								name="Supported languages"
+								onChange={handleForm}
+								value={game['Supported languages']}
+							/>
+						</span>
+							</GroupBox>
+							<GroupBox label='Full Audio Languages' style={{marginBottom: '1rem'}}>
+						<span style={{fontSize: '1.2rem'}}>
+							<TextInput
+								placeholder={errors['Full audio languages'].message ? errors['Full audio languages'].message : 'Comma-seperated tags here...'}
+								style={
+									errors['Full audio languages'].message ? inputBgErr : inputBgReg}
+								name="Full audio languages"
+								onChange={handleForm}
+								value={game['Full audio languages']}
+							/>
+						</span>
+							</GroupBox>
+							<GroupBox label='Metacritic Score' style={{marginBottom: '1rem'}}>
+								<Frame variant={"field"} style={numInputFrame}>
+									<input
+										type={'number'}
+										placeholder={errors['Metacritic score'].message ? errors['Metacritic score'].message : 'Number here...'}
+										style={errors['Metacritic score'].message
+											?
+											Object.assign(numInputStyles, inputBgErr)
+											:
+											Object.assign(numInputStyles, inputBgReg)
+										}
+										name="Metacritic score"
+										onChange={handleForm}
+										onBeforeInput={onlyAllowNumber}
+										value={game['Metacritic score']}
+									/>
+								</Frame>
+							</GroupBox>
+							<GroupBox label='Support Link' style={{marginBottom: '1rem'}}>
+						<span style={{fontSize: '1.2rem'}}>
+							<TextInput
+								placeholder={errors['Support url'].message ? errors['Support url'].message : 'Text here...'}
+								style={errors['Support url'].message ? inputBgErr : inputBgReg}
+								name="Support url"
+								onChange={handleForm}
+								value={game['Support url']}
+							/>
+						</span>
+							</GroupBox>
+							<GroupBox label='Support Email' style={{marginBottom: '1rem'}}>
+						<span style={{fontSize: '1.2rem'}}>
+							<TextInput
+								placeholder={errors['Support email'].message ? errors['Support email'].message : 'Text here...'}
+								style={errors['Support email'].message ? inputBgErr : inputBgReg}
+								name="Support email"
+								onChange={handleForm}
+								value={game['Support email']}
+							/>
+						</span>
+							</GroupBox>
+							<div style={{display: 'flex', justifyContent:'space-evenly'}}>
+								<Button>CANCEL</Button>
+								<Button onClick={submitForm}>SUBMIT</Button>
+							</div>
+						</Frame>
+					</WindowContent>
+				</Window>
 			</div>
 		);
 	}

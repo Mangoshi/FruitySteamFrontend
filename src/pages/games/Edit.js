@@ -49,7 +49,7 @@ const Edit = () => {
 
 	return (
 		<>
-			<GameForm game={game} key={game.id}/>
+			<GameForm game={game} setGame={setGame} key={game.id}/>
 		</>
 	);
 };
