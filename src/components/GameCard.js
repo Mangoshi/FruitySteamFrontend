@@ -16,7 +16,7 @@ const GameCard = (props) => {
         viewButton = (
             <>
                 <TableDataCell style={{ textAlign: 'center' }}>
-                    <Link to={`/games/${props.game._id}`}>
+                    <Link to={`/games/id/${props.game._id}`}>
                         {/* onClick: update game state with game's name */}
                         <Button variant='flat' size='sm' onClick={() => updateGameState(props.game.Name)}>
                             <p

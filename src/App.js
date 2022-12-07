@@ -64,7 +64,7 @@ const App = () => {
 	if(token){
 		authenticatedRoutes = (
 			<>
-				<Route path="/games/:id" element={<GamesShow/>}/>
+				<Route path="/games/id/:id" element={<GamesShow/>}/>
 			</>
 		)
 	}

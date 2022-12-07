@@ -36,7 +36,8 @@ const Navbar = () => {
 	// console.log("Current location = ", location.pathname)
 
 	// gameViewActive boolean to tell if viewing game or not
-	let gameViewActive = location.pathname.includes('/game/')
+	let urlArray = location.pathname.split("/")
+	let gameViewActive = urlArray[1] === "games" && (urlArray[2] === "id" || urlArray[2] === "edit")
 	// console.log(gameViewActive)
 
 	// TODO: Settings start menu option goes to theme settings somehow?

@@ -1,18 +1,20 @@
 import {Link, useParams} from 'react-router-dom';
 import axios from 'axios';
-import {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import GameCardDetailed from "../../components/GameCardDetailed";
 import {Button, Hourglass, Window, WindowContent, WindowHeader} from "react95";
+import {AuthContext} from "../../AuthContext";
 
 const Show = () => {
 	const { id } = useParams();
 	const [ game, setGame ] = useState(null);
+	const { token } = useContext(AuthContext)
 
 	useEffect(() => {
 		axios.get(`https://fruity-steam.vercel.app/api/games/?by=_id&query=${id}`,
 			{
 				headers: {
-					"Authorization": `Bearer ${process.env.REACT_APP_TOKEN}`
+					"Authorization": `Bearer ${token}`
 				}
 			})
 			.then((response) => {
