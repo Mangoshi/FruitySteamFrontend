@@ -162,7 +162,7 @@ const Index = () => {
 	)
 
 	const gamesList = games.map((game) => {
-		return <GameCard game={game} key={game._id}/>;
+		return <GameCard game={game} key={game._id} games={games} setGames={setGames}/>;
 	});
 
 	// Creating list of options for select box
