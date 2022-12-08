@@ -5,6 +5,7 @@ import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import {useState} from "react";
 import {GameContext} from "./GameContext";
 import {AuthContext} from "./AuthContext";
+import {UserContext} from "./UserContext";
 
 // Import React95 bits
 import { styleReset } from 'react95';
@@ -24,6 +25,7 @@ import GamesIndex from './pages/games/Index';
 import GamesShow from './pages/games/Show';
 import GamesAdd from './pages/games/Add.js'
 import GamesEdit from './pages/games/Edit.js'
+import UsersIndex from './pages/users/Index.js'
 
 // Import components
 import Navbar from './components/Navbar';
@@ -76,6 +78,7 @@ const App = () => {
 			<>
 				<Route path="/games/add" element={<GamesAdd/>}/>
 				<Route path="/games/edit/:id" element={<GamesEdit/>}/>
+				<Route path="/users/" element={<UsersIndex/>}/>
 			</>
 		)
 	}
@@ -83,23 +86,27 @@ const App = () => {
 	// Initialising game state logic
 	const [game, setGame] = useState(null);
 
+	const [user, setUser] = useState(null);
+
 	return (
 		<AuthContext.Provider value={{ token, setToken, role, setRole}}>
 			<GameContext.Provider value={{ game, setGame }}>
-				<Router>
-					<GlobalStyles />
-					<ThemeProvider theme={themes.raspberry}>
-						<Navbar/>
-						<Routes>
-							<Route path="/" element={<Home/>}/>
-							<Route path="/games/" element={<GamesIndex/>}/>
-							{authenticatedRoutes}
-							{adminRoutes}
-							{/* Catch-all redirect */}
-							<Route path="*" element={<Home />}/>
-						</Routes>
-					</ThemeProvider>
-				</Router>
+				<UserContext.Provider value={{ user, setUser }}>
+					<Router>
+						<GlobalStyles />
+						<ThemeProvider theme={themes.raspberry}>
+							<Navbar/>
+							<Routes>
+								<Route path="/" element={<Home/>}/>
+								<Route path="/games/" element={<GamesIndex/>}/>
+								{authenticatedRoutes}
+								{adminRoutes}
+								{/* Catch-all redirect */}
+								<Route path="*" element={<Home />}/>
+							</Routes>
+						</ThemeProvider>
+					</Router>
+				</UserContext.Provider>
 			</GameContext.Provider>
 		</AuthContext.Provider>
 	);

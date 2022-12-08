@@ -1,0 +1,22 @@
+[
+	{
+		"value": "username",
+		"label": "Username"
+	},
+	{
+		"value": "email",
+		"label": "Email"
+	},
+	{
+		"value": "role",
+		"label": "Role"
+	},
+	{
+		"value": "createdAt",
+		"label": "Created At"
+	},
+	{
+		"value": "updatedAt",
+		"label": "Updated At"
+	}
+]
