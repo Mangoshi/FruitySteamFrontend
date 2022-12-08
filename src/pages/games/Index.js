@@ -91,7 +91,7 @@ const Index = () => {
 		builtLimitQuery = ''
 		builtSearchQuery = ''
 		builtSortQuery = ''
-		builtPageQuery = ''
+		builtPageQuery = `?page=${currentPage}`
 	}
 
 	// TODO: IMPORTANT!!! Set a delay for requests to be made (one-two seconds)
