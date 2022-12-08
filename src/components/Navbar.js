@@ -10,9 +10,11 @@ import ic_mangows from "./icons/ic_mangows.png"
 import ic_computer from "./icons/ic_computer.ico"
 import ic_msdos from "./icons/ic_msdos.ico"
 import ic_folder_exe from "./icons/ic_folder_exe.ico"
-import ic_user from "./icons/ic_user.ico"
+import ic_user from "./icons/ic_user.png"
 import ic_settings from "./icons/ic_settings.ico"
 import ic_auth from "./icons/ic_auth.ico"
+import ic_users from "./icons/ic_users.png"
+import {UserContext} from "../UserContext";
 
 const Navbar = () => {
 	const { logout } = useAuth()
@@ -34,11 +36,23 @@ const Navbar = () => {
 	// useLocation to reveal Router data
 	const location = useLocation()
 	// console.log("Current location = ", location.pathname)
+	let urlArray = location.pathname.split("/")
+	// console.log("urlArray = ", urlArray)
 
 	// gameViewActive boolean to tell if viewing game or not
-	let urlArray = location.pathname.split("/")
 	let gameViewActive = urlArray[1] === "games" && (urlArray[2] === "id" || urlArray[2] === "edit")
 	// console.log(gameViewActive)
+
+	const {user} = useContext(UserContext)
+
+	console.log("user = ", user)
+	let limitedName = user
+	if (user && user.length > 20) {
+		limitedName = user.substring(0, 20) + "..."
+		console.log(limitedName)
+	}
+
+	let userViewActive = urlArray[1] === "users" && (urlArray[2] === "id" || urlArray[2] === "edit")
 
 	// TODO: Settings start menu option goes to theme settings somehow?
 	// TODO: User start menu option goes to api/users/me
@@ -149,7 +163,7 @@ const Navbar = () => {
 								style={{marginRight: '0.5rem'}}
 							>
 								<img
-									src={ic_user}
+									src={ic_users}
 									alt='user icon'
 									style={{height: '24px', marginRight: 4}}
 								/>
@@ -157,7 +171,7 @@ const Navbar = () => {
 							</Button>
 						</Link>
 					}
-					{/*{
+					{
 						role === 'admin' && userViewActive &&
 						<Button
 							active={userViewActive}
@@ -168,9 +182,9 @@ const Navbar = () => {
 								alt='user icon'
 								style={{height: '24px', marginRight: 4}}
 							/>
-							{user && userViewActive ? limitedTitle : 'User Name'}
+							{user && userViewActive ? limitedName : 'User Name'}
 						</Button>
-					}*/}
+					}
 				</div>
 				<Frame variant='well' style={{marginRight: '0.5rem', padding: '0.2rem'}}>
 					<Clock format={'h:mm A'} ticking={true} interval={60}/>
