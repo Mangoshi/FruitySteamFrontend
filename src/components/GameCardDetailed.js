@@ -2,7 +2,7 @@ import {Anchor, Button, Frame, GroupBox, Window, WindowContent, WindowHeader} fr
 import {Link} from "react-router-dom";
 import Carousel from "nuka-carousel";
 import ReactPlayer from 'react-player'
-import styled from "styled-components";
+import ResponsiveWrapper from "./ResponsiveWrapper";
 
 const GameCardDetailed = (props) => {
 
@@ -156,28 +156,6 @@ const GameCardDetailed = (props) => {
 		marginLeft: '0.5rem',
 		width: '100%'
 	}
-
-	const breakpoints = {
-		sm: 480,
-		md: 768,
-		lg: 1024,
-		xl: 1200
-	}
-
-	const ResponsiveWrapper = styled.div`
-		@media (min-width: ${breakpoints.sm}px){
-			width: 90vw
-		}
-		@media (min-width: ${breakpoints.md}px){
-			width: 80vw
-		}
-		@media (min-width: ${breakpoints.lg}px){
-			width: 70vw
-		}
-		@media (min-width: ${breakpoints.xl}px){
-			width: 60vw
-		}
-	`
 
 	// TODO: Add ALL game data!
 	return (
