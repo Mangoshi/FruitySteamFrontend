@@ -186,7 +186,7 @@ const Index = () => {
 						</WindowHeader>
 						<WindowContent>
 							{ role === 'admin' &&
-								<Link to='/games/add'>
+								<Link to='/users/add'>
 									<Button
 										style={{marginBottom: '1rem'}}
 										fullWidth

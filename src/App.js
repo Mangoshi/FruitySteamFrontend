@@ -27,6 +27,8 @@ import GamesAdd from './pages/games/Add.js'
 import GamesEdit from './pages/games/Edit.js'
 import UsersIndex from './pages/users/Index.js'
 import UsersShow from './pages/users/Show.js'
+import UsersAdd from './pages/users/Add.js'
+import UsersEdit from './pages/users/Edit.js'
 
 // Import components
 import Navbar from './components/Navbar';
@@ -81,6 +83,8 @@ const App = () => {
 				<Route path="/games/edit/:id" element={<GamesEdit/>}/>
 				<Route path="/users/" element={<UsersIndex/>}/>
 				<Route path="/users/id/:id" element={<UsersShow/>}/>
+				<Route path="/users/add" element={<UsersAdd/>}/>
+				<Route path="/users/edit/:id" element={<UsersEdit/>}/>
 			</>
 		)
 	}
