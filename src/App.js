@@ -63,6 +63,13 @@ const App = () => {
 	const [token, setToken] = useState(null)
 	// Initialising role state logic
 	const [role, setRole] = useState(null)
+	// Initialising game state logic
+	const [game, setGame] = useState(null);
+
+	const [user, setUser] = useState(null);
+
+	const [theme, setTheme] = useState(localStorage.getItem('theme') ? JSON.parse(localStorage.getItem('theme')) : themes.raspberry)
+
 
 	// Defining routes that will only be included in the router if a token exists
 	let authenticatedRoutes
@@ -88,18 +95,6 @@ const App = () => {
 			</>
 		)
 	}
-
-	let localStorageTheme =
-		localStorage.getItem('theme')
-			? JSON.parse(localStorage.getItem('theme'))
-			: themes.raspberry
-
-	// Initialising game state logic
-	const [game, setGame] = useState(null);
-
-	const [user, setUser] = useState(null);
-
-	const [theme, setTheme] = useState(localStorageTheme);
 
 	return (
 		<AuthContext.Provider value={{ token, setToken, role, setRole}}>
