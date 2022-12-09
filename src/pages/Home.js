@@ -75,6 +75,15 @@ const Home = ({theme, setTheme, themes}) => {
         { label: 'wmii', value: themes.wmii }
     ]
 
+    const setThemeAndLocalStorage = (theme) => {
+        setTheme(theme)
+        localStorage.setItem('theme', JSON.stringify(theme))
+    }
+
+    // console.log("theme:",theme)
+    // console.log("themeOptions:",themeOptions)
+    // console.log("themes",themes)
+
     return (
         <div>
             <div style={{display: "flex", justifyContent: 'center', marginBottom: '1rem'}}>
@@ -103,11 +112,6 @@ const Home = ({theme, setTheme, themes}) => {
                                 You are now logged in! Click the games tab to start browsing our database.
                             </p>
                             }
-                            {token && role === 'admin' &&
-                            <p align='center' style={{fontSize: '1rem'}}>
-                                You are now logged in as an admin! Happy CRUDing!
-                            </p>
-                            }
                             {/* If there isn't a token, show login/register form */}
                             {!token &&
                                 <LoginRegisterForm/>
@@ -124,8 +128,8 @@ const Home = ({theme, setTheme, themes}) => {
                     <WindowContent>
                         <p>Select a different theme? </p>
                         <Select
-                            onChange={e => setTheme(e.value)}
-                            defaultValue={theme}
+                            onChange={e => setThemeAndLocalStorage(e.value)}
+                            defaultValue={themes[theme.name]}
                             options={themeOptions}
                             menuMaxHeight={200}
                             width={160}

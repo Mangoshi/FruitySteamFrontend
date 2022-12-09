@@ -89,12 +89,17 @@ const App = () => {
 		)
 	}
 
+	let localStorageTheme =
+		localStorage.getItem('theme')
+			? JSON.parse(localStorage.getItem('theme'))
+			: themes.raspberry
+
 	// Initialising game state logic
 	const [game, setGame] = useState(null);
 
 	const [user, setUser] = useState(null);
 
-	const [theme, setTheme] = useState(themes.raspberry);
+	const [theme, setTheme] = useState(localStorageTheme);
 
 	return (
 		<AuthContext.Provider value={{ token, setToken, role, setRole}}>
