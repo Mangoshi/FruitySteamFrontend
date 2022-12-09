@@ -90,16 +90,18 @@ const App = () => {
 
 	const [user, setUser] = useState(null);
 
+	const [theme, setTheme] = useState(themes.raspberry);
+
 	return (
 		<AuthContext.Provider value={{ token, setToken, role, setRole}}>
 			<GameContext.Provider value={{ game, setGame }}>
 				<UserContext.Provider value={{ user, setUser }}>
 					<Router>
 						<GlobalStyles />
-						<ThemeProvider theme={themes.raspberry}>
+						<ThemeProvider theme={theme}>
 							<Navbar/>
 							<Routes>
-								<Route path="/" element={<Home/>}/>
+								<Route path="/" element={<Home theme={theme} setTheme={setTheme} themes={themes}/>}/>
 								<Route path="/games/" element={<GamesIndex/>}/>
 								{authenticatedRoutes}
 								{adminRoutes}
