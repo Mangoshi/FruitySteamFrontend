@@ -80,6 +80,7 @@ const App = () => {
 			<>
 				<Route path="/games/id/:id" element={<GamesShow/>}/>
 				<Route path="/me" element={<UsersMe/>}/>
+				<Route path="/me/edit" element={<UsersEdit me={id}/>}/>
 			</>
 		)
 	}

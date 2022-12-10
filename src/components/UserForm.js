@@ -8,7 +8,7 @@ import {
 	WindowContent,
 	WindowHeader
 } from 'react95';
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 import {useContext, useState} from "react";
 import axios from "axios";
@@ -17,24 +17,7 @@ import ResponsiveWrapper from "./ResponsiveWrapper";
 
 const UserForm = ({user, setUser}) => {
 
-	const halfSizeGroupParent = {
-		display: "flex",
-		justifyContent: 'space-between'
-	}
-
-	const halfSizeGroupLeft = {
-		marginBottom: '1rem',
-		marginRight: '0.5rem',
-		width: '100%'
-	}
-
-	const halfSizeGroupRight = {
-		marginBottom: '1rem',
-		marginLeft: '0.5rem',
-		width: '100%'
-	}
-
-	const {token} = useContext(AuthContext)
+	const {token, role} = useContext(AuthContext)
 	const navigate = useNavigate();
 
 	const [form, setForm] = useState({
@@ -110,7 +93,7 @@ const UserForm = ({user, setUser}) => {
 					}})
 					.then(response => {
 						console.log(response.data);
-						navigate('/users');
+						navigate(-1);
 					})
 					.catch(err => {
 						console.error(err);
@@ -126,7 +109,7 @@ const UserForm = ({user, setUser}) => {
 				}})
 				.then(response => {
 					console.log(response.data);
-					navigate('/users');
+					navigate(-1);
 				})
 				.catch(err => {
 					console.error(err);
@@ -164,10 +147,12 @@ const UserForm = ({user, setUser}) => {
 			<ResponsiveWrapper>
 				<Window style={{width: '100%'}}>
 					<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
-						<span style={{marginLeft: '0.2rem'}}>{user ? 'Edit' : 'Add'} User.exe</span>
-						<Link to='/users/'>
-							<Button style={{marginTop: '0.2rem'}}>X</Button>
-						</Link>
+						{ role === 'admin' ?
+							<span style={{marginLeft: '0.2rem'}}>{user ? 'Edit' : 'Add'} User.exe</span>
+							:
+							<span style={{marginLeft: '0.2rem'}}>Edit Profile.exe</span>
+						}
+						<Button style={{marginTop: '0.2rem'}} onClick={() => navigate(-1)}>X</Button>
 					</WindowHeader>
 					<WindowContent>
 						<Frame variant='inside' style={{margin: '1rem', padding: '1rem', width: '94%'}}>
@@ -197,6 +182,7 @@ const UserForm = ({user, setUser}) => {
 									/>
 								</GroupBox>
 							)}
+							{ role === 'admin' && (
 							<GroupBox label={'Role'} style={{marginBottom: '1rem'}}>
 								<Select
 									name='role'
@@ -210,6 +196,7 @@ const UserForm = ({user, setUser}) => {
 									defaultValue={user ? user.role : form.role}
 								/>
 							</GroupBox>
+							)}
 							{ user && (
 								<GroupBox label='Wishlist' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
@@ -222,7 +209,7 @@ const UserForm = ({user, setUser}) => {
 								</GroupBox>
 							)}
 							<div style={{display: 'flex', justifyContent:'space-evenly'}}>
-								<Link to={'/users'}><Button>CANCEL</Button></Link>
+								<Button onClick={() => navigate(-1)}>CANCEL</Button>
 								<Button onClick={submitForm}>SUBMIT</Button>
 							</div>
 						</Frame>

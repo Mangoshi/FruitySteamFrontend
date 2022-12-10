@@ -1,10 +1,12 @@
 import {Anchor, Button, Frame, GroupBox, Window, WindowContent, WindowHeader} from 'react95';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Carousel from "nuka-carousel";
 import ReactPlayer from 'react-player'
 import ResponsiveWrapper from "./ResponsiveWrapper";
 
 const GameCardDetailed = (props) => {
+
+	const navigate = useNavigate()
 
 	let categories = props.game['Categories']
 	// Split categories into an array based off the commas
@@ -163,9 +165,7 @@ const GameCardDetailed = (props) => {
 				<Window style={{width: '100%'}}>
 					<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
 						<span style={{marginLeft: '0.2rem'}}>{props.game.Name}.exe</span>
-						<Link to='/games/'>
-							<Button style={{marginTop: '0.2rem'}}>X</Button>
-						</Link>
+						<Button style={{marginTop: '0.2rem'}} onClick={() => navigate(-1)}>X</Button>
 					</WindowHeader>
 					<WindowContent>
 						<Frame variant='inside' style={{ margin: '1rem', padding: '1rem', width: '94%'}}>
@@ -356,6 +356,10 @@ const GameCardDetailed = (props) => {
 									<Anchor href={props.game['Support email']}>{props.game['Support email']}</Anchor>
 								</span>
 							</GroupBox>
+							<div style={{display: 'flex', justifyContent: 'space-around'}}>
+								<Button onClick={() => navigate(-1)}>BACK</Button>
+								<Button onClick={() => navigate(`/games/edit/${props.game._id}`)}>EDIT</Button>
+							</div>
 						</Frame>
 					</WindowContent>
 				</Window>

@@ -5,27 +5,45 @@ import axios from "axios";
 import {Button, Hourglass, Window, WindowContent, WindowHeader} from "react95";
 import {AuthContext} from "../../AuthContext";
 
-const Edit = () => {
+const Edit = ({me}) => {
 
 	const { id } = useParams();
 	const [ user, setUser ] = useState(null);
 	const { token } = useContext(AuthContext)
 
 	useEffect(() => {
-		axios.get(`https://fruity-steam.vercel.app/api/users/?by=_id&query=${id}`,
-			{
-				headers: {
-					"Authorization": `Bearer ${token}`
-				}
-			})
-			.then((response) => {
-				console.log(response.data.data[0]);
-				setUser(response.data.data[0])
-			})
-			.catch((err) => {
-				console.error(err);
-				console.log(err.response.data.message);
-			});
+		if(!me){
+			axios.get(`https://fruity-steam.vercel.app/api/users/?by=_id&query=${id}`,
+				{
+					headers: {
+						"Authorization": `Bearer ${token}`
+					}
+				})
+				.then((response) => {
+					console.log(response.data.data[0]);
+					setUser(response.data.data[0])
+				})
+				.catch((err) => {
+					console.error(err);
+					console.log(err.response.data.message);
+				});
+		} else {
+			axios.get(`https://fruity-steam.vercel.app/api/users/id/${me}`,
+				{
+					headers: {
+						"Authorization": `Bearer ${token}`
+					}
+				})
+				.then((response) => {
+					console.log(response.data.data[0]);
+					setUser(response.data.data[0])
+				})
+				.catch((err) => {
+					console.error(err);
+					console.log(err.response.data.message);
+				});
+		}
+
 	}, [id]);
 
 	if(!user) return (

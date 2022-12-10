@@ -141,7 +141,7 @@ const GameForm = ({game, setGame}) => {
 				}})
 				.then(response => {
 					console.log(response.data);
-					navigate('/games');
+					navigate(-1);
 				})
 				.catch(err => {
 					console.error(err);
@@ -157,7 +157,7 @@ const GameForm = ({game, setGame}) => {
 			}})
 			.then(response => {
 				console.log(response.data);
-				navigate('/games');
+				navigate(-1);
 			})
 			.catch(err => {
 				console.error(err);
@@ -212,9 +212,7 @@ const GameForm = ({game, setGame}) => {
 					<Window style={{width: '100%'}}>
 						<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
 							<span style={{marginLeft: '0.2rem'}}>Add.exe</span>
-							<Link to='/games/'>
-								<Button style={{marginTop: '0.2rem'}}>X</Button>
-							</Link>
+							<Button style={{marginTop: '0.2rem'}} onClick={() => navigate(-1)}>X</Button>
 						</WindowHeader>
 						<WindowContent>
 							<Frame variant='inside' style={{margin: '1rem', padding: '1rem', width: '94%'}}>
@@ -478,7 +476,7 @@ const GameForm = ({game, setGame}) => {
 								</span>
 								</GroupBox>
 								<div style={{display: 'flex', justifyContent:'space-evenly'}}>
-									<Button>CANCEL</Button>
+									<Button onClick={() => navigate(-1)}>CANCEL</Button>
 									<Button onClick={submitForm}>SUBMIT</Button>
 								</div>
 							</Frame>
@@ -516,9 +514,7 @@ const GameForm = ({game, setGame}) => {
 					<Window style={{width: '100%'}}>
 						<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
 							<span style={{marginLeft: '0.2rem'}}>Edit.exe</span>
-							<Link to='/games/'>
-								<Button style={{marginTop: '0.2rem'}}>X</Button>
-							</Link>
+							<Button style={{marginTop: '0.2rem'}} onClick={() => navigate(-1)}>X</Button>
 						</WindowHeader>
 						<WindowContent>
 							<Frame variant='inside' style={{margin: '1rem', padding: '1rem', width: '94%'}}>
@@ -801,7 +797,7 @@ const GameForm = ({game, setGame}) => {
 							</span>
 								</GroupBox>
 								<div style={{display: 'flex', justifyContent:'space-evenly'}}>
-									<Link to={'/games'}><Button>CANCEL</Button></Link>
+									<Button onClick={() => navigate(-1)}>CANCEL</Button>
 									<Button onClick={submitForm}>SUBMIT</Button>
 								</div>
 							</Frame>

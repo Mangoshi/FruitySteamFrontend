@@ -2,7 +2,7 @@ import axios from 'axios';
 import {useState, useEffect, useContext, useRef} from 'react';
 import {AuthContext} from "../../AuthContext";
 import GameCard from '../../components/GameCard';
-import {Link, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {
 	Button,
 	GroupBox,
@@ -41,6 +41,7 @@ const Index = () => {
 	const [totalPages, setTotalPages] = useState(0)
 
 	const ref = useRef(null)
+	const navigate = useNavigate()
 
 	if(page){
 		setCurrentPage(Number(page))
@@ -147,15 +148,13 @@ const Index = () => {
 			<Window style={{width: "250px"}}>
 				<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
 					<span style={{marginLeft: '0.2rem'}}>Games.exe</span>
-					<Link to='/'>
-						<Button style={{marginTop: '0.2rem'}}>X</Button>
-					</Link>
+					<Button style={{marginTop: '0.2rem'}} onClick={() => navigate(-1)}>X</Button>
 				</WindowHeader>
 				<WindowContent>
-				<div style={{display: "flex", flexDirection: "column", justifyContent: 'center', alignItems: 'center'}}>
-					<p style={{fontSize: '1.5rem'}}>Loading...</p>
-					<Hourglass size={48} style={{ margin: 20 }}/>
-				</div>
+					<div style={{display: "flex", flexDirection: "column", justifyContent: 'center', alignItems: 'center'}}>
+						<p style={{fontSize: '1.5rem'}}>Loading...</p>
+						<Hourglass size={48} style={{ margin: 20 }}/>
+					</div>
 				</WindowContent>
 			</Window>
 		</div>
@@ -257,9 +256,7 @@ const Index = () => {
 				<Window style={{width: "auto"}}>
 					<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
 						<span style={{marginLeft: '0.2rem'}}>Games.exe</span>
-						<Link to='/'>
-							<Button style={{marginTop: '0.2rem'}}>X</Button>
-						</Link>
+						<Button style={{marginTop: '0.2rem'}} onClick={() => navigate(-1)}>X</Button>
 					</WindowHeader>
 					<WindowContent>
 						{ role === 'admin' &&

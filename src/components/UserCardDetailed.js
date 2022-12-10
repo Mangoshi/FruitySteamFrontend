@@ -1,10 +1,13 @@
 import {Anchor, Button, Frame, GroupBox, Window, WindowContent, WindowHeader} from 'react95';
 import {useNavigate} from "react-router-dom";
 import ResponsiveWrapper from "./ResponsiveWrapper";
+import {useContext} from "react";
+import {AuthContext} from "../AuthContext";
 
 const UserCardDetailed = ({user}) => {
 
 	const navigate = useNavigate()
+	const { role } = useContext(AuthContext)
 
 	let createdAtDate = new Date(user.createdAt).toLocaleDateString()
 	let createdAtTime = new Date(user.createdAt).toLocaleTimeString()
@@ -86,7 +89,11 @@ const UserCardDetailed = ({user}) => {
 							{/*	TODO: Make edit & back buttons functional! */}
 							<div style={{display: 'flex', justifyContent: 'space-around'}}>
 								<Button onClick={() => navigate(-1)}>BACK</Button>
-								<Button>EDIT</Button>
+								{role === 'admin' ?
+									<Button onClick={() => navigate(`/users/edit/${user._id}`)}>EDIT</Button>
+									:
+									<Button onClick={() => navigate(`/me/edit/`)}>EDIT</Button>
+								}
 							</div>
 						</Frame>
 					</WindowContent>

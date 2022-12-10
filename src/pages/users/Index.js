@@ -2,7 +2,7 @@ import axios from 'axios';
 import {useState, useEffect, useContext, useRef} from 'react';
 import {AuthContext} from "../../AuthContext";
 import UserCard from '../../components/UserCard';
-import {Link, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {
 	Button,
 	GroupBox,
@@ -40,6 +40,7 @@ const Index = () => {
 	const [totalPages, setTotalPages] = useState(0)
 
 	const ref = useRef(null)
+	const navigate = useNavigate()
 
 	if(page){
 		setCurrentPage(Number(page))
@@ -123,9 +124,7 @@ const Index = () => {
 			<Window style={{width: "250px"}}>
 				<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
 					<span style={{marginLeft: '0.2rem'}}>Users.exe</span>
-					<Link to='/'>
-						<Button style={{marginTop: '0.2rem'}}>X</Button>
-					</Link>
+					<Button style={{marginTop: '0.2rem'}} onClick={() => navigate(-1)}>X</Button>
 				</WindowHeader>
 				<WindowContent>
 					<div style={{display: "flex", flexDirection: "column", justifyContent: 'center', alignItems: 'center'}}>
@@ -180,9 +179,7 @@ const Index = () => {
 					<Window style={{width: "100%"}}>
 						<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
 							<span style={{marginLeft: '0.2rem'}}>Users.exe</span>
-							<Link to='/'>
-								<Button style={{marginTop: '0.2rem'}}>X</Button>
-							</Link>
+							<Button style={{marginTop: '0.2rem'}} onClick={() => navigate(-1)}>X</Button>
 						</WindowHeader>
 						<WindowContent>
 							{ role === 'admin' &&
