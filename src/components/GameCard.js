@@ -11,7 +11,6 @@ const GameCard = ({game, games, setGames}) => {
     // importing updateGameState function from useGame
     const { updateGameState } = useGame()
 
-    // TODO: Game covers in table? (Server will need updating)
     let viewButton
     if(token){
         viewButton = (
@@ -65,7 +64,6 @@ const GameCard = ({game, games, setGames}) => {
                     </Link>
                 </TableDataCell>
                 <TableDataCell style={{ textAlign: 'center' }}>
-                    {/* TODO: onClick: confirm delete game using game's id */}
                     <Button variant='flat' size='sm' onClick={() => deleteGameConfirm(game)}>
                         <p style={{marginBottom: '0.2rem', fontSize: '1.25rem'}}>&#10008;</p>
                     </Button>

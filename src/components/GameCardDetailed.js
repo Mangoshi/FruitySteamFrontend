@@ -157,7 +157,6 @@ const GameCardDetailed = (props) => {
 		width: '100%'
 	}
 
-	// TODO: Add ALL game data!
 	return (
 		<div style={{display: "flex", justifyContent: 'center', marginBottom: '1rem'}}>
 			<ResponsiveWrapper>
@@ -286,7 +285,6 @@ const GameCardDetailed = (props) => {
 									<Anchor href={props.game['Metacritic url']}>{props.game['Metacritic score']}</Anchor>
 								</span>
 							</GroupBox>
-							{/* TODO: Check if any game has a user score, if not, remove */}
 							<GroupBox label='User Score (Broken?)' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game['User score'] ? (
