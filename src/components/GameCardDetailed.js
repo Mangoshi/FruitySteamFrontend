@@ -190,6 +190,26 @@ const GameCardDetailed = (props) => {
 		width: '100%'
 	}
 
+	function addToWishlist() {
+		let newWishlist = wishlist.concat(props.game._id)
+		axios.put(`https://fruity-steam.vercel.app/api/users/id/${id}`,
+			{
+			wishlist: newWishlist
+			},
+			{
+			headers: {
+				"Authorization": `Bearer ${token}`
+			}})
+			.then(response => {
+				console.log(response.data);
+				navigate('/me');
+			})
+			.catch(err => {
+				console.error(err);
+				console.log(err.response.data.msg)
+			});
+	}
+
 	return (
 		<div style={{display: "flex", justifyContent: 'center', marginBottom: '1rem'}}>
 			<ResponsiveWrapper>
@@ -392,7 +412,7 @@ const GameCardDetailed = (props) => {
 								{checkIfInWishlist(props.game) ?
 									<Button>REMOVE FROM WISHLIST</Button>
 									:
-									<Button>ADD TO WISHLIST</Button>
+									<Button onClick={addToWishlist}>ADD TO WISHLIST</Button>
 								}
 								{role === 'admin' &&
 								<Button onClick={() => navigate(`/games/edit/${props.game._id}`)}>EDIT</Button>
