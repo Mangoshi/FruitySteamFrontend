@@ -11,7 +11,6 @@ import {UserContext} from "./UserContext";
 import { styleReset } from 'react95';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 
-// TODO: Theme selector!
 // Pick React95 theme
 import themes from 'react95/dist/themes';
 
@@ -29,6 +28,7 @@ import UsersIndex from './pages/users/Index.js'
 import UsersShow from './pages/users/Show.js'
 import UsersAdd from './pages/users/Add.js'
 import UsersEdit from './pages/users/Edit.js'
+import UsersMe from './pages/users/Me.js'
 
 // Import components
 import Navbar from './components/Navbar';
@@ -68,6 +68,8 @@ const App = () => {
 
 	const [user, setUser] = useState(null);
 
+	const [id, setID] = useState(null);
+
 	const [theme, setTheme] = useState(localStorage.getItem('theme') ? JSON.parse(localStorage.getItem('theme')) : themes.raspberry)
 
 
@@ -77,11 +79,11 @@ const App = () => {
 		authenticatedRoutes = (
 			<>
 				<Route path="/games/id/:id" element={<GamesShow/>}/>
+				<Route path="/me" element={<UsersMe/>}/>
 			</>
 		)
 	}
 
-	// TODO: Admin routes (users, user/:id)
 	let adminRoutes
 	if(token && role==='admin') {
 		adminRoutes = (
@@ -97,7 +99,7 @@ const App = () => {
 	}
 
 	return (
-		<AuthContext.Provider value={{ token, setToken, role, setRole}}>
+		<AuthContext.Provider value={{ token, setToken, role, setRole, id, setID }}>
 			<GameContext.Provider value={{ game, setGame }}>
 				<UserContext.Provider value={{ user, setUser }}>
 					<Router>

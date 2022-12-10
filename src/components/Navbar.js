@@ -22,7 +22,7 @@ const Navbar = () => {
 	const [open, setOpen] = useState(false);
 
 	// Using AuthContext to check if user is admin
-	const {role} = useContext(AuthContext)
+	const {token, role} = useContext(AuthContext)
 
 	// Using GameContext to update viewed game tab
 	const {game} = useContext(GameContext)
@@ -54,7 +54,6 @@ const Navbar = () => {
 
 	let userViewActive = urlArray[1] === "users" && (urlArray[2] === "id" || urlArray[2] === "edit")
 
-	// TODO: Settings start menu option goes to theme settings somehow?
 	// TODO: User start menu option goes to api/users/me
 	// TODO: Collapse nav when too small?
 	return (
@@ -83,14 +82,18 @@ const Navbar = () => {
 							}}
 							onClick={() => setOpen(false)}
 						>
-							<MenuListItem>
-								<img
-									src={ic_user}
-									alt='user icon'
-									style={{height: '24px', marginRight: 4}}
-								/>
-								Profile
-							</MenuListItem>
+							{ token &&
+							<Link to='/me'>
+								<MenuListItem>
+									<img
+										src={ic_user}
+										alt='user icon'
+										style={{height: '24px', marginRight: 4}}
+									/>
+									Profile
+								</MenuListItem>
+							</Link>
+							}
 							<MenuListItem>
 								<img
 									src={ic_settings}

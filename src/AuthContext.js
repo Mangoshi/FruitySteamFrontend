@@ -9,5 +9,9 @@ export const AuthContext = createContext({
 	// role starts as null
 	role: null,
 	// setRole allows role state to be updated
-	setRole: () => {}
+	setRole: () => {},
+	// id starts as null
+	id: null,
+	// setID allows id state to be updated
+	setID: () => {}
 });

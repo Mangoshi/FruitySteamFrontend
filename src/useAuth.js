@@ -1,5 +1,6 @@
 import useToken from "./useToken";
 import useRole from "./useRole";
+import useID from "./useID";
 import {useNavigate} from "react-router-dom";
 import {useEffect} from "react";
 import axios from "axios";
@@ -10,6 +11,8 @@ export const useAuth = () => {
 	const { token, storeToken, removeToken } = useToken();
 	// Import role functions from useRole
 	const { role, storeRole, removeRole } = useRole();
+	// Import id functions from useID
+	const { id, storeID, removeID } = useID();
 	// Import navigate function from React Router's useNavigate
 	const navigate = useNavigate()
 
@@ -18,6 +21,8 @@ export const useAuth = () => {
 		const token = localStorage.getItem('token')
 		// Retrieve role from local storage
 		const role = localStorage.getItem('role')
+		// Retrieve id from local storage
+		const id = localStorage.getItem('userID')
 		// If token exists
 		if(token) {
 			// Store the token using function from useToken
@@ -32,7 +37,14 @@ export const useAuth = () => {
 		} else {
 			// console.log("No role in localStorage!")
 		}
-	},[storeRole, storeToken])
+		// If id exists
+		if(id) {
+			// Store the id using function from useID
+			storeID(id)
+		} else {
+			// console.log("No id in localStorage!")
+		}
+	},[storeRole, storeToken, storeID])
 
 	// Login function to log a user in using Axios to make HTTP request
 	const login = ({email, password}) => {
@@ -43,6 +55,7 @@ export const useAuth = () => {
 				// console.log(res.data)
 				storeToken(res.data.token)
 				storeRole(res.data.role)
+				storeID(res.data.id)
 			})
 			.catch((err) => {
 				console.error('Error: ', err)
@@ -64,6 +77,7 @@ export const useAuth = () => {
 						// console.log(res.data)
 						storeToken(res.data.token)
 						storeRole(res.data.role)
+						storeID(res.data.id)
 					})
 					.catch((err) => {
 						console.error('Error: ', err)
@@ -78,8 +92,9 @@ export const useAuth = () => {
 	const logout = () => {
 		removeToken()
 		removeRole()
+		removeID()
 		navigate('/')
 	}
 
-	return { token, register, login, logout }
+	return { token, id, register, login, logout }
 }

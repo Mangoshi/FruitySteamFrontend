@@ -1,25 +1,10 @@
 import {Anchor, Button, Frame, GroupBox, Window, WindowContent, WindowHeader} from 'react95';
-import {Link} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import ResponsiveWrapper from "./ResponsiveWrapper";
 
 const UserCardDetailed = ({user}) => {
 
-	const halfSizeGroupParent = {
-		display: "flex",
-		justifyContent: 'space-between'
-	}
-
-	const halfSizeGroupLeft = {
-		marginBottom: '1rem',
-		marginRight: '0.5rem',
-		width: '100%'
-	}
-
-	const halfSizeGroupRight = {
-		marginBottom: '1rem',
-		marginLeft: '0.5rem',
-		width: '100%'
-	}
+	const navigate = useNavigate()
 
 	let createdAtDate = new Date(user.createdAt).toLocaleDateString()
 	let createdAtTime = new Date(user.createdAt).toLocaleTimeString()
@@ -56,9 +41,7 @@ const UserCardDetailed = ({user}) => {
 				<Window style={{width: '100%'}}>
 					<WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
 						<span style={{marginLeft: '0.2rem'}}>{user.username}.exe</span>
-						<Link to='/users/'>
-							<Button style={{marginTop: '0.2rem'}}>X</Button>
-						</Link>
+						<Button style={{marginTop: '0.2rem'}} onClick={() => navigate(-1)}>X</Button>
 					</WindowHeader>
 					<WindowContent>
 						<Frame variant='inside' style={{
@@ -102,7 +85,7 @@ const UserCardDetailed = ({user}) => {
 							</GroupBox>
 							{/*	TODO: Make edit & back buttons functional! */}
 							<div style={{display: 'flex', justifyContent: 'space-around'}}>
-								<Button>BACK</Button>
+								<Button onClick={() => navigate(-1)}>BACK</Button>
 								<Button>EDIT</Button>
 							</div>
 						</Frame>
