@@ -54,7 +54,6 @@ const Navbar = () => {
 
 	let userViewActive = urlArray[1] === "users" && (urlArray[2] === "id" || urlArray[2] === "edit")
 
-	// TODO: User start menu option goes to api/users/me
 	// TODO: Collapse nav when too small?
 	return (
 		<AppBar position="sticky" style={{zIndex: 100, marginBottom: '1rem'}}>

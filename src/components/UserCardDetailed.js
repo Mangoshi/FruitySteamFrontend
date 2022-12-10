@@ -86,7 +86,6 @@ const UserCardDetailed = ({user}) => {
 									{updatedAtDate} @ {updatedAtTime}
 								</span>
 							</GroupBox>
-							{/*	TODO: Make edit & back buttons functional! */}
 							<div style={{display: 'flex', justifyContent: 'space-around'}}>
 								<Button onClick={() => navigate(-1)}>BACK</Button>
 								{role === 'admin' ?
