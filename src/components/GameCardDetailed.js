@@ -1,12 +1,43 @@
 import {Anchor, Button, Frame, GroupBox, Window, WindowContent, WindowHeader} from 'react95';
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import Carousel from "nuka-carousel";
 import ReactPlayer from 'react-player'
 import ResponsiveWrapper from "./ResponsiveWrapper";
+import {AuthContext} from "../AuthContext";
+import {useContext, useEffect, useState} from "react";
+import axios from "axios";
 
 const GameCardDetailed = (props) => {
 
 	const navigate = useNavigate()
+
+	const { role, id, token } = useContext(AuthContext)
+
+	const [wishlist, setWishlist] = useState([])
+
+	useEffect(() => {
+		axios.get(`https://fruity-steam.vercel.app/api/users/id/${id}`,
+			{
+				headers: {
+					"Authorization": `Bearer ${token}`
+				}
+			})
+			.then((response) => {
+				console.log("user wishlist:",response.data.data[0].wishlist);
+				setWishlist(response.data.data[0].wishlist)
+			})
+			.catch((err) => {
+				console.error(err);
+				console.log(err.response.data.message);
+			});
+	}, [id]);
+
+	const checkIfInWishlist = (game) => {
+		// console.log("wishlist:",wishlist);
+		// console.log("game:",game);
+		// console.log("in wishlist?", wishlist.filter(wish => wish._id === game._id).length > 0);
+		return wishlist.filter(wish => wish._id === game._id).length > 0
+	}
 
 	let categories = props.game['Categories']
 	// Split categories into an array based off the commas
@@ -358,7 +389,14 @@ const GameCardDetailed = (props) => {
 							</GroupBox>
 							<div style={{display: 'flex', justifyContent: 'space-around'}}>
 								<Button onClick={() => navigate(-1)}>BACK</Button>
+								{checkIfInWishlist(props.game) ?
+									<Button>REMOVE FROM WISHLIST</Button>
+									:
+									<Button>ADD TO WISHLIST</Button>
+								}
+								{role === 'admin' &&
 								<Button onClick={() => navigate(`/games/edit/${props.game._id}`)}>EDIT</Button>
+								}
 							</div>
 						</Frame>
 					</WindowContent>
