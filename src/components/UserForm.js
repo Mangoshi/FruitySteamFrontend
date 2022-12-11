@@ -58,6 +58,8 @@ const UserForm = ({user, setUser}) => {
 		}
 	}
 
+	const [error , setError] = useState(null);
+
 	const isRequired = (fields) => {
 		let error = false;
 
@@ -96,8 +98,8 @@ const UserForm = ({user, setUser}) => {
 					})
 					.catch(err => {
 						console.error(err);
-						console.log(err.response.data.msg)
-						setErrors(err.response.data.error);
+						console.log(err.response.data.message)
+						setError(err.response.data.message);
 					});
 			}
 		} else {
@@ -113,8 +115,8 @@ const UserForm = ({user, setUser}) => {
 				})
 				.catch(err => {
 					console.error(err);
-					console.log(err.response.data.msg)
-					setErrors(err.response.data.error);
+					console.log(err.response.data.message)
+					setError(err.response.data.message);
 				});
 		}
 	}
@@ -171,6 +173,13 @@ const UserForm = ({user, setUser}) => {
 									onChange={e => handleForm(e)}
 									error={errors.username}
 								/>
+								{errors.username.message &&
+									<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors.username.message}
+										</small>
+									</div>
+								}
 							</GroupBox>
 							<GroupBox label={'Email'} style={{marginBottom: '1rem'}}>
 								<TextInput
@@ -179,6 +188,13 @@ const UserForm = ({user, setUser}) => {
 									onChange={e => handleForm(e)}
 									error={errors.email}
 								/>
+								{errors.email.message &&
+									<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors.email.message}
+										</small>
+									</div>
+								}
 							</GroupBox>
 							{ !user && (
 								<GroupBox label={'Password'} style={{marginBottom: '1rem'}}>
@@ -188,6 +204,13 @@ const UserForm = ({user, setUser}) => {
 										onChange={e => handleForm(e)}
 										error={errors.password}
 									/>
+									{errors.password.message &&
+										<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+											<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+												{errors.password.message}
+											</small>
+										</div>
+									}
 								</GroupBox>
 							)}
 							{ role === 'admin' && (
@@ -216,6 +239,11 @@ const UserForm = ({user, setUser}) => {
 								</span>
 								</GroupBox>
 							)}
+							{error &&
+								<div style={{display: 'flex', justifyContent:'center', marginBottom: '1rem'}}>
+									<p style={{color: 'red', backgroundColor: '#666', padding: 5}}>{error}</p>
+								</div>
+							}
 							<div style={{display: 'flex', justifyContent:'space-evenly'}}>
 								<Button onClick={() => navigate(-1)}>CANCEL</Button>
 								<Button onClick={submitForm}>SUBMIT</Button>
