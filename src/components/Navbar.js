@@ -54,6 +54,8 @@ const Navbar = () => {
 
 	let userViewActive = urlArray[1] === "users" && (urlArray[2] === "id" || urlArray[2] === "edit")
 
+	let meViewActive = urlArray[1] === "me"
+
 	// TODO: Collapse nav when too small?
 	return (
 		<AppBar position="sticky" style={{zIndex: 100, marginBottom: '1rem'}}>
@@ -185,6 +187,20 @@ const Navbar = () => {
 								style={{height: '24px', marginRight: 4}}
 							/>
 							{user && userViewActive ? limitedName : 'User Name'}
+						</Button>
+					}
+					{
+						meViewActive &&
+						<Button
+							active={meViewActive}
+							size="lg"
+						>
+							<img
+								src={ic_user}
+								alt='user icon'
+								style={{height: '24px', marginRight: 4}}
+							/>
+							{'Me'}
 						</Button>
 					}
 				</div>

@@ -13,11 +13,15 @@ import {useContext, useState} from "react";
 import axios from "axios";
 import {AuthContext} from "../AuthContext";
 import ResponsiveWrapper from "./ResponsiveWrapper";
+import {useGame} from "../useGame";
 
 const GameForm = ({game, setGame}) => {
 
 	const {token} = useContext(AuthContext)
 	const navigate = useNavigate();
+
+	const { updateGameState } = useGame()
+	updateGameState(game.Name)
 
 	const [form, setForm] = useState({
 		Name: '',

@@ -6,6 +6,7 @@ import ResponsiveWrapper from "./ResponsiveWrapper";
 import {AuthContext} from "../AuthContext";
 import {useContext, useEffect, useState} from "react";
 import axios from "axios";
+import {useGame} from "../useGame";
 
 const GameCardDetailed = (props) => {
 
@@ -14,6 +15,10 @@ const GameCardDetailed = (props) => {
 	const { role, id, token } = useContext(AuthContext)
 
 	const [wishlist, setWishlist] = useState([])
+
+	const { updateGameState } = useGame()
+
+	updateGameState(props.game.Name)
 
 	useEffect(() => {
 		axios.get(`https://fruity-steam.vercel.app/api/users/id/${id}`,

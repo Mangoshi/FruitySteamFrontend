@@ -5,11 +5,15 @@ import {useContext, useState} from "react";
 import axios from "axios";
 import {AuthContext} from "../AuthContext";
 import ResponsiveWrapper from "./ResponsiveWrapper";
+import {useUser} from "../useUser";
 
 const UserForm = ({user, setUser}) => {
 
 	const {token, role} = useContext(AuthContext)
 	const navigate = useNavigate();
+
+	const { updateUserState } = useUser()
+	updateUserState(user.username)
 
 	const [form, setForm] = useState({
 		username: '',

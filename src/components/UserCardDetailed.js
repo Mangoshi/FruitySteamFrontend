@@ -4,12 +4,16 @@ import ResponsiveWrapper from "./ResponsiveWrapper";
 import {useContext, useState} from "react";
 import {AuthContext} from "../AuthContext";
 import axios from "axios";
+import {useUser} from "../useUser";
 
 const UserCardDetailed = ({user}) => {
 
 	const navigate = useNavigate()
 	const { role, token } = useContext(AuthContext)
 	const [wishlist, setWishlist] = useState(user.wishlist)
+
+	const { updateUserState } = useUser()
+	updateUserState(user.username)
 
 	let createdAtDate = new Date(user.createdAt).toLocaleDateString()
 	let createdAtTime = new Date(user.createdAt).toLocaleTimeString()
