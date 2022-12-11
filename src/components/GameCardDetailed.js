@@ -233,22 +233,28 @@ const GameCardDetailed = (props) => {
 						<Button style={{marginTop: '0.2rem'}} onClick={() => navigate(-1)}>X</Button>
 					</WindowHeader>
 					<WindowContent>
+						{props.game['Header image'] &&
 						<Frame variant='inside' style={{ margin: '1rem', padding: '1rem', width: '94%'}}>
 							<a href={`https://store.steampowered.com/app/${props.game['AppID']}`}>
 								<img src={props.game['Header image']} alt='Game header' width='100%'/>
 							</a>
 						</Frame>
+						}
 						<Frame variant='inside' style={{
 							margin: '1rem',
 							padding: '1rem',
 							width: '94%'
 						}}>
+							{props.game.Screenshots &&
 							<GroupBox label='Screenshots' style={{marginBottom: '1rem'}}>
 								{screenshot_slider}
 							</GroupBox>
+							}
+							{props.game.Movies &&
 							<GroupBox label='Movies' style={{marginBottom: '1rem'}}>
 								{movies_slider}
 							</GroupBox>
+							}
 							<div style={halfSizeGroupParent}>
 								<GroupBox label='Release date' style={halfSizeGroupLeft}>
 								<span style={{fontSize: '1.2rem'}}>
@@ -350,6 +356,7 @@ const GameCardDetailed = (props) => {
 									<Anchor href={props.game['Metacritic url']}>{props.game['Metacritic score']}</Anchor>
 								</span>
 							</GroupBox>
+							{props.game['User score'] &&
 							<GroupBox label='User Score (Broken?)' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game['User score'] ? (
@@ -359,56 +366,75 @@ const GameCardDetailed = (props) => {
 									)}
 								</span>
 							</GroupBox>
+							}
 							<div style={halfSizeGroupParent}>
-								<GroupBox label='Positive Reviews' style={halfSizeGroupLeft}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Positive']}
-								</span>
-								</GroupBox>
+								{props.game['Positive'] &&
+									<GroupBox label='Positive Reviews' style={halfSizeGroupLeft}>
+									<span style={{fontSize: '1.2rem'}}>
+										{props.game['Positive']}
+									</span>
+									</GroupBox>
+								}
+								{props.game['Negative'] &&
 								<GroupBox label='Negative Reviews' style={halfSizeGroupRight}>
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game['Negative']}
 								</span>
 								</GroupBox>
+								}
 							</div>
+							{props.game['Recommendations'] &&
 							<GroupBox label='Curator Recommendations' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game['Recommendations']}
 								</span>
 							</GroupBox>
+							}
+							{props.game['Estimated owners'] &&
 							<GroupBox label='Estimated Owners' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game['Estimated owners']}
 								</span>
 							</GroupBox>
+							}
+							{props.game['Peak CCU'] &&
 							<GroupBox label='Peak CCU' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game['Peak CCU']}
 								</span>
 							</GroupBox>
+							}
 							<div style={halfSizeGroupParent}>
+								{props.game['Average playtime forever'] &&
 								<GroupBox label='Average playtime (forever)' style={halfSizeGroupLeft}>
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game['Average playtime forever']} hours
 								</span>
 								</GroupBox>
+								}
+								{props.game['Median playtime forever'] &&
 								<GroupBox label='Median playtime (forever)' style={halfSizeGroupRight}>
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game['Median playtime forever']} hours
 								</span>
 								</GroupBox>
+								}
 							</div>
 							<div style={halfSizeGroupParent}>
+								{props.game['Average playtime two weeks'] &&
 								<GroupBox label='Average playtime (2 weeks)' style={halfSizeGroupLeft}>
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game['Average playtime two weeks']} hours
 								</span>
 								</GroupBox>
+								}
+								{props.game['Median playtime two weeks'] &&
 								<GroupBox label='Median playtime (2 weeks)' style={halfSizeGroupRight}>
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game['Median playtime two weeks']} hours
 								</span>
 								</GroupBox>
+								}
 							</div>
 							<GroupBox label='Support Link' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
@@ -418,7 +444,6 @@ const GameCardDetailed = (props) => {
 							<GroupBox label='Support Email' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game['Support email'] ? (props.game['Support email']) : ("N/A")}
-									<Anchor href={props.game['Support email']}>{props.game['Support email']}</Anchor>
 								</span>
 							</GroupBox>
 							<div style={{display: 'flex', justifyContent: 'space-around'}}>
