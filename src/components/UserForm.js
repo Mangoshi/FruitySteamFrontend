@@ -27,7 +27,7 @@ const UserForm = ({user, setUser}) => {
 		wishlist: [],
 	})
 
-	const [wishlist, setWishlist] = useState(user.wishlist)
+	const [wishlist, setWishlist] = useState(user ? user.wishlist : [])
 
 	const handleForm = (e) => {
 		console.log(e)
