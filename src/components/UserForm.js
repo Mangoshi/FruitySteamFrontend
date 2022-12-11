@@ -1,5 +1,5 @@
-import {Anchor, Button, Frame, GroupBox, Select, TextInput, Window, WindowContent, WindowHeader} from 'react95';
-import {useNavigate} from "react-router-dom";
+import {Button, Frame, GroupBox, Select, TextInput, Window, WindowContent, WindowHeader} from 'react95';
+import {Link, useNavigate} from "react-router-dom";
 
 import {useContext, useState} from "react";
 import axios from "axios";
@@ -129,9 +129,9 @@ const UserForm = ({user, setUser}) => {
 						padding: 4
 					}}>
 						<div key={entry._id} style={{display: 'flex', justifyContent: 'space-between'}}>
-							<Anchor href={`/games/id/${entry._id}`} target="_blank" rel="noreferrer">
+							<Link to={`/games/id/${entry._id}`}>
 								{entry.Name}
-							</Anchor>
+							</Link>
 							<Button size={'sm'} onClick={() => removeFromWishlist(entry._id)}>X</Button>
 						</div>
 					</li>
