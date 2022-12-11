@@ -11,7 +11,6 @@ import ic_computer from "./icons/ic_computer.ico"
 import ic_msdos from "./icons/ic_msdos.ico"
 import ic_folder_exe from "./icons/ic_folder_exe.ico"
 import ic_user from "./icons/ic_user.png"
-import ic_settings from "./icons/ic_settings.ico"
 import ic_auth from "./icons/ic_auth.ico"
 import ic_users from "./icons/ic_users.png"
 import {UserContext} from "../UserContext";
@@ -94,37 +93,42 @@ const Navbar = () => {
 							}}
 							onClick={() => setOpen(false)}
 						>
-							{ token &&
-							<Link to='/me'>
-								<MenuListItem>
-									<img
-										src={ic_user}
-										alt='user icon'
-										style={{height: '24px', marginRight: 4}}
-									/>
-									Profile
-								</MenuListItem>
-							</Link>
+							{ token ?
+								<>
+									<Link to='/me'>
+										<MenuListItem>
+											<img
+												src={ic_user}
+												alt='user icon'
+												style={{height: '24px', marginRight: 4}}
+											/>
+											Profile
+										</MenuListItem>
+									</Link>
+									<Separator/>
+									<MenuListItem
+										onClick={logout}
+									>
+										<img
+											src={ic_auth}
+											alt='keys icon'
+											style={{height: '24px', marginRight: 4}}
+										/>
+										Logout
+									</MenuListItem>
+								</>
+								:
+								<>
+									<MenuListItem>
+										<img
+											src={ic_user}
+											alt='user icon'
+											style={{height: '24px', marginRight: 4}}
+										/>
+										Please login!
+									</MenuListItem>
+								</>
 							}
-							<MenuListItem>
-								<img
-									src={ic_settings}
-									alt='settings icon'
-									style={{height: '24px', marginRight: 4}}
-								/>
-								Settings
-							</MenuListItem>
-							<Separator/>
-							<MenuListItem
-								onClick={logout}
-							>
-								<img
-									src={ic_auth}
-									alt='keys icon'
-									style={{height: '24px', marginRight: 4}}
-								/>
-								Logout
-							</MenuListItem>
 						</MenuList>
 					)}
 					<Link to='/'>
