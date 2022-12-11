@@ -39,6 +39,7 @@ const Index = () => {
 	const [limit, setLimit] = useState(100)
 	const [totalGames, setTotalGames] = useState(0)
 	const [totalPages, setTotalPages] = useState(0)
+	const [isLoaded, setIsLoaded] = useState(false)
 
 	const ref = useRef(null)
 	const navigate = useNavigate()
@@ -95,52 +96,61 @@ const Index = () => {
 		builtPageQuery = `?page=${currentPage}`
 	}
 
-	// TODO: IMPORTANT!!! Set a delay for requests to be made (one-two seconds)
 	// TODO: Figure out fix / error message for when MongoDB memory limit reached
 	//  - Could also reduce available limits to 25ish max
 	useEffect(() => {
-		console.log(`Built Query: ${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`)
-		axios.get(`${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`, authHeaders)
-			.then((response) => {
-				// TODO: While loading show hourglass animation
-				// console.log("Full response data: ",response.data)
-				let data = response.data.data
-				let totalGames = Number.parseInt(response.data.total)
-				console.log("Total games: ", totalGames)
-				console.log("Limit: ", limit)
-				console.log("Max pages: ", Math.ceil(totalGames/limit))
-				setTotalGames(totalGames)
-				setTotalPages(Math.ceil(totalGames/limit))
-				if(adultFilter){
-/*
-					if(data.filter(game => game.Notes).length > 0) {
-						let count = 0
-						let i
-						console.group("Games with adult content:")
-						for (i in data) {
-							if (data[i].Notes) {
-								count++
-								console.log(count, "-", data[i].Name, ":", data[i].Notes)
-							}
-						}
-						console.groupEnd()
-						console.log("Filtered array", data.filter(game => !game.Notes))
+		// console.log(`Built Query: ${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`)
+		const fetchData = async () => {
+			await axios.get(`${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`, authHeaders)
+				.then((response) => {
+					// TODO: While loading show hourglass animation
+					// console.log("Full response data: ",response.data)
+					let data = response.data.data
+					let totalGames = Number.parseInt(response.data.total)
+					console.log("Total games: ", totalGames)
+					console.log("Limit: ", limit)
+					console.log("Max pages: ", Math.ceil(totalGames / limit))
+					setTotalGames(totalGames)
+					setTotalPages(Math.ceil(totalGames / limit))
+					if (adultFilter) {
+						/*
+											if(data.filter(game => game.Notes).length > 0) {
+												let count = 0
+												let i
+												console.group("Games with adult content:")
+												for (i in data) {
+													if (data[i].Notes) {
+														count++
+														console.log(count, "-", data[i].Name, ":", data[i].Notes)
+													}
+												}
+												console.groupEnd()
+												console.log("Filtered array", data.filter(game => !game.Notes))
+											}
+						*/
+						setGames(data.filter(game => !game.Notes))
+						console.log(data.filter(game => !game.Notes))
+					} else {
+						setGames(data);
+						console.log(data);
 					}
-*/
-					setGames(data.filter(game => !game.Notes))
-					console.log(data.filter(game => !game.Notes))
-				} else {
-					setGames(data);
-					console.log(data);
-				}
-				setSearchError(null)
-				// setPage(Number(page))
-			})
-			.catch((err) => {
-				console.error(err);
-				console.log("ERROR: ", err.response.data.msg)
-				setSearchError(err.response.data.msg)
-			});
+					setIsLoaded(true)
+					setSearchError(null)
+					// setPage(Number(page))
+				})
+				.catch((err) => {
+					console.error(err);
+					console.log("ERROR: ", err.response.data.msg)
+					setSearchError(err.response.data.msg)
+				});
+		}
+
+		const timer = setTimeout(() => {
+			fetchData()
+		}, 250)
+
+		return () => clearTimeout(timer)
+
 	}, [URL, currentPage, builtSearchQuery, builtSortQuery, adultFilter, limit]);
 
 	if (!games) return (
@@ -413,7 +423,13 @@ const Index = () => {
 								}
 							</div>
 						</div>
-						{!searchError ? (
+						{!isLoaded && !searchError && (
+							<div style={{display: "flex", flexDirection: "column", justifyContent: 'center', alignItems: 'center'}}>
+								<p style={{fontSize: '1.5rem'}}>Loading...</p>
+								<Hourglass size={48} style={{ margin: 20 }}/>
+							</div>
+						)}
+						{isLoaded && !searchError ? (
 						<>
 							<Table>
 								<TableHead>
@@ -433,7 +449,6 @@ const Index = () => {
 								<p style={{fontSize: '2rem'}}>{searchError}!</p>
 							</div>
 						)}
-
 					</WindowContent>
 				</Window>
 			</div>
