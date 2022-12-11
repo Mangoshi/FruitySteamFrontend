@@ -131,7 +131,7 @@ const Home = ({theme, setTheme, themes}) => {
                     <Window style={{width: "auto"}}>
                         <WindowHeader style={{display: "flex", justifyContent: 'space-between'}}>
                             <span>Theme.exe</span>
-                            <Button style={{marginTop: '0.2rem'}}>X</Button>
+                            <Button disabled style={{marginTop: '0.2rem'}}>X</Button>
                         </WindowHeader>
                         <WindowContent>
                             <p>Select a different theme? </p>
