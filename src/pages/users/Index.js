@@ -38,6 +38,7 @@ const Index = () => {
 	const [limit, setLimit] = useState(100)
 	const [totalGames, setTotalGames] = useState(0)
 	const [totalPages, setTotalPages] = useState(0)
+	const [isLoaded, setIsLoaded] = useState(false)
 
 	const ref = useRef(null)
 	const navigate = useNavigate()
@@ -89,34 +90,42 @@ const Index = () => {
 		builtPageQuery = `?page=${currentPage}`
 	}
 
-	// TODO: IMPORTANT!!! Set a delay for requests to be made (one-two seconds)
-	// TODO: Figure out fix / error message for when MongoDB memory limit reached
-	//  - Could also reduce available limits to 25ish max
 	useEffect(() => {
-		console.log(`Built Query: ${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`)
-		axios.get(`${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`, authHeaders)
-			.then((response) => {
-				// TODO: While loading show hourglass animation
-				// console.log("Full response data: ",response.data)
-				let data = response.data.data
-				let totalGames = Number.parseInt(response.data.total)
-				console.log("Total users: ", totalGames)
-				console.log("Limit: ", limit)
-				console.log("Max pages: ", Math.ceil(totalGames/limit))
-				setTotalGames(totalGames)
-				setTotalPages(Math.ceil(totalGames/limit))
+		// console.log(`Built Query: ${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`)
+		const fetchData = async () => {
+			await axios.get(`${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`, authHeaders)
+				.then((response) => {
+					// TODO: While loading show hourglass animation
+					// console.log("Full response data: ",response.data)
+					let data = response.data.data
+					let totalGames = Number.parseInt(response.data.total)
+					console.log("Total users: ", totalGames)
+					console.log("Limit: ", limit)
+					console.log("Max pages: ", Math.ceil(totalGames / limit))
+					setTotalGames(totalGames)
+					setTotalPages(Math.ceil(totalGames / limit))
 
-				setUsers(data);
-				console.log(data);
+					setUsers(data);
+					console.log(data);
 
-				setSearchError(null)
-				// setPage(Number(page))
-			})
-			.catch((err) => {
-				console.error(err);
-				console.log("ERROR: ", err.response)
-				setSearchError('No users found')
-			});
+					setIsLoaded(true)
+					setSearchError(null)
+					// setPage(Number(page))
+				})
+				.catch((err) => {
+					console.error(err);
+					console.log("ERROR: ", err.response)
+					setSearchError('No users found!')
+				});
+		}
+
+		const timer = setTimeout(() => {
+			setIsLoaded(false)
+			fetchData()
+		}, 250)
+
+		return () => clearTimeout(timer)
+
 	}, [URL, currentPage, builtSearchQuery, builtSortQuery, limit]);
 
 	if (!users) return (
@@ -315,7 +324,13 @@ const Index = () => {
 									}
 								</div>
 							</div>
-							{!searchError ? (
+							{!isLoaded && !searchError && (
+								<div style={{display: "flex", flexDirection: "column", justifyContent: 'center', alignItems: 'center', margin: '2rem'}}>
+									<p style={{fontSize: '2rem'}}>Loading...</p>
+									<Hourglass size={48} style={{ margin: 20 }}/>
+								</div>
+							)}
+							{isLoaded && !searchError ? (
 								<>
 									<Table>
 										<TableHead>
@@ -333,7 +348,7 @@ const Index = () => {
 								</>
 							) : (
 								<div style={{display: 'flex', justifyContent: 'center'}}>
-									<p style={{fontSize: '2rem'}}>{searchError}!</p>
+									<p style={{fontSize: '2rem'}}>{searchError}</p>
 								</div>
 							)}
 
