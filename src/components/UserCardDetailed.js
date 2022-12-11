@@ -55,7 +55,6 @@ const UserCardDetailed = ({user}) => {
 							<Anchor href={`/games/id/${entry._id}`} target="_blank" rel="noreferrer">
 								{entry.Name}
 							</Anchor>
-							{/* TODO: Allow wishlist game removal with this */}
 							<Button size={'sm'} onClick={() => removeFromWishlist(entry._id)}>X</Button>
 						</div>
 					</li>
