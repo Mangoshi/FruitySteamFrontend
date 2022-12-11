@@ -7,7 +7,7 @@ import {
 	WindowContent,
 	WindowHeader
 } from 'react95';
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 import {useContext, useState} from "react";
 import axios from "axios";
@@ -15,23 +15,6 @@ import {AuthContext} from "../AuthContext";
 import ResponsiveWrapper from "./ResponsiveWrapper";
 
 const GameForm = ({game, setGame}) => {
-
-	const halfSizeGroupParent = {
-		display: "flex",
-		justifyContent: 'space-between'
-	}
-
-	const halfSizeGroupLeft = {
-		marginBottom: '1rem',
-		marginRight: '0.5rem',
-		width: '100%'
-	}
-
-	const halfSizeGroupRight = {
-		marginBottom: '1rem',
-		marginLeft: '0.5rem',
-		width: '100%'
-	}
 
 	const {token} = useContext(AuthContext)
 	const navigate = useNavigate();
@@ -87,6 +70,8 @@ const GameForm = ({game, setGame}) => {
 		"Screenshots": '',
 		"Movies": '',
 	});
+
+	const [error , setError] = useState(null);
 
 	const handleForm = (e) => {
 		console.log(e)
@@ -146,6 +131,7 @@ const GameForm = ({game, setGame}) => {
 				.catch(err => {
 					console.error(err);
 					console.log(err.response.data.msg)
+					setError(err.response.data.msg);
 					setErrors(err.response.data.error);
 				});
 			}
@@ -162,14 +148,14 @@ const GameForm = ({game, setGame}) => {
 			.catch(err => {
 				console.error(err);
 				console.log(err.response.data.msg)
-				setErrors(err.response.data.error);
+				setError(err.response.data.error);
 				});
 		}
 	};
 
 	// Regular Expression function to enforce numbers only
 	const onlyAllowNumber = (input) => {
-		const regex = new RegExp("^[0-9]*$");
+		const regex = new RegExp("^[0-9.]*$");
 		if (input.data != null && !regex.test(input.data))
 			input.preventDefault();
 	}
@@ -181,10 +167,10 @@ const GameForm = ({game, setGame}) => {
 		height: '2.2rem',
 	}
 	const inputBgReg = {
-		backgroundColor: 'white'
+		textDecoration: 'none'
 	}
 	const inputBgErr = {
-		backgroundColor: 'indianred'
+		textDecoration: 'underline red'
 	}
 	const numInputStyles = {
 		width: '90%',
@@ -194,7 +180,8 @@ const GameForm = ({game, setGame}) => {
 		border: 'none',
 		outline: 'none',
 		fontSize: '1rem',
-		font: 'unset'
+		font: 'unset',
+		backgroundColor: 'white',
 	}
 
 	const dateFormatted = (date) => {
@@ -202,6 +189,23 @@ const GameForm = ({game, setGame}) => {
 			let dateObj = new Date(date);
 			return dateObj.toISOString().split('T')[0];
 		}
+	}
+
+	const halfSizeGroupParent = {
+		display: "flex",
+		justifyContent: 'space-between'
+	}
+
+	const halfSizeGroupLeft = {
+		marginBottom: '1rem',
+		marginRight: '0.5rem',
+		width: '100%'
+	}
+
+	const halfSizeGroupRight = {
+		marginBottom: '1rem',
+		marginLeft: '0.5rem',
+		width: '100%'
 	}
 
 	// If there is no game props, it's an add form
@@ -219,32 +223,40 @@ const GameForm = ({game, setGame}) => {
 								<div style={halfSizeGroupParent}>
 									<GroupBox label='Game Title *' style={halfSizeGroupLeft}>
 										<TextInput
-											placeholder={errors.Name.message ? errors.Name.message : 'Text here...'}
+											placeholder={'Text here...'}
 											name="Name"
 											onChange={handleForm}
 											value={form.Name}
-											style={errors.Name.message ? inputBgErr : inputBgReg}
 										/>
+										{errors.Name.message &&
+										<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+											<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+												{errors.Name.message}
+											</small>
+										</div>
+										}
 									</GroupBox>
 									<GroupBox label='App ID *' style={halfSizeGroupRight}>
 										<Frame variant={"field"} style={numInputFrame}>
 										{/* Using regular input because React95 NumberInput is broken */}
 										<input
 											type="number"
-											placeholder={errors.AppID.message ? errors.AppID.message : 'Number here...'}
+											placeholder={'Number here...'}
 											name="AppID"
 											onChange={handleForm}
 											onBeforeInput={onlyAllowNumber}
 											value={form.AppID}
 											min={2140821}
 											max={9999999}
-											style={errors.AppID.message
-												?
-												Object.assign(numInputStyles, inputBgErr)
-												:
-												Object.assign(numInputStyles, inputBgReg)
-											}
+											style={numInputStyles}
 										/>
+											{errors.AppID.message &&
+												<div style={{marginTop: '1rem', display: 'flex', justifyContent: 'center'}}>
+													<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+														{errors.AppID.message}
+													</small>
+												</div>
+											}
 										</Frame>
 									</GroupBox>
 								</div>
@@ -253,36 +265,38 @@ const GameForm = ({game, setGame}) => {
 										<Frame variant={"field"} style={numInputFrame}>
 											<input
 												type="number"
-												placeholder={errors.Price.message ? errors.Price.message : 'Number here...'}
+												placeholder={'Number here...'}
 												name="Price"
 												onChange={handleForm}
 												onBeforeInput={onlyAllowNumber}
 												value={form.Price}
-												style={errors.Price.message
-													?
-													Object.assign(numInputStyles, inputBgErr)
-													:
-													Object.assign(numInputStyles, inputBgReg)
-												}
+												style={numInputStyles}
 											/>
+											{errors.Price.message &&
+											<div style={{marginTop: '1rem', display: 'flex', justifyContent: 'center'}}>
+												<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+													{errors.Price.message}
+												</small>
+											</div>
+											}
 										</Frame>
 									</GroupBox>
 									<GroupBox label='Release Date' style={halfSizeGroupRight}>
 										<Frame variant={"field"} style={numInputFrame}>
 											<input
 												type={"date"}
-												placeholder={errors['Release date'].message ? errors['Release date'].message : 'Date here...'}
-												style={errors['Release date'].message
-													?
-													Object.assign(numInputStyles, inputBgErr)
-													:
-													Object.assign(numInputStyles, inputBgReg)
-												}
+												style={numInputStyles}
 												name="Release date"
 												onChange={handleForm}
-
 											/>
 										</Frame>
+										{errors['Release date'].message &&
+											<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+												<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+													{errors["Release date"].message}
+												</small>
+											</div>
+										}
 									</GroupBox>
 								</div>
 								<GroupBox label='Cover' style={{marginBottom: '1rem'}}>
@@ -295,186 +309,263 @@ const GameForm = ({game, setGame}) => {
 									<p>VIDEO UPLOAD</p>
 								</GroupBox>
 								<GroupBox label='About The Game' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1rem'}}>
-									<TextInput
-										placeholder={errors['About the game'].message ? errors['About the game'].message : 'Text here...'}
-										style={errors['About the game'].message ? inputBgErr : inputBgReg}
-										name="About the game"
-										onChange={handleForm}
-										multiline={true}
-
-									/>
-								</span>
+									<span style={{fontSize: '1rem'}}>
+										<TextInput
+											placeholder={'Text here...'}
+											name="About the game"
+											onChange={handleForm}
+											multiline={true}
+										/>
+									</span>
+									{errors['About the game'].message &&
+										<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+											<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+												{errors["About the game"].message}
+											</small>
+										</div>
+									}
 								</GroupBox>
 								<GroupBox label='Developers' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput
-										placeholder={errors.Developers.message ? errors.Developers.message : 'Text here...'}
-										style={errors.Developers.message ? inputBgErr : inputBgReg}
-										name="Developers"
-										onChange={handleForm}
-									/>
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										<TextInput
+											placeholder={'Text here...'}
+											name="Developers"
+											onChange={handleForm}
+										/>
+									</span>
+									{errors.Developers.message &&
+										<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+											<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+												{errors.Developers.message}
+											</small>
+										</div>
+									}
 								</GroupBox>
 								<GroupBox label='Publishers' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput
-										placeholder={errors.Publishers.message ? errors.Publishers.message : 'Text here...'}
-										style={errors.Publishers.message ? inputBgErr : inputBgReg}
-										name="Publishers"
-										onChange={handleForm}
-									/>
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										<TextInput
+											placeholder={'Text here...'}
+											name="Publishers"
+											onChange={handleForm}
+										/>
+									</span>
+									{errors.Publishers.message &&
+									<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors.Publishers.message}
+										</small>
+									</div>
+									}
 								</GroupBox>
 								<GroupBox label='Website' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput
-										placeholder={errors.Website.message ? errors.Website.message : 'Text here...'}
-										style={errors.Website.message ? inputBgErr : inputBgReg}
-										name="Website"
-										onChange={handleForm}
-									/>
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										<TextInput
+											placeholder={'Text here...'}
+											name="Website"
+											onChange={handleForm}
+										/>
+									</span>
+									{errors.Website.message &&
+									<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors.Website.message}
+										</small>
+									</div>
+									}
 								</GroupBox>
 								<GroupBox label='Required Age' style={{marginBottom: '1rem'}}>
 									<Frame variant={"field"} style={numInputFrame}>
 										<input
 											type={'number'}
-											placeholder={errors['Required age'].message ? errors['Required age'].message : 'Number here...'}
-											style={errors['Required age'].message
-												?
-												Object.assign(numInputStyles, inputBgErr)
-												:
-												Object.assign(numInputStyles, inputBgReg)
-											}
+											placeholder={'Number here...'}
+											style={numInputStyles}
 											name="Required age"
 											onChange={handleForm}
 											onBeforeInput={onlyAllowNumber}
 										/>
 									</Frame>
+									{errors['Required age'].message &&
+									<div style={{marginTop: '1rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors["Required age"].message}
+										</small>
+									</div>
+									}
 								</GroupBox>
 								<GroupBox label='Categories' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput
-										placeholder={errors.Categories.message ? errors.Categories.message : 'Comma-seperated tags here...'}
-										style={errors.Categories.message ? inputBgErr : inputBgReg}
-										name="Categories"
-										onChange={handleForm}
-									/>
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										<TextInput
+											placeholder={'Comma-seperated tags here...'}
+											name="Categories"
+											onChange={handleForm}
+										/>
+									</span>
+									{errors.Categories.message &&
+									<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors.Categories.message}
+										</small>
+									</div>
+									}
 								</GroupBox>
 								<GroupBox label='Tags' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput
-										placeholder={errors.Tags.message ? errors.Tags.message : 'Comma-seperated tags here...'}
-										style={errors.Tags.message ? inputBgErr : inputBgReg}
-										name="Tags"
-										onChange={handleForm}
-									/>
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										<TextInput
+											placeholder={'Comma-seperated tags here...'}
+											name="Tags"
+											onChange={handleForm}
+										/>
+									</span>
+									{errors.Tags.message &&
+									<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors.Tags.message}
+										</small>
+									</div>
+									}
 								</GroupBox>
 								<GroupBox label='Genres' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput
-										placeholder={errors.Genres.message ? errors.Genres.message : 'Comma-seperated tags here...'}
-										style={errors.Genres.message ? inputBgErr : inputBgReg}
-										name="Genres"
-										onChange={handleForm}
-									/>
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										<TextInput
+											placeholder={'Comma-seperated tags here...'}
+											name="Genres"
+											onChange={handleForm}
+										/>
+									</span>
+									{errors.Genres.message &&
+									<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors.Genres.message}
+										</small>
+									</div>
+									}
 								</GroupBox>
 								<GroupBox label='DLC Count' style={{marginBottom: '1rem'}}>
 									<Frame variant={"field"} style={numInputFrame}>
 										<input
 											type={'number'}
-											placeholder={errors['DLC count'].message ? errors['DLC count'].message : 'Number here...'}
-											style={errors['DLC count'].message
-												?
-												Object.assign(numInputStyles, inputBgErr)
-												:
-												Object.assign(numInputStyles, inputBgReg)
-											}
+											placeholder={'Number here...'}
+											style={numInputStyles}
 											name="DLC count"
 											onChange={handleForm}
 											onBeforeInput={onlyAllowNumber}
 										/>
 									</Frame>
+									{errors['DLC count'].message &&
+									<div style={{marginTop: '1rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors["DLC count"].message}
+										</small>
+									</div>
+									}
 								</GroupBox>
 								<GroupBox label='Achievements' style={{marginBottom: '1rem'}}>
 									<Frame variant={"field"} style={numInputFrame}>
 										<input
 											type={'number'}
-											placeholder={errors['Achievements'].message ? errors['Achievements'].message : 'Number here...'}
-											style={errors['Achievements'].message
-												?
-												Object.assign(numInputStyles, inputBgErr)
-												:
-												Object.assign(numInputStyles, inputBgReg)
-											}
+											placeholder={'Number here...'}
+											style={numInputStyles}
 											name="Achievements"
 											onChange={handleForm}
 											onBeforeInput={onlyAllowNumber}
 										/>
 									</Frame>
+									{errors.Achievements.message &&
+									<div style={{marginTop: '1rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors.Achievements.message}
+										</small>
+									</div>
+									}
 								</GroupBox>
 								<GroupBox label='Supported Languages' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput
-										placeholder={errors['Supported languages'].message ? errors['Supported languages'].message : 'Comma-seperated tags here...'}
-										style={errors['Supported languages'].message ? inputBgErr : inputBgReg}
-										name="Supported languages"
-										onChange={handleForm}
-									/>
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										<TextInput
+											placeholder={'Comma-seperated tags here...'}
+											name="Supported languages"
+											onChange={handleForm}
+										/>
+									</span>
+									{errors['Supported languages'].message &&
+									<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors["Supported languages"].message}
+										</small>
+									</div>
+									}
 								</GroupBox>
 								<GroupBox label='Full Audio Languages' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput
-										placeholder={errors['Full audio languages'].message ? errors['Full audio languages'].message : 'Comma-seperated tags here...'}
-										style={
-											errors['Full audio languages'].message ? inputBgErr : inputBgReg}
-										name="Full audio languages"
-										onChange={handleForm}
-									/>
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										<TextInput
+											placeholder={'Comma-seperated tags here...'}
+											name="Full audio languages"
+											onChange={handleForm}
+										/>
+									</span>
+									{errors['Full audio languages'].message &&
+									<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors["Full audio languages"].message}
+										</small>
+									</div>
+									}
 								</GroupBox>
 								<GroupBox label='Metacritic Score' style={{marginBottom: '1rem'}}>
 									<Frame variant={"field"} style={numInputFrame}>
 										<input
 											type={'number'}
-											placeholder={errors['Metacritic score'].message ? errors['Metacritic score'].message : 'Number here...'}
-											style={errors['Metacritic score'].message
-												?
-												Object.assign(numInputStyles, inputBgErr)
-												:
-												Object.assign(numInputStyles, inputBgReg)
-											}
+											placeholder={'Number here...'}
+											style={numInputStyles}
 											name="Metacritic score"
 											onChange={handleForm}
 											onBeforeInput={onlyAllowNumber}
 										/>
 									</Frame>
+									{errors['Metacritic score'].message &&
+									<div style={{marginTop: '1rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors["Metacritic score"].message}
+										</small>
+									</div>
+									}
 								</GroupBox>
 								<GroupBox label='Support Link' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput
-										placeholder={errors['Support url'].message ? errors['Support url'].message : 'Text here...'}
-										style={errors['Support url'].message ? inputBgErr : inputBgReg}
-										name="Support url"
-										onChange={handleForm}
-									/>
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										<TextInput
+											placeholder={'Text here...'}
+											name="Support url"
+											onChange={handleForm}
+										/>
+									</span>
+									{errors['Support url'].message &&
+									<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors["Support url"].message}
+										</small>
+									</div>
+									}
 								</GroupBox>
 								<GroupBox label='Support Email' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1.2rem'}}>
-									<TextInput
-										placeholder={errors['Support email'].message ? errors['Support email'].message : 'Text here...'}
-										style={errors['Support email'].message ? inputBgErr : inputBgReg}
-										name="Support email"
-										onChange={handleForm}
-									/>
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										<TextInput
+											placeholder={'Text here...'}
+											name="Support email"
+											onChange={handleForm}
+										/>
+									</span>
+									{errors['Support email'].message &&
+									<div style={{marginTop: '0.7rem', display: 'flex', justifyContent: 'center'}}>
+										<small style={{color: 'red', backgroundColor: '#666', paddingLeft: 3, paddingRight: 3}}>
+											{errors["Support email"].message}
+										</small>
+									</div>
+									}
 								</GroupBox>
+								{error &&
+								<div style={{display: 'flex', justifyContent:'center', marginBottom: '1rem'}}>
+									<p style={{color: 'red', backgroundColor: '#666', padding: 5}}>{error}</p>
+								</div>
+								}
 								<div style={{display: 'flex', justifyContent:'space-evenly'}}>
 									<Button onClick={() => navigate(-1)}>CANCEL</Button>
 									<Button onClick={submitForm}>SUBMIT</Button>
