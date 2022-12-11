@@ -1,5 +1,19 @@
 # Getting Started with FruitySteam
 
+This project is hosted on Vercel and is available [here](https://fruity-steam-frontend.vercel.app/).
+
+Alternative mirrors: [Mirror 1](https://fruity-steam-frontend-mangoshi.vercel.app/), [Mirror 2](https://fruity-steam-frontend-git-main-mangoshi.vercel.app/), [Mirror 3](https://fruity-steam-frontend-311okjlgv-mangoshi.vercel.app/).
+
+<hr/>
+
+Backend repository: [FruitySteam](https://github.com/Mangoshi/FruitySteam).
+
+Backend is also hosted on Vercel and is available [here](https://fruity-steam.vercel.app/).
+
+Alternative mirrors: [Mirror 1](https://fruity-steam-mangoshi.vercel.app/), [Mirror 2](https://fruity-steam-git-main-mangoshi.vercel.app/), [Mirror 3](https://fruity-steam-nhp01l305-mangoshi.vercel.app/).
+
+<hr/>
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
@@ -38,33 +52,3 @@ If you aren't satisfied with the build tool and configuration choices, you can `
 Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
