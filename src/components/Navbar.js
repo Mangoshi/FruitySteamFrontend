@@ -1,5 +1,5 @@
 import {Link, useLocation} from 'react-router-dom';
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {useAuth} from "../useAuth";
 import {GameContext} from "../GameContext";
 import {AuthContext} from "../AuthContext";
@@ -56,7 +56,18 @@ const Navbar = () => {
 
 	let meViewActive = urlArray[1] === "me"
 
-	// TODO: Collapse nav when too small?
+	const [width, setWidth] = useState(window.innerWidth);
+	const breakpoint = 725;
+	useEffect(() => {
+		const handleResizeWindow = () => setWidth(window.innerWidth);
+		// subscribe to window resize event "onComponentDidMount"
+		window.addEventListener("resize", handleResizeWindow);
+		return () => {
+			// unsubscribe "onComponentDestroy"
+			window.removeEventListener("resize", handleResizeWindow);
+		};
+	}, []);
+
 	return (
 		<AppBar position="sticky" style={{zIndex: 100, marginBottom: '1rem'}}>
 			<Toolbar style={{position: 'relative', justifyContent: 'space-between'}}>
@@ -72,7 +83,7 @@ const Navbar = () => {
 							alt='alt Windows 95 logo'
 							style={{height: '24px', marginRight: 4}}
 						/>
-						Start
+						{width > breakpoint && <p>Start</p>}
 					</Button>
 					{open && (
 						<MenuList
@@ -127,7 +138,7 @@ const Navbar = () => {
 								alt='computer icon'
 								style={{height: '24px', marginRight: 4}}
 							/>
-							Home
+							{width > breakpoint && <p>Home</p>}
 						</Button>
 					</Link>
 					<Link to='/games/'>
@@ -141,24 +152,9 @@ const Navbar = () => {
 								alt='folder icon'
 								style={{height: '24px', marginRight: 4}}
 							/>
-							Games
+							{width > breakpoint && <p>Games</p>}
 						</Button>
 					</Link>
-					{
-						gameViewActive &&
-						<Button
-							active={gameViewActive}
-							size="lg"
-							style={{marginRight: '0.5rem'}}
-						>
-							<img
-								src={ic_msdos}
-								alt='ms-dos icon'
-								style={{height: '24px', marginRight: 4}}
-							/>
-							{game && gameViewActive ? limitedTitle : 'Game Name'}
-						</Button>
-					}
 					{role === 'admin' &&
 						<Link to='/users/'>
 							<Button
@@ -171,37 +167,97 @@ const Navbar = () => {
 									alt='user icon'
 									style={{height: '24px', marginRight: 4}}
 								/>
-								Users
+								{width > breakpoint && <p>Users</p>}
 							</Button>
 						</Link>
 					}
+					{gameViewActive &&
+						<>
+							{width > breakpoint ?
+								<Button
+									active={gameViewActive}
+									size="lg"
+									style={{marginRight: '0.5rem'}}
+								>
+									<img
+										src={ic_msdos}
+										alt='ms-dos icon'
+										style={{height: '24px', marginRight: 4}}
+									/>
+									{game && gameViewActive ? limitedTitle : 'Game Name'}
+								</Button>
+							:
+								<Button
+									active={gameViewActive}
+									size="lg"
+									style={{marginRight: '0.5rem'}}
+								>
+									<img
+										src={ic_msdos}
+										alt='ms-dos icon'
+										style={{height: '24px', marginRight: 4}}
+									/>
+								</Button>
+							}
+						</>
+					}
 					{
 						role === 'admin' && userViewActive &&
-						<Button
-							active={userViewActive}
-							size="lg"
-						>
-							<img
-								src={ic_user}
-								alt='user icon'
-								style={{height: '24px', marginRight: 4}}
-							/>
-							{user && userViewActive ? limitedName : 'User Name'}
-						</Button>
+						<>
+							{width > breakpoint ?
+								<Button
+									active={userViewActive}
+									size="lg"
+								>
+									<img
+										src={ic_user}
+										alt='user icon'
+										style={{height: '24px', marginRight: 4}}
+									/>
+									{user && userViewActive ? limitedName : 'User Name'}
+								</Button>
+							:
+								<Button
+									active={userViewActive}
+									size="lg"
+								>
+									<img
+										src={ic_user}
+										alt='user icon'
+										style={{height: '24px', marginRight: 4}}
+									/>
+								</Button>
+							}
+						</>
 					}
 					{
 						meViewActive &&
-						<Button
-							active={meViewActive}
-							size="lg"
-						>
-							<img
-								src={ic_user}
-								alt='user icon'
-								style={{height: '24px', marginRight: 4}}
-							/>
-							{'Me'}
-						</Button>
+						<>
+							{width > breakpoint ?
+								<Button
+									active={meViewActive}
+									size="lg"
+								>
+									<img
+										src={ic_user}
+										alt='user icon'
+										style={{height: '24px', marginRight: 4}}
+									/>
+									{'Me'}
+								</Button>
+							:
+								<Button
+									active={meViewActive}
+									size="lg"
+								>
+									<img
+										src={ic_user}
+										alt='user icon'
+										style={{height: '24px', marginRight: 4}}
+									/>
+								</Button>
+							}
+						</>
 					}
 				</div>
 				<Frame variant='well' style={{marginRight: '0.5rem', padding: '0.2rem'}}>
