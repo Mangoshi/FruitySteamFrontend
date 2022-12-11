@@ -141,11 +141,12 @@ const Index = () => {
 				.catch((err) => {
 					console.error(err);
 					console.log("ERROR: ", err.response.data.msg)
-					setSearchError(err.response.data.msg)
+					setSearchError(err.response.data.msg+"!")
 				});
 		}
 
 		const timer = setTimeout(() => {
+			setIsLoaded(false)
 			fetchData()
 		}, 250)
 
@@ -424,8 +425,8 @@ const Index = () => {
 							</div>
 						</div>
 						{!isLoaded && !searchError && (
-							<div style={{display: "flex", flexDirection: "column", justifyContent: 'center', alignItems: 'center'}}>
-								<p style={{fontSize: '1.5rem'}}>Loading...</p>
+							<div style={{display: "flex", flexDirection: "column", justifyContent: 'center', alignItems: 'center', margin: '2rem'}}>
+								<p style={{fontSize: '2rem'}}>Loading...</p>
 								<Hourglass size={48} style={{ margin: 20 }}/>
 							</div>
 						)}
@@ -445,8 +446,8 @@ const Index = () => {
 							</Table>
 						</>
 						) : (
-							<div style={{display: 'flex', justifyContent: 'center'}}>
-								<p style={{fontSize: '2rem'}}>{searchError}!</p>
+							<div style={{display: 'flex', justifyContent: 'center', margin: '2rem'}}>
+								<p style={{fontSize: '2rem'}}>{searchError}</p>
 							</div>
 						)}
 					</WindowContent>
