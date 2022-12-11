@@ -1,13 +1,4 @@
-import {
-	Anchor,
-	Button,
-	Frame,
-	GroupBox, Select,
-	TextInput,
-	Window,
-	WindowContent,
-	WindowHeader
-} from 'react95';
+import {Anchor, Button, Frame, GroupBox, Select, TextInput, Window, WindowContent, WindowHeader} from 'react95';
 import {useNavigate} from "react-router-dom";
 
 import {useContext, useState} from "react";
@@ -35,6 +26,8 @@ const UserForm = ({user, setUser}) => {
 		role: '',
 		wishlist: [],
 	})
+
+	const [wishlist, setWishlist] = useState(user.wishlist)
 
 	const handleForm = (e) => {
 		console.log(e)
@@ -103,6 +96,7 @@ const UserForm = ({user, setUser}) => {
 			}
 		} else {
 			// TODO: Figure out why isRequired is not working here
+			user.wishlist = wishlist
 			axios.put(`https://fruity-steam.vercel.app/api/users/id/${user._id}`, user, {
 				headers: {
 					"Authorization": `Bearer ${token}`
@@ -119,26 +113,34 @@ const UserForm = ({user, setUser}) => {
 		}
 	}
 
-	let formattedWishlist
-	if(user && user.wishlist.length !== 0){
-		formattedWishlist = user.wishlist.map((game) => {
-			return (
-				<li key={game._id} style={{
-					border: '2px solid grey',
-					borderRadius: 8,
-					marginBottom: '0.5rem',
-					padding: 4
-				}}>
-					<div style={{display: 'flex', justifyContent: 'space-between'}}>
-						<Anchor href={`/games/id/${game._id}`} target="_blank" rel="noreferrer">
-							{game.Name}
-						</Anchor>
-						{/* TODO: Allow wishlist game removal with this */}
-						<Button size={'sm'}>X</Button>
-					</div>
-				</li>
-			)
-		})
+	function removeFromWishlist(gameID) {
+		let newWishlist = wishlist.filter(entry => entry._id !== gameID)
+		setWishlist(newWishlist)
+	}
+
+	function formatWishlist(wishlist) {
+		if(user && wishlist){
+			return wishlist.map(entry => {
+				return (
+					<li key={entry._id} style={{
+						border: '2px solid grey',
+						borderRadius: 8,
+						marginBottom: '0.5rem',
+						padding: 4
+					}}>
+						<div key={entry._id} style={{display: 'flex', justifyContent: 'space-between'}}>
+							<Anchor href={`/games/id/${entry._id}`} target="_blank" rel="noreferrer">
+								{entry.Name}
+							</Anchor>
+							<Button size={'sm'} onClick={() => removeFromWishlist(entry._id)}>X</Button>
+						</div>
+					</li>
+				)
+			})
+		}
+		else {
+			return null
+		}
 	}
 
 	// If no user props, it's an add form
@@ -200,9 +202,9 @@ const UserForm = ({user, setUser}) => {
 							{ user && (
 								<GroupBox label='Wishlist' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									{formattedWishlist ?
+									{formatWishlist(wishlist) ?
 										<ol>
-											{formattedWishlist}
+											{formatWishlist(wishlist)}
 										</ol>
 										: 'No games in wishlist'}
 								</span>

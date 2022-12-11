@@ -1,13 +1,15 @@
 import {Anchor, Button, Frame, GroupBox, Window, WindowContent, WindowHeader} from 'react95';
 import {useNavigate} from "react-router-dom";
 import ResponsiveWrapper from "./ResponsiveWrapper";
-import {useContext} from "react";
+import {useContext, useState} from "react";
 import {AuthContext} from "../AuthContext";
+import axios from "axios";
 
 const UserCardDetailed = ({user}) => {
 
 	const navigate = useNavigate()
-	const { role } = useContext(AuthContext)
+	const { role, token } = useContext(AuthContext)
+	const [wishlist, setWishlist] = useState(user.wishlist)
 
 	let createdAtDate = new Date(user.createdAt).toLocaleDateString()
 	let createdAtTime = new Date(user.createdAt).toLocaleTimeString()
@@ -15,27 +17,54 @@ const UserCardDetailed = ({user}) => {
 	let updatedAtDate = new Date(user.updatedAt).toLocaleDateString()
 	let updatedAtTime = new Date(user.updatedAt).toLocaleTimeString()
 
-	console.log(user.wishlist)
-	let formattedWishlist
-	if(user.wishlist.length !== 0){
-		formattedWishlist = user.wishlist.map((game) => {
-			return (
-				<li key={game._id} style={{
-					border: '2px solid grey',
-					borderRadius: 8,
-					marginBottom: '0.5rem',
-					padding: 4
-				}}>
-					<div style={{display: 'flex', justifyContent: 'space-between'}}>
-						<Anchor href={`/games/id/${game._id}`} target="_blank" rel="noreferrer">
-							{game.Name}
-						</Anchor>
-						{/* TODO: Allow wishlist game removal with this */}
-						<Button size={'sm'}>X</Button>
-					</div>
-				</li>
-			)
-		})
+	function removeFromWishlist(gameID) {
+		let newWishlist = wishlist.filter(entry => entry._id !== gameID)
+		updateUser(newWishlist)
+	}
+
+	function updateUser(newWishlist) {
+		axios.put(`https://fruity-steam.vercel.app/api/users/id/${user._id}`,
+			{
+				wishlist: newWishlist
+			},
+			{
+				headers: {
+					"Authorization": `Bearer ${token}`
+				}})
+			.then(response => {
+				console.log(response.data);
+				setWishlist(newWishlist)
+			})
+			.catch(err => {
+				console.error(err);
+				console.log(err.response.data.msg)
+			});
+	}
+
+	function formatWishlist(wishlist) {
+		if(wishlist){
+			return wishlist.map(entry => {
+				return (
+					<li key={entry._id} style={{
+						border: '2px solid grey',
+						borderRadius: 8,
+						marginBottom: '0.5rem',
+						padding: 4
+					}}>
+						<div key={entry._id} style={{display: 'flex', justifyContent: 'space-between'}}>
+							<Anchor href={`/games/id/${entry._id}`} target="_blank" rel="noreferrer">
+								{entry.Name}
+							</Anchor>
+							{/* TODO: Allow wishlist game removal with this */}
+							<Button size={'sm'} onClick={() => removeFromWishlist(entry._id)}>X</Button>
+						</div>
+					</li>
+				)
+			})
+		}
+		else {
+			return null
+		}
 	}
 
 	return (
@@ -69,9 +98,9 @@ const UserCardDetailed = ({user}) => {
 							</GroupBox>
 							<GroupBox label='Wishlist' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									{formattedWishlist ?
+									{wishlist.length !== 0 ?
 											<ol>
-												{formattedWishlist}
+												{formatWishlist(wishlist)}
 											</ol>
 										: 'No games in wishlist'}
 								</span>
