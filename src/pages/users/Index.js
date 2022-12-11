@@ -251,7 +251,7 @@ const Index = () => {
 												<Select
 													defaultValue={limit}
 													menuMaxHeight={200}
-													width={250}
+													width={'100%'}
 													options={limitOptions}
 													onChange={e => setLimit(e.value)}
 												/>
@@ -261,7 +261,7 @@ const Index = () => {
 										<GroupBox label={'Page'} style={halfSizeGroupRight}>
 											<div style={{display: 'flex', justifyContent: 'space-between'}}>
 												<NumberInput
-													width={250}
+													width={'100%'}
 													defaultValue={currentPage}
 													ref={ref}
 													id={'pageInput'}
