@@ -138,7 +138,6 @@ const GameForm = ({game, setGame}) => {
 					console.error(err);
 					console.log(err.response.data.msg)
 					setError(err.response.data.msg);
-					setErrors(err.response.data.error);
 				});
 			}
 		} else {
