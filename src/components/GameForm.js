@@ -21,7 +21,9 @@ const GameForm = ({game, setGame}) => {
 	const navigate = useNavigate();
 
 	const { updateGameState } = useGame()
-	updateGameState(game.Name)
+	if(game){
+		updateGameState(game.Name)
+	}
 
 	const [form, setForm] = useState({
 		Name: '',

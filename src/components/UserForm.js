@@ -13,7 +13,9 @@ const UserForm = ({user, setUser}) => {
 	const navigate = useNavigate();
 
 	const { updateUserState } = useUser()
-	updateUserState(user.username)
+	if(user){
+		updateUserState(user.username)
+	}
 
 	const [form, setForm] = useState({
 		username: '',
