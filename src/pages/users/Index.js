@@ -1,10 +1,7 @@
-import axios from 'axios';
-import {useState, useEffect, useContext, useRef} from 'react';
-import {AuthContext} from "../../AuthContext";
+// UI imports
 import UserCard from '../../components/UserCard';
-import {Link, useNavigate, useParams} from "react-router-dom";
 import {
-	Button,
+	Button, Frame,
 	GroupBox,
 	Hourglass, NumberInput,
 	Select,
@@ -18,35 +15,49 @@ import {
 	WindowContent,
 	WindowHeader
 } from "react95";
-
-import options from './json/options.json'
 import ResponsiveWrapper from "../../components/ResponsiveWrapper";
 
+// React Router imports
+import {Link, useNavigate, useParams} from "react-router-dom";
+
+// HTTP request imports
+import axios from 'axios';
+
+// State imports
+import {useState, useEffect, useContext, useRef} from 'react';
+import {AuthContext} from "../../AuthContext";
+
+// JSON imports
+import options from './json/options.json'
+
 const Index = () => {
-	// TODO: Allow user to add/remove games to wishlist (server update needed)
-	//  - Allow them to view wishlist independently of their profile too?
+	// Page variable from URL params
 	const {page} = useParams();
+	// Token and role from AuthContext
 	const {token, role} = useContext(AuthContext)
+	// State variables for users HTTP requests
 	const [users, setUsers] = useState(null);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [filterActive, setFilterActive] = useState(false)
 	const [searchBy, setSearchBy] = useState("username")
 	const [searchQuery, setSearchQuery] = useState({query: ""})
 	const [sortBy, setSortBy] = useState("createdAt")
 	const [sortDirection, setSortDirection] = useState("Descending")
-	const [searchError, setSearchError] = useState(null)
 	const [limit, setLimit] = useState(100)
-	const [totalGames, setTotalGames] = useState(0)
-	const [totalPages, setTotalPages] = useState(0)
+	const [filterActive, setFilterActive] = useState(false)
 	const [isLoaded, setIsLoaded] = useState(false)
+	const [totalUsers, setTotalUsers] = useState(0)
+	const [totalPages, setTotalPages] = useState(0)
+	const [searchError, setSearchError] = useState(null)
 
-	const ref = useRef(null)
+	// useNavigate hook to handle redirects
 	const navigate = useNavigate()
 
+	// If page param is passed, set currentPage to that page
 	if(page){
 		setCurrentPage(Number(page))
 	}
 
+	// Options available to limit number of games displayed
 	const limitOptions = [
 		{value: 10, label: "10"},
 		{value: 25, label: "25"},
@@ -57,6 +68,7 @@ const Index = () => {
 		{value: 1000, label: "1000"},
 	]
 
+	// Function to handle search query changes
 	const handleSearch = (e) => {
 		let name = e.target.name;
 		let value = e.target.value;
@@ -66,18 +78,24 @@ const Index = () => {
 			[name]: value
 		}));
 
-		// TODO: Reset page to 1 when search query is changed
-		//  - Currently doesn't change because using defaultValue instead of value
-		// setCurrentPage(1)
-		// document.getElementById("pageInput").value = 1
-		// console.log(document.getElementById("pageInput"))
+		// Also resets current page to 1
+		setCurrentPage(1)
 	};
 
-	let URL, authHeaders, builtSearchQuery, builtSortQuery, builtLimitQuery, builtPageQuery
+	// Initialising variables needed for filtered HTTP request
+	let URL,
+		authHeaders,
+		builtSearchQuery,
+		builtSortQuery,
+		builtLimitQuery,
+		builtPageQuery
 
+	// Initialising URL and authHeaders
 	URL = 'https://fruity-steam.vercel.app/api/users'
 	authHeaders = { headers: { "Authorization": `Bearer ${token}`}}
 
+	// If the filter is active, build the search query
+	// Else if the filter is not active, set the search queries to null (except for page)
 	if(filterActive){
 		builtLimitQuery = `?limit=${limit}`
 		builtSearchQuery = `&by=${searchBy}&query=${searchQuery.query}`
@@ -90,28 +108,36 @@ const Index = () => {
 		builtPageQuery = `?page=${currentPage}`
 	}
 
+	// Users GET request
 	useEffect(() => {
 		// console.log(`Built Query: ${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`)
+		// Async function to handle HTTP request
 		const fetchData = async () => {
+			// Await the response from the HTTP request
 			await axios.get(`${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`, authHeaders)
 				.then((response) => {
-					// TODO: While loading show hourglass animation
 					// console.log("Full response data: ",response.data)
+					// Initialise data variable to response data
 					let data = response.data.data
-					let totalGames = Number.parseInt(response.data.total)
-					console.log("Total users: ", totalGames)
-					console.log("Limit: ", limit)
-					console.log("Max pages: ", Math.ceil(totalGames / limit))
-					setTotalGames(totalGames)
-					setTotalPages(Math.ceil(totalGames / limit))
-
+					// Initialise totalUsers variable to total users
+					let totalUsers = Number.parseInt(response.data.total)
+					// console.log("Total users: ", totalUsers)
+					// console.log("Limit: ", limit)
+					// console.log("Max pages: ", Math.ceil(totalUsers / limit))
+					// Set totalUsers state variable to total users
+					setTotalUsers(totalUsers)
+					// Set totalPages state variable to max pages based on total users and limit
+					setTotalPages(Math.ceil(totalUsers / limit))
+					// Set users state variable to data
 					setUsers(data);
-					console.log(data);
-
+					// console.log(data);
+					// Set isLoaded state variable to true
 					setIsLoaded(true)
+					// Set searchError state variable to null
 					setSearchError(null)
 					// setPage(Number(page))
 				})
+				// Catch any errors
 				.catch((err) => {
 					console.error(err);
 					console.log("ERROR: ", err.response)
@@ -119,15 +145,18 @@ const Index = () => {
 				});
 		}
 
+		// Initialising a 250ms timer to prevent too many requests
 		const timer = setTimeout(() => {
 			setIsLoaded(false)
 			fetchData()
 		}, 250)
 
+		// Clear the timer on unmount
 		return () => clearTimeout(timer)
 
 	}, [URL, currentPage, builtSearchQuery, builtSortQuery, limit]);
 
+	// If there are no users, display loading animation
 	if (!users) return (
 		<div style={{display: "flex", justifyContent: 'center'}}>
 			<Window style={{width: "250px"}}>
@@ -145,6 +174,7 @@ const Index = () => {
 		</div>
 	)
 
+	// If there are users, map them to as UserCard components
 	const usersList = users.map((user) => {
 		return <UserCard user={user} key={user._id} users={users} setUsers={setUsers}/>;
 	});
@@ -153,6 +183,7 @@ const Index = () => {
 	let searchByOptions = options
 	let sortByOptions = options
 
+	// Defining the sortDirection options
 	let sortDirectionOptions = [
 		{
 			"value" : "Ascending",
@@ -164,21 +195,45 @@ const Index = () => {
 		}
 	]
 
+	// Container style variables
 	const halfSizeGroupParent = {
 		display: "flex",
 		justifyContent: 'space-between'
 	}
-
 	const halfSizeGroupLeft = {
 		marginBottom: '1rem',
 		marginRight: '0.5rem',
 		width: '100%'
 	}
-
 	const halfSizeGroupRight = {
 		marginBottom: '1rem',
 		marginLeft: '0.5rem',
 		width: '100%'
+	}
+
+	// Custom styles to mimic the Windows 95 input field
+	const numInputFrame = {
+		padding: 1,
+		width: '100%',
+		height: '2.2rem',
+	}
+	const numInputStyles = {
+		width: '90%',
+		height: '1.5rem',
+		marginTop: 1,
+		marginLeft: 8,
+		border: 'none',
+		outline: 'none',
+		fontSize: '1rem',
+		font: 'unset',
+		backgroundColor: 'white',
+	}
+
+	// Function to enforce a number input
+	const onlyAllowNumber = (input) => {
+		const regex = new RegExp("^[0-9]*$");
+		if (input.data != null && !regex.test(input.data))
+			input.preventDefault();
 	}
 
 	return (
@@ -260,22 +315,24 @@ const Index = () => {
 										</GroupBox>
 										<GroupBox label={'Page'} style={halfSizeGroupRight}>
 											<div style={{display: 'flex', justifyContent: 'space-between'}}>
-												<NumberInput
-													width={'100%'}
-													defaultValue={currentPage}
-													ref={ref}
-													id={'pageInput'}
-													onChange={e => {setCurrentPage(e)}}
-													min={1}
-													max={totalPages}
-												/>
+												<Frame variant={"field"} style={numInputFrame}>
+													<input
+														width={'100%'}
+														value={currentPage}
+														min={1}
+														max={totalPages}
+														onChange={e => {setCurrentPage(e.target.value)}}
+														onBeforeInput={onlyAllowNumber}
+														style={numInputStyles}
+													/>
+												</Frame>
 											</div>
 										</GroupBox>
 									</div>
 								</>
 							}
 							<div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1rem'}}>
-								<p>Total users: {totalGames}</p>
+								<p>Total users: {totalUsers}</p>
 								<p>Total pages: {totalPages}</p>
 							</div>
 							{/* Pagination div */}
@@ -283,8 +340,8 @@ const Index = () => {
 								{/* Previous Block*/}
 								<div>
 									{/* If page is greater than 1, activate back button */}
-									{currentPage > 1 ? (
-										<Button size='sm' onClick={() => setCurrentPage(currentPage - 1)}> {"<<"} </Button>
+									{Number(currentPage) > 1 ? (
+										<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) - 1)}> {"<<"} </Button>
 									) : (
 										<Button size='sm' disabled> {"<<"} </Button>
 									)
@@ -293,31 +350,34 @@ const Index = () => {
 								{/* Numeric Block*/}
 								<div>
 									{/* 2 before */}
-									{currentPage === 2 &&
-										<Button size='sm' onClick={() => setCurrentPage(currentPage - 1)}>{currentPage - 1}</Button>
+									{Number(currentPage) === 2 &&
+										<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) - 1)}>{Number(currentPage) - 1}</Button>
 									}
-									{currentPage > 2 &&
+									{Number(currentPage) > 2 &&
 										<>
-											<Button size='sm' onClick={() => setCurrentPage(currentPage - 2)}>{currentPage - 2}</Button>
-											<Button size='sm' onClick={() => setCurrentPage(currentPage - 1)}>{currentPage - 1}</Button>
+											<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) - 2)}>{Number(currentPage) - 2}</Button>
+											<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) - 1)}>{Number(currentPage) - 1}</Button>
 										</>
 									}
 									{/* Current page */}
-									<Button size='sm' active>{currentPage}</Button>
-
-									{/* 2 after */}
-									{currentPage < totalPages &&
-										<Button size='sm' onClick={() => setCurrentPage(currentPage + 1)}>{currentPage + 1}</Button>
+									{Number(currentPage) > 0 ?
+										<Button size='sm' active>{currentPage}</Button>
+										:
+										null
 									}
-									{currentPage < totalPages - 1 &&
-										<Button size='sm' onClick={() => setCurrentPage(currentPage + 2)}>{currentPage + 2}</Button>
+									{/* 2 after */}
+									{Number(currentPage) < totalPages &&
+										<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) + 1)}>{Number(currentPage) + 1}</Button>
+									}
+									{Number(currentPage) < totalPages - 1 &&
+										<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) + 2)}>{Number(currentPage) + 2}</Button>
 									}
 								</div>
 								{/* Next Block */}
 								<div>
 									{/* If page is less than total games / limit, activate forward button */}
-									{currentPage < totalPages ? (
-										<Button size='sm' onClick={() => setCurrentPage(currentPage + 1)}> {">>"} </Button>
+									{Number(currentPage) < totalPages ? (
+										<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) + 1)}> {">>"} </Button>
 									) : (
 										<Button size='sm' disabled> {">>"} </Button>
 									)
