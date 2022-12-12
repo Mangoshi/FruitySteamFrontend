@@ -1,22 +1,34 @@
+// UI imports
 import {Button, Frame, GroupBox, Select, TextInput, Window, WindowContent, WindowHeader} from 'react95';
+import ResponsiveWrapper from "./ResponsiveWrapper";
+
+// React Router imports
 import {Link, useNavigate} from "react-router-dom";
 
-import {useContext, useState} from "react";
+// HTTP request imports
 import axios from "axios";
+
+// State imports
+import {useContext, useState} from "react";
 import {AuthContext} from "../AuthContext";
-import ResponsiveWrapper from "./ResponsiveWrapper";
 import {useUser} from "../useUser";
 
 const UserForm = ({user, setUser}) => {
 
+	// Using token and role from AuthContext to check user permissions
 	const {token, role} = useContext(AuthContext)
+
+	// Using navigate to handle redirects
 	const navigate = useNavigate();
 
+	// Using updateUserState from useUser hook to update user state
 	const { updateUserState } = useUser()
+	// If a user prop was passed in, set user state to that user
 	if(user){
 		updateUserState(user.username)
 	}
 
+	// Initialising state for form inputs
 	const [form, setForm] = useState({
 		username: '',
 		email: '',
@@ -25,6 +37,7 @@ const UserForm = ({user, setUser}) => {
 		wishlist: [],
 	})
 
+	// Initialising state for form error messages
 	const [errors, setErrors] = useState({
 		username: '',
 		email: '',
@@ -33,8 +46,10 @@ const UserForm = ({user, setUser}) => {
 		wishlist: [],
 	})
 
+	// Wishlist state, if user prop was passed in set wishlist state to that user's wishlist
 	const [wishlist, setWishlist] = useState(user ? user.wishlist : [])
 
+	// Function to handle form input changes
 	const handleForm = (e) => {
 		console.log(e)
 		let name, value
@@ -58,8 +73,10 @@ const UserForm = ({user, setUser}) => {
 		}
 	}
 
+	// Initialising state for HTTP request errors
 	const [error , setError] = useState(null);
 
+	// Function to handle required fields
 	const isRequired = (fields) => {
 		let error = false;
 
@@ -85,7 +102,9 @@ const UserForm = ({user, setUser}) => {
 		return error;
 	}
 
+	// Function to handle form submission
 	const submitForm = () => {
+		// If no user prop was passed in, create a new user
 		if(!user){
 			if(!isRequired(['username', 'email', 'password'])){
 				axios.post('https://fruity-steam.vercel.app/register', form, {
@@ -102,6 +121,7 @@ const UserForm = ({user, setUser}) => {
 						setError(err.response.data.message);
 					});
 			}
+		// If user prop was passed in, update the user
 		} else {
 			// TODO: Figure out why isRequired is not working here
 			user.wishlist = wishlist
@@ -121,11 +141,13 @@ const UserForm = ({user, setUser}) => {
 		}
 	}
 
+	// Function to handle removing items from wishlist
 	function removeFromWishlist(gameID) {
 		let newWishlist = wishlist.filter(entry => entry._id !== gameID)
 		setWishlist(newWishlist)
 	}
 
+	// Function to format the wishlist for rendering
 	function formatWishlist(wishlist) {
 		if(user && wishlist){
 			return wishlist.map(entry => {
@@ -151,7 +173,7 @@ const UserForm = ({user, setUser}) => {
 		}
 	}
 
-	// If no user props, it's an add form
+	// Render the form
 	return (
 		<div style={{display: "flex", justifyContent: 'center', marginBottom: '1rem'}}>
 			<ResponsiveWrapper>

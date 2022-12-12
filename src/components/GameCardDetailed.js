@@ -17,16 +17,21 @@ import {useGame} from "../useGame";
 
 const GameCardDetailed = (props) => {
 
+	// Using navigate to handle redirects
 	const navigate = useNavigate()
 
+	// Using AuthContext to check user-related state
 	const { role, id, token } = useContext(AuthContext)
 
+	// Initialising wishlist state
 	const [wishlist, setWishlist] = useState([])
 
+	// Importing updateGameState function from useGame hook
 	const { updateGameState } = useGame()
-
+	// Setting game state to the viewed game
 	updateGameState(props.game.Name)
 
+	// GET request to users to get wishlist
 	useEffect(() => {
 		axios.get(`https://fruity-steam.vercel.app/api/users/id/${id}`,
 			{
@@ -35,15 +40,17 @@ const GameCardDetailed = (props) => {
 				}
 			})
 			.then((response) => {
-				console.log("user wishlist:",response.data.data[0].wishlist);
+				// console.log("user wishlist:",response.data.data[0].wishlist);
 				setWishlist(response.data.data[0].wishlist)
 			})
 			.catch((err) => {
-				console.error(err);
+				// console.error(err);
 				console.log(err.response.data.message);
 			});
 	}, [id]);
 
+	// Function to check if game is in wishlist
+	// Returns true if game is in wishlist, false if not
 	const checkIfInWishlist = (game) => {
 		// console.log("wishlist:",wishlist);
 		// console.log("game:",game);
@@ -51,16 +58,19 @@ const GameCardDetailed = (props) => {
 		return wishlist.filter(wish => wish._id === game._id).length > 0
 	}
 
+	// Function to add game to wishlist
 	function addToWishlist() {
 		let newWishlist = wishlist.concat(props.game._id)
 		updateUser(newWishlist)
 	}
 
+	// Function to remove game from wishlist
 	function removeFromWishlist() {
 		let newWishlist = wishlist.filter(entry => entry._id !== props.game._id)
 		updateUser(newWishlist)
 	}
 
+	// Function to update user's wishlist & redirect to their profile
 	function updateUser(newWishlist) {
 		axios.put(`https://fruity-steam.vercel.app/api/users/id/${id}`,
 			{
@@ -138,7 +148,9 @@ const GameCardDetailed = (props) => {
 	// Split formatted string into an array
 	let languages_array = formattedLanguages.split(',')
 
+	// For each language
 	for(let i in languages_array){
+		// Make language an image, using shields.io to style as a label
 		languages_array[i] = <img
 			src={`https://img.shields.io/static/v1?label=&message=${languages_array[i]}&color=grey`}
 			alt={languages_array[i]}
@@ -178,12 +190,13 @@ const GameCardDetailed = (props) => {
 		screenshots_array[i] = <img
 			src={screenshots_array[i]}
 			alt={screenshots_array[i]}
-		    key={`screenshot-${i}`}
+			key={`screenshot-${i}`}
 			width={'100%'}
 			draggable={'false'}
 		/>
 	}
 
+	// Wrapping the array in a carousel
 	const screenshot_slider = (
 		<Carousel
 			autoplay={true}
@@ -195,14 +208,17 @@ const GameCardDetailed = (props) => {
 		</Carousel>
 	);
 
-	// TODO: Figure out why videos completely break
+	// TODO: Figure out why videos give MIME type errors
 	let movies = props.game['Movies']
 	let moviesArray = movies.split(',')
+	// For each movie
 	for(let i in moviesArray){
 		// console.log(moviesArray[i])
+		// Wrap the movie in ReactPlayer element (for video playback)
 		moviesArray[i] = <ReactPlayer url={moviesArray[i]} width={"100%"} controls={true} key={moviesArray[i]}/>
 	}
 
+	// Wrapping the array in a carousel
 	const movies_slider = (
 		<Carousel
 			autoplay={true}
@@ -214,17 +230,16 @@ const GameCardDetailed = (props) => {
 		</Carousel>
 	);
 
+	// Container style variables
 	const halfSizeGroupParent = {
 		display: "flex",
 		justifyContent: 'space-between'
 	}
-
 	const halfSizeGroupLeft = {
 		marginBottom: '1rem',
 		marginRight: '0.5rem',
 		width: '100%'
 	}
-
 	const halfSizeGroupRight = {
 		marginBottom: '1rem',
 		marginLeft: '0.5rem',
@@ -269,7 +284,7 @@ const GameCardDetailed = (props) => {
 								</GroupBox>
 								<GroupBox label='Price' style={halfSizeGroupRight}>
 									<span style={{fontSize: '1.2rem'}}>
-										{props.game.Price ? '$ ' + props.game['Price'] : 'Not provided!'}
+										{props.game.Price ? '$ ' + props.game['Price'] : 'Free / Not provided!'}
 									</span>
 								</GroupBox>
 							</div>
@@ -383,24 +398,24 @@ const GameCardDetailed = (props) => {
 							<div style={halfSizeGroupParent}>
 								<GroupBox label='Average playtime (forever)' style={halfSizeGroupLeft}>
 									<span style={{fontSize: '1.2rem'}}>
-										{props.game['Average playtime forever'] ? props.game['Average playtime forever'] + 'hours' : 'Unknown'}
+										{props.game['Average playtime forever'] ? props.game['Average playtime forever'] + ' hours' : 'Unknown'}
 									</span>
 								</GroupBox>
 								<GroupBox label='Median playtime (forever)' style={halfSizeGroupRight}>
 									<span style={{fontSize: '1.2rem'}}>
-										{props.game['Median playtime forever'] ? props.game['Median playtime forever'] + 'hours' : 'Unknown'}
+										{props.game['Median playtime forever'] ? props.game['Median playtime forever'] + ' hours' : 'Unknown'}
 									</span>
 								</GroupBox>
 							</div>
 							<div style={halfSizeGroupParent}>
 								<GroupBox label='Average playtime (2 weeks)' style={halfSizeGroupLeft}>
 									<span style={{fontSize: '1.2rem'}}>
-										{props.game['Average playtime two weeks'] ? props.game['Average playtime two weeks'] + 'hours' : 'Unknown'}
+										{props.game['Average playtime two weeks'] ? props.game['Average playtime two weeks'] + ' hours' : 'Unknown'}
 									</span>
 								</GroupBox>
 								<GroupBox label='Median playtime (2 weeks)' style={halfSizeGroupRight}>
 									<span style={{fontSize: '1.2rem'}}>
-										{props.game['Median playtime two weeks'] ? props.game['Median playtime two weeks'] + 'hours' : 'Unknown'}
+										{props.game['Median playtime two weeks'] ? props.game['Median playtime two weeks'] + ' hours' : 'Unknown'}
 									</span>
 								</GroupBox>
 							</div>

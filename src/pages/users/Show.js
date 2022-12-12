@@ -1,15 +1,28 @@
-import {Link, useParams} from 'react-router-dom';
-import axios from 'axios';
-import {useContext, useEffect, useState} from 'react';
+// UserCardDetailed import
 import UserCardDetailed from "../../components/UserCardDetailed";
+
+// UI imports
 import {Button, Hourglass, Window, WindowContent, WindowHeader} from "react95";
+
+// React Router imports
+import {Link, useParams} from 'react-router-dom';
+
+// HTTP request imports
+import axios from 'axios';
+
+// State imports
+import {useContext, useEffect, useState} from 'react';
 import {AuthContext} from "../../AuthContext";
 
 const Show = () => {
+	// ID from URL params
 	const { id } = useParams();
+	// User state
 	const [ user, setUser ] = useState(null);
+	// Token from AuthContext
 	const { token } = useContext(AuthContext)
 
+	// GET request to get user data using id from URL params
 	useEffect(() => {
 		axios.get(`https://fruity-steam.vercel.app/api/users/id/${id}`,
 			{
@@ -27,6 +40,7 @@ const Show = () => {
 			});
 	}, [id]);
 
+	// If user state is null, show loading animation
 	if(!user) return (
 		<div style={{display: "flex", justifyContent: 'center'}}>
 			<Window style={{width: "250px"}}>
@@ -46,6 +60,7 @@ const Show = () => {
 		</div>
 	)
 
+	// Else, return UserCardDetailed component with user data
 	return (
 		<>
 			<UserCardDetailed user={user} key={user.id} />

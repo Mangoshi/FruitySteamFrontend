@@ -1,11 +1,8 @@
-import {Link, useLocation} from 'react-router-dom';
-import {useContext, useEffect, useState} from "react";
-import {useAuth} from "../useAuth";
-import {GameContext} from "../GameContext";
-import {AuthContext} from "../AuthContext";
-
-import Clock from 'react-live-clock';
+// UI imports
 import {AppBar, Button, Frame, MenuList, MenuListItem, Separator, Toolbar} from 'react95';
+import Clock from 'react-live-clock';
+
+// Icon imports
 import ic_mangows from "./icons/ic_mangows.png"
 import ic_computer from "./icons/ic_computer.ico"
 import ic_msdos from "./icons/ic_msdos.ico"
@@ -13,10 +10,22 @@ import ic_folder_exe from "./icons/ic_folder_exe.ico"
 import ic_user from "./icons/ic_user.png"
 import ic_auth from "./icons/ic_auth.ico"
 import ic_users from "./icons/ic_users.png"
+
+// React Router imports
+import {Link, useLocation} from 'react-router-dom';
+
+// State imports
 import {UserContext} from "../UserContext";
+import {useContext, useEffect, useState} from "react";
+import {useAuth} from "../useAuth";
+import {GameContext} from "../GameContext";
+import {AuthContext} from "../AuthContext";
 
 const Navbar = () => {
+
+	// Logout function from useAuth
 	const { logout } = useAuth()
+
 	// State for start menu
 	const [open, setOpen] = useState(false);
 
@@ -42,27 +51,34 @@ const Navbar = () => {
 	let gameViewActive = urlArray[1] === "games" && (urlArray[2] === "id" || urlArray[2] === "edit")
 	// console.log(gameViewActive)
 
+	// Using UserContext to update user viewed user tab
 	const {user} = useContext(UserContext)
 
-	console.log("user = ", user)
+	// Limiting user title to 20 characters in length
 	let limitedName = user
 	if (user && user.length > 20) {
 		limitedName = user.substring(0, 20) + "..."
 		console.log(limitedName)
 	}
 
+	// userViewActive boolean to tell if viewing user or not
 	let userViewActive = urlArray[1] === "users" && (urlArray[2] === "id" || urlArray[2] === "edit")
 
+	// meViewActive boolean to tell if viewing own profile or not
 	let meViewActive = urlArray[1] === "me"
 
+	// Window width state based off window.innerWidth
 	const [width, setWidth] = useState(window.innerWidth);
+	// Defining breakpoint for small screens
+	// Using 725px because any smaller and longest title breaks navbar
 	const breakpoint = 725;
 	useEffect(() => {
+		// If window width changes, set width state to new window width
 		const handleResizeWindow = () => setWidth(window.innerWidth);
-		// subscribe to window resize event "onComponentDidMount"
+		// Subscribe to window resize event
 		window.addEventListener("resize", handleResizeWindow);
 		return () => {
-			// unsubscribe "onComponentDestroy"
+			// Unsubscribe from window resize event
 			window.removeEventListener("resize", handleResizeWindow);
 		};
 	}, []);

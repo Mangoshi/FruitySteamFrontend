@@ -1,7 +1,7 @@
 import {useContext} from "react";
 import {AuthContext} from "./AuthContext";
 
-// useToken will define token functions, and allows us to update AuthContext state
+// useToken defines token functions to be used across the app as a hook
 const useToken = () => {
 	// Import setToken function from AuthContext
 	const {setRole} = useContext(AuthContext)

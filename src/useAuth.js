@@ -5,7 +5,7 @@ import {useNavigate} from "react-router-dom";
 import {useEffect} from "react";
 import axios from "axios";
 
-// useAuth will define authentication functions to be used across the app
+// useAuth defines authentication functions to be used across the app as a hook
 export const useAuth = () => {
 	// Import token functions from useToken
 	const { token, storeToken, removeToken } = useToken();

@@ -1,7 +1,7 @@
 import {useContext} from "react";
 import {AuthContext} from "./AuthContext";
 
-// useID will define ID functions, and allows us to update AuthContext state
+// useID defines ID functions to be used across the app as a hook
 const useID = () => {
 	// Import setID function from AuthContext
 	const {setID} = useContext(AuthContext)

@@ -1,16 +1,27 @@
-import {Button, Select, Window, WindowContent, WindowHeader} from "react95";
-import mangowsWave from './images/img_mangowsWave.png'
+// LoginRegisterForm import
 import LoginRegisterForm from "../components/LoginRegisterForm";
-import {useContext} from "react";
-import {AuthContext} from "../AuthContext";
+
+// UI imports
+import {Button, Select, Window, WindowContent, WindowHeader} from "react95";
+
+// Image import
+import mangowsWave from './images/img_mangowsWave.png'
+
+// React Router imports
 import {useLocation} from "react-router-dom";
 
+// State imports
+import {useContext} from "react";
+import {AuthContext} from "../AuthContext";
 
 const Home = ({theme, setTheme, themes}) => {
 
+    // Location from React Router
     const location = useLocation()
+    // urlArray from location split by "/"
     let urlArray = location.pathname.split("/")
     // console.log(urlArray)
+    // Home page is active if urlArray[1] is empty
     let homePageActive = urlArray[1] === ""
     // console.log("homePageActive:",homePageActive)
 
@@ -19,8 +30,9 @@ const Home = ({theme, setTheme, themes}) => {
     // console.log("token:",token)
 
     // console.log("theme:",theme)
-
+    // If home page is active
     if(homePageActive) {
+        // Define theme options from React95 themes
         let themeOptions = [
             {label: 'aiee', value: themes.aiee},
             {label: 'ash', value: themes.ash},
@@ -83,6 +95,7 @@ const Home = ({theme, setTheme, themes}) => {
             {label: 'wmii', value: themes.wmii}
         ]
 
+        // Function to set theme state and in localStorage
         const setThemeAndLocalStorage = (theme) => {
             setTheme(theme)
             localStorage.setItem('theme', JSON.stringify(theme))

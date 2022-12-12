@@ -7,16 +7,12 @@ import {GameContext} from "./GameContext";
 import {AuthContext} from "./AuthContext";
 import {UserContext} from "./UserContext";
 
-// Import React95 bits
+// Import React95 & styled-components stuff
 import { styleReset } from 'react95';
-import { createGlobalStyle, ThemeProvider } from 'styled-components';
-
-// Pick React95 theme
 import themes from 'react95/dist/themes';
-
-// Import original Windows 95 font
 import ms_sans_serif from 'react95/dist/fonts/ms_sans_serif.woff2';
 import ms_sans_serif_bold from 'react95/dist/fonts/ms_sans_serif_bold.woff2';
+import { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 // Import pages
 import Home from './pages/Home';
@@ -33,7 +29,6 @@ import UsersMe from './pages/users/Me.js'
 // Import components
 import Navbar from './components/Navbar';
 
-// TODO: Responsive styles, mobile-friendly
 // Reset global styles
 const GlobalStyles = createGlobalStyle`
 	@font-face {
@@ -65,13 +60,12 @@ const App = () => {
 	const [role, setRole] = useState(null)
 	// Initialising game state logic
 	const [game, setGame] = useState(null);
-
+	// Initialising user state logic
 	const [user, setUser] = useState(null);
-
+	// Initialising ID state logic
 	const [id, setID] = useState(null);
-
+	// Initialising theme state logic (if theme in localStorage, use that, else use default theme)
 	const [theme, setTheme] = useState(localStorage.getItem('theme') ? JSON.parse(localStorage.getItem('theme')) : themes.raspberry)
-
 
 	// Defining routes that will only be included in the router if a token exists
 	let authenticatedRoutes
@@ -85,6 +79,7 @@ const App = () => {
 		)
 	}
 
+	// Defining routes that will only be included in the router if user is an admin
 	let adminRoutes
 	if(token && role==='admin') {
 		adminRoutes = (
@@ -100,6 +95,10 @@ const App = () => {
 	}
 
 	return (
+		// Wrapping everything in context providers
+		// Followed by React Router
+		// Then setting global styles
+		// Then wrapping Nav & Routes in a theme provider
 		<AuthContext.Provider value={{ token, setToken, role, setRole, id, setID }}>
 			<GameContext.Provider value={{ game, setGame }}>
 				<UserContext.Provider value={{ user, setUser }}>

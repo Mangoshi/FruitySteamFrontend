@@ -1,7 +1,7 @@
 import { GameContext } from "./GameContext";
 import { useContext } from 'react'
 
-// Initialising useGame
+// useGame defines game functions to be used across the app as a hook
 export const useGame = () => {
     // Using setGame from GameContext
     const { setGame } = useContext(GameContext)

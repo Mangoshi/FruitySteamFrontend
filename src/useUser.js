@@ -1,7 +1,7 @@
 import { UserContext } from "./UserContext";
 import { useContext } from 'react'
 
-// Initialising useUser
+// useUser defines user functions to be used across the app as a hook
 export const useUser = () => {
 	// Using setUser from UserContext
 	const { setUser } = useContext(UserContext)

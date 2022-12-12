@@ -1,16 +1,31 @@
+// GameForm import
 import GameForm from "../../components/GameForm";
-import {Link, useParams} from "react-router-dom";
-import {useContext, useEffect, useState} from "react";
-import axios from "axios";
+
+// UI imports
 import {Button, Hourglass, Window, WindowContent, WindowHeader} from "react95";
+
+// React Router imports
+import {Link, useParams} from "react-router-dom";
+
+// HTTP request imports
+import axios from "axios";
+
+// State imports
+import {useContext, useEffect, useState} from "react";
 import {AuthContext} from "../../AuthContext";
 
 const Edit = () => {
 
+	// Using id from URL params
 	const { id } = useParams();
+
+	// Initialising game state
 	const [ game, setGame ] = useState(null);
+
+	// Using token from AuthContext to authenticate request
 	const { token } = useContext(AuthContext)
 
+	// GET request to get game data using id from URL params
 	useEffect(() => {
 		axios.get(`https://fruity-steam.vercel.app/api/games/?by=_id&query=${id}`,
 			{
@@ -28,6 +43,7 @@ const Edit = () => {
 			});
 	}, [id]);
 
+	// If game state is null, return window with loading animation
 	if(!game) return (
 		<div style={{display: "flex", justifyContent: 'center'}}>
 			<Window style={{width: "250px"}}>
@@ -47,6 +63,7 @@ const Edit = () => {
 		</div>
 	)
 
+	// If game state is not null, return GameForm component with game data
 	return (
 		<>
 			<GameForm game={game} setGame={setGame} key={game.id}/>

@@ -1,5 +1,7 @@
+// styled-components import
 import styled from "styled-components";
 
+// Defining breakpoints
 const breakpoints = {
 	sm: 480,
 	md: 768,
@@ -7,6 +9,7 @@ const breakpoints = {
 	xl: 1200
 }
 
+// Defining media queries & widths for each breakpoint
 const ResponsiveWrapper = styled.div`
 		@media (min-width: ${breakpoints.sm}px){
 			width: 90vw

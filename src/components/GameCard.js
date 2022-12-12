@@ -1,16 +1,24 @@
-import { Link } from 'react-router-dom';
+// UI imports
 import { Button, TableDataCell, TableRow } from 'react95';
+
+// React Router imports
+import { Link } from 'react-router-dom';
+
+// HTTP request imports
+import axios from "axios";
+
+// State imports
 import { useGame } from "../useGame";
 import { useContext } from "react";
 import { AuthContext } from "../AuthContext";
-import axios from "axios";
 
 const GameCard = ({game, games, setGames}) => {
-    // importing token context to check if logged-in
+    // Importing token & role context to check if logged-in / authorized
     const { token, role } = useContext(AuthContext)
-    // importing updateGameState function from useGame
+    // Importing updateGameState function from useGame
     const { updateGameState } = useGame()
 
+    // Conditional rendering of view button based on user authentication
     let viewButton
     if(token){
         viewButton = (
@@ -31,6 +39,7 @@ const GameCard = ({game, games, setGames}) => {
         )
     }
 
+    // Function to confirm deletion of game from database
     const deleteGameConfirm = (game) => {
         let result = window.confirm(`Are you sure you want to delete ${game.Name}?`);
         if (result) {
@@ -38,6 +47,7 @@ const GameCard = ({game, games, setGames}) => {
         }
     }
 
+    // Function to delete game from database
     const deleteGame = (id) => {
         axios.delete(`https://fruity-steam.vercel.app/api/games/id/${id}`, {
             headers: { "Authorization": `Bearer ${token}`}
@@ -51,6 +61,7 @@ const GameCard = ({game, games, setGames}) => {
             });
     }
 
+    // Conditional rendering of admin buttons based on user role
     let adminButtons
     if(role==='admin'){
         adminButtons = (
@@ -72,6 +83,7 @@ const GameCard = ({game, games, setGames}) => {
             )
     }
 
+    // Rendering game card
     return (
         <TableRow>
             <TableDataCell style={{width: '400px'}}>

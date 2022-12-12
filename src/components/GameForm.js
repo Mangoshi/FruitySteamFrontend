@@ -1,3 +1,4 @@
+// UI imports
 import {
 	Button,
 	Frame,
@@ -7,24 +8,34 @@ import {
 	WindowContent,
 	WindowHeader
 } from 'react95';
+import ResponsiveWrapper from "./ResponsiveWrapper";
+
+// React Router imports
 import {useNavigate} from "react-router-dom";
 
-import {useContext, useState} from "react";
+// HTTP request imports
 import axios from "axios";
+
+// State imports
+import {useContext, useState} from "react";
 import {AuthContext} from "../AuthContext";
-import ResponsiveWrapper from "./ResponsiveWrapper";
 import {useGame} from "../useGame";
 
 const GameForm = ({game, setGame}) => {
 
+	// Importing token context to check if logged-in
 	const {token} = useContext(AuthContext)
+	// Importing useNavigate from React Router to handle redirects
 	const navigate = useNavigate();
 
+	// Importing updateGameState function from useGame
 	const { updateGameState } = useGame()
+	// If game props are passed, set the game state to the game
 	if(game){
 		updateGameState(game.Name)
 	}
 
+	// State for form inputs
 	const [form, setForm] = useState({
 		Name: '',
 		AppID: '',
@@ -51,6 +62,7 @@ const GameForm = ({game, setGame}) => {
 		"Movies": '',
 	})
 
+	// State for form errors
 	const [errors, setErrors] = useState({
 		Name: '',
 		AppID: '',
@@ -77,8 +89,10 @@ const GameForm = ({game, setGame}) => {
 		"Movies": '',
 	});
 
+	// State for request errors
 	const [error , setError] = useState(null);
 
+	// Function to handle form input changes
 	const handleForm = (e) => {
 		console.log(e)
 		let name = e.target.name;
@@ -96,6 +110,7 @@ const GameForm = ({game, setGame}) => {
 		}
 	};
 
+	// Function to handle required fields
 	const isRequired = (fields) => {
 		let error = false;
 
@@ -121,9 +136,16 @@ const GameForm = ({game, setGame}) => {
 		return error;
 	};
 
-	let formattedCategories, formattedTags, formattedGenres, formattedLanguages, formattedAudioLanguages
+	// Initialising formatted form data variables
+	let formattedCategories,
+		formattedTags,
+		formattedGenres,
+		formattedLanguages,
+		formattedAudioLanguages
 
+	// Function to submit form data
 	const submitForm = () => {
+		// If a game wasn't passed as a prop, request is a POST
 		if(!game){
 			if(!isRequired(['Name', 'AppID', 'Price'])){
 				axios.post('https://fruity-steam.vercel.app/api/games', form, {
@@ -140,6 +162,7 @@ const GameForm = ({game, setGame}) => {
 					setError(err.response.data.msg);
 				});
 			}
+		// If a game was passed as a prop, request is a PUT
 		} else {
 			// TODO: Figure out why isRequired is not working here
 			axios.put(`https://fruity-steam.vercel.app/api/games/id/${game._id}`, game, {
@@ -158,11 +181,19 @@ const GameForm = ({game, setGame}) => {
 		}
 	};
 
-	// Regular Expression function to enforce numbers only
+	// Regular Expression function to enforce numbers and full-stops only
 	const onlyAllowNumber = (input) => {
 		const regex = new RegExp("^[0-9.]*$");
 		if (input.data != null && !regex.test(input.data))
 			input.preventDefault();
+	}
+
+	// Function to format dates to YYYY-MM-DD for edit form
+	const dateFormatted = (date) => {
+		if(date){
+			let dateObj = new Date(date);
+			return dateObj.toISOString().split('T')[0];
+		}
 	}
 
 	// Custom styles to mimic the Windows 95 input field
@@ -189,24 +220,16 @@ const GameForm = ({game, setGame}) => {
 		backgroundColor: 'white',
 	}
 
-	const dateFormatted = (date) => {
-		if(date){
-			let dateObj = new Date(date);
-			return dateObj.toISOString().split('T')[0];
-		}
-	}
-
+	// Container style variables
 	const halfSizeGroupParent = {
 		display: "flex",
 		justifyContent: 'space-between'
 	}
-
 	const halfSizeGroupLeft = {
 		marginBottom: '1rem',
 		marginRight: '0.5rem',
 		width: '100%'
 	}
-
 	const halfSizeGroupRight = {
 		marginBottom: '1rem',
 		marginLeft: '0.5rem',
@@ -586,17 +609,21 @@ const GameForm = ({game, setGame}) => {
 	// If there is game props, it's an edit form
 	else{
 
-		// TODO: Figure out issue with spaces when updating game
-
+		// Adding a space after each comma in categories string
 		formattedCategories = game['Categories'].replaceAll(',', ', ')
 
+		// Adding a space after each comma in tags string
 		formattedTags = game['Tags'].replaceAll(',', ', ')
 
+		// Adding a space after each comma in genres string
 		formattedGenres = game['Genres'].replaceAll(',', ', ')
 
 		formattedLanguages = game['Supported languages']
+			// Removing all apostrophes from supported languages string
 			.replaceAll("'", '')
+			// Removing leading square bracket
 			.replace('[', '')
+			// Removing trailing square bracket
 			.replace(']', '')
 
 		formattedAudioLanguages = game['Full audio languages']

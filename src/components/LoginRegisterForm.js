@@ -1,5 +1,8 @@
-import { useState } from 'react';
+// UI imports
 import {Anchor, Button, GroupBox, TextInput} from "react95";
+
+// State imports
+import { useState } from 'react';
 import {useAuth} from "../useAuth";
 
 
@@ -45,19 +48,25 @@ const LoginRegisterForm = () => {
 		}));
 	};
 
+	// Handling form validation
 	const formRulesPassed = (form) => {
 		let name = form.username;
 		let email = form.email;
 		let password = form.password;
 
+		// Name must be alphanumeric
 		let nameRule = /^[a-zA-Z0-9]+$/
+		// Email must be alphanumeric with an @ symbol and a . symbol
 		let emailRule = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/
+		// Password must be at least 5 characters long
 		let passwordRule = password.length >= 5
 
+		// Initialising rules passed state
 		let nameRulePassed = false
 		let emailRulePassed = false
 		let passwordRulePassed = false
 
+		// Testing name rule on name
 		if(!nameRule.test(name)){
 			setUsernameError("Username must be alphanumeric!")
 		} else {
@@ -65,6 +74,7 @@ const LoginRegisterForm = () => {
 			nameRulePassed = true
 		}
 
+		// Testing email rule on email
 		if (!emailRule.test(email)) {
 			setEmailError("Email must be in the correct format!")
 		} else {
@@ -72,6 +82,7 @@ const LoginRegisterForm = () => {
 			emailRulePassed = true
 		}
 
+		// Testing password rule on password
 		if (!passwordRule) {
 			setPasswordError("Password must be at least 5 characters long!")
 		} else {
@@ -79,6 +90,7 @@ const LoginRegisterForm = () => {
 			passwordRulePassed = true
 		}
 
+		// Returning true if all rules passed
 		if(formType === 'login' && emailRulePassed && passwordRulePassed){
 			return true
 		}

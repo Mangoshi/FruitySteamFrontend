@@ -1,15 +1,28 @@
-import {useContext, useEffect, useState} from "react";
-import {AuthContext} from "../../AuthContext";
-import axios from "axios";
-import {Button, Hourglass, Window, WindowContent, WindowHeader} from "react95";
+// UserCardDetailed import
 import UserCardDetailed from "../../components/UserCardDetailed";
+
+// UI import
+import {Button, Hourglass, Window, WindowContent, WindowHeader} from "react95";
+
+// React Router import
 import {useNavigate} from "react-router-dom";
 
+// HTTP request import
+import axios from "axios";
+
+// State import
+import {useContext, useEffect, useState} from "react";
+import {AuthContext} from "../../AuthContext";
+
 const Me = () => {
+	// Token and ID from AuthContext
 	const { token, id } = useContext(AuthContext)
+	// User state
 	const [ user, setUser ] = useState(null);
+	// Navigate function from React Router
 	const navigate = useNavigate();
 
+	// GET request to get user data using id from AuthContext (current user)
 	useEffect(() => {
 		axios.get(`https://fruity-steam.vercel.app/api/users/id/${id}`,
 			{
@@ -27,6 +40,7 @@ const Me = () => {
 			});
 	}, [id, token]);
 
+	// If user state is null, return loading animation
 	if(!user) return (
 		<div style={{display: "flex", justifyContent: 'center'}}>
 			<Window style={{width: "250px"}}>
@@ -44,6 +58,7 @@ const Me = () => {
 		</div>
 	)
 
+	// Else, return user card with user data
 	return (
 		<>
 			<UserCardDetailed user={user} key={user.id} />

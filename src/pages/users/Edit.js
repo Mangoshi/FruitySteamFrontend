@@ -1,16 +1,31 @@
+// UserForm import
 import UserForm from "../../components/UserForm";
-import {Link, useParams} from "react-router-dom";
-import {useContext, useEffect, useState} from "react";
-import axios from "axios";
+
+// UI imports
 import {Button, Hourglass, Window, WindowContent, WindowHeader} from "react95";
+
+// React Router imports
+import {Link, useParams} from "react-router-dom";
+
+// HTTP request imports
+import axios from "axios";
+
+// State imports
+import {useContext, useEffect, useState} from "react";
 import {AuthContext} from "../../AuthContext";
 
 const Edit = ({me}) => {
 
+	// ID from URL params
 	const { id } = useParams();
+	// User state
 	const [ user, setUser ] = useState(null);
+	// Token from AuthContext
 	const { token } = useContext(AuthContext)
 
+	// GET request to get user data using id from URL params
+	// If me prop wasn't passed, make request to get user data using id from URL params
+	// Else, make request to get user data using id from me prop
 	useEffect(() => {
 		if(!me){
 			axios.get(`https://fruity-steam.vercel.app/api/users/?by=_id&query=${id}`,
@@ -43,9 +58,9 @@ const Edit = ({me}) => {
 					console.log(err.response.data.message);
 				});
 		}
-
 	}, [id]);
 
+	// If user state is null, return window with loading animation
 	if(!user) return (
 		<div style={{display: "flex", justifyContent: 'center'}}>
 			<Window style={{width: "250px"}}>
@@ -65,6 +80,7 @@ const Edit = ({me}) => {
 		</div>
 	)
 
+	// Else, return UserForm component with user data
 	return (
 		<>
 			<UserForm user={user} setUser={setUser} key={user.id}/>

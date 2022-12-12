@@ -169,6 +169,7 @@ const Index = () => {
 					setSearchError(null)
 					// setPage(Number(page))
 				})
+				// Catch any errors
 				.catch((err) => {
 					console.error(err);
 					console.log("ERROR: ", err.response.data.msg)
@@ -476,7 +477,6 @@ const Index = () => {
 									:
 									null
 								}
-
 								{/* 2 after */}
 								{Number(currentPage) < totalPages &&
 									<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) + 1)}>{Number(currentPage) + 1}</Button>

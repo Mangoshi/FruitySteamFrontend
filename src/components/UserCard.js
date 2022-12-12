@@ -1,16 +1,25 @@
-import { Link } from 'react-router-dom';
+// UI imports
 import { Button, TableDataCell, TableRow } from 'react95';
+
+// React Router imports
+import { Link } from 'react-router-dom';
+
+// HTTP request imports
+import axios from "axios";
+
+// State imports
 import { useUser } from "../useUser";
 import { useContext } from "react";
 import { AuthContext } from "../AuthContext";
-import axios from "axios";
 
 const UserCard = ({user, users, setUsers}) => {
-	// importing token context to check if logged-in
+
+	// Importing token context to check if logged-in
 	const { token, role } = useContext(AuthContext)
-	// importing updateUserState function from useUser
+	// Importing updateUserState function from useUser
 	const { updateUserState } = useUser()
 
+	// Conditional rendering of view button based on user authentication
 	let viewButton
 	if(token){
 		viewButton = (
@@ -31,6 +40,7 @@ const UserCard = ({user, users, setUsers}) => {
 		)
 	}
 
+	// Function to confirm deletion of user from database
 	const deleteUserConfirm = (user) => {
 		let result = window.confirm(`Are you sure you want to delete ${user.username}?`);
 		if (result) {
@@ -38,6 +48,7 @@ const UserCard = ({user, users, setUsers}) => {
 		}
 	}
 
+	// Function to delete user from database
 	const deleteUser = (id) => {
 		axios.delete(`https://fruity-steam.vercel.app/api/users/id/${id}`, {
 			headers: { "Authorization": `Bearer ${token}`}
@@ -51,6 +62,7 @@ const UserCard = ({user, users, setUsers}) => {
 			});
 	}
 
+	// Conditional rendering of admin buttons based on user authentication
 	let adminButtons
 	if(role==='admin'){
 		adminButtons = (
@@ -71,6 +83,7 @@ const UserCard = ({user, users, setUsers}) => {
 		)
 	}
 
+	// Rendering user card
 	return (
 		<TableRow>
 			{/* Setting width very large to force end columns to the right */}

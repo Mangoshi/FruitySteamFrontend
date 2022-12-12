@@ -1,31 +1,47 @@
+// UI imports
 import {Button, Frame, GroupBox, Window, WindowContent, WindowHeader} from 'react95';
-import {Link, useNavigate} from "react-router-dom";
 import ResponsiveWrapper from "./ResponsiveWrapper";
+
+// React Router imports
+import {Link, useNavigate} from "react-router-dom";
+
+// HTTP request imports
+import axios from "axios";
+
+// State imports
 import {useContext, useState} from "react";
 import {AuthContext} from "../AuthContext";
-import axios from "axios";
 import {useUser} from "../useUser";
 
 const UserCardDetailed = ({user}) => {
 
+	// Using navigate to handle redirects
 	const navigate = useNavigate()
+
+	// Using AuthContext to check user-related state
 	const { role, token } = useContext(AuthContext)
+
+	// Initialising wishlist state
 	const [wishlist, setWishlist] = useState(user.wishlist)
 
+	// Importing updateUser function from useUser hook
 	const { updateUserState } = useUser()
+	// Setting user state to viewed user
 	updateUserState(user.username)
 
+	// Converting createdAt & updatedAt dates to readable formats
 	let createdAtDate = new Date(user.createdAt).toLocaleDateString()
 	let createdAtTime = new Date(user.createdAt).toLocaleTimeString()
-
 	let updatedAtDate = new Date(user.updatedAt).toLocaleDateString()
 	let updatedAtTime = new Date(user.updatedAt).toLocaleTimeString()
 
+	// Function to remove game from wishlist
 	function removeFromWishlist(gameID) {
 		let newWishlist = wishlist.filter(entry => entry._id !== gameID)
 		updateUser(newWishlist)
 	}
 
+	// Function to update user wishlist
 	function updateUser(newWishlist) {
 		axios.put(`https://fruity-steam.vercel.app/api/users/id/${user._id}`,
 			{
@@ -45,6 +61,7 @@ const UserCardDetailed = ({user}) => {
 			});
 	}
 
+	// Function to format wishlist for rendering
 	function formatWishlist(wishlist) {
 		if(wishlist){
 			return wishlist.map(entry => {

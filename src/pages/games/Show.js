@@ -1,15 +1,28 @@
-import {Link, useParams} from 'react-router-dom';
-import axios from 'axios';
-import {useContext, useEffect, useState} from 'react';
+// GameCardDetailed import
 import GameCardDetailed from "../../components/GameCardDetailed";
+
+// UI imports
 import {Button, Hourglass, Window, WindowContent, WindowHeader} from "react95";
+
+// React Router imports
+import {Link, useParams} from 'react-router-dom';
+
+// HTTP request imports
+import axios from 'axios';
+
+// State imports
+import {useContext, useEffect, useState} from 'react';
 import {AuthContext} from "../../AuthContext";
 
 const Show = () => {
+	// ID from URL params
 	const { id } = useParams();
+	// Game state
 	const [ game, setGame ] = useState(null);
+	// Token from AuthContext
 	const { token } = useContext(AuthContext)
 
+	// GET request to get game data using id from URL params
 	useEffect(() => {
 		axios.get(`https://fruity-steam.vercel.app/api/games/?by=_id&query=${id}`,
 			{
@@ -27,6 +40,7 @@ const Show = () => {
 			});
 	}, [id]);
 
+	// If game state is null, return window with loading animation
 	if(!game) return (
 		<div style={{display: "flex", justifyContent: 'center'}}>
 			<Window style={{width: "250px"}}>
@@ -46,6 +60,7 @@ const Show = () => {
 		</div>
 	)
 
+	// If game state is not null, return GameCardDetailed with game data
 	return (
 		<>
 			<GameCardDetailed game={game} key={game.id} />
