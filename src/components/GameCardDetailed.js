@@ -316,11 +316,18 @@ const GameCardDetailed = (props) => {
 								</span>
 								}
 							</GroupBox>
-							<GroupBox label='Required age' style={{marginBottom: '1rem'}}>
+							<GroupBox label='Required Age' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game['Required age'] ? props.game['Required age'] : 'Unknown'}
 								</span>
 							</GroupBox>
+							{props.game['Notes'] ?
+							<GroupBox label='Adult Content Notes' style={{marginBottom: '1rem'}}>
+								<span style={{fontSize: '1.2rem'}}>
+									{props.game['Notes']}
+								</span>
+							</GroupBox>
+							: null}
 							<GroupBox label='Categories' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game.Categories ? categories_array : 'Not provided!'}
