@@ -1,12 +1,11 @@
-import axios from 'axios';
-import {useState, useEffect, useContext, useRef} from 'react';
-import {AuthContext} from "../../AuthContext";
+// GameCard import
 import GameCard from '../../components/GameCard';
-import {Link, useNavigate, useParams} from "react-router-dom";
+
+// UI imports
 import {
-	Button,
+	Button, Frame,
 	GroupBox,
-	Hourglass, NumberInput,
+	Hourglass,
 	Select,
 	Table,
 	TableBody,
@@ -19,35 +18,49 @@ import {
 	WindowHeader
 } from "react95";
 
+// React Router imports
+import {Link, useNavigate, useParams} from "react-router-dom";
+
+// HTTP request imports
+import axios from 'axios';
+
+// State imports
+import {useState, useEffect, useContext} from 'react';
+import {AuthContext} from "../../AuthContext";
+
+// JSON imports
 import authenticatedOptions from './json/authenticatedOptions.json'
 import unauthenticatedOptions from './json/unauthenticatedOptions.json'
 
 const Index = () => {
-	// TODO: Allow user to add/remove games to wishlist (server update needed)
-	//  - Allow them to view wishlist independently of their profile too?
+	// Page variable from URL params
 	const {page} = useParams();
+	// Token and role from AuthContext
 	const {token, role} = useContext(AuthContext)
-	const [games, setGames] = useState(null);
-	const [currentPage, setCurrentPage] = useState(1);
-	const [filterActive, setFilterActive] = useState(false)
+	// State variables for games HTTP requests
+	const [games, setGames] = useState(null)
+	const [currentPage, setCurrentPage] = useState(1)
 	const [searchBy, setSearchBy] = useState("Name")
 	const [searchQuery, setSearchQuery] = useState({query: ""})
 	const [sortBy, setSortBy] = useState("AppID")
 	const [sortDirection, setSortDirection] = useState("Ascending")
-	const [adultFilter, setAdultFilter] = useState(true)
-	const [searchError, setSearchError] = useState(null)
 	const [limit, setLimit] = useState(100)
+	const [filterActive, setFilterActive] = useState(false)
+	const [adultFilter, setAdultFilter] = useState(true)
+	const [isLoaded, setIsLoaded] = useState(false)
 	const [totalGames, setTotalGames] = useState(0)
 	const [totalPages, setTotalPages] = useState(0)
-	const [isLoaded, setIsLoaded] = useState(false)
+	const [searchError, setSearchError] = useState(null)
 
-	const ref = useRef(null)
+	// useNavigate hook to handle redirects
 	const navigate = useNavigate()
 
+	// If page param passed, set currentPage state to that page
 	if(page){
 		setCurrentPage(Number(page))
 	}
 
+	// Options available to limit number of games displayed
 	const limitOptions = [
 		{value: 10, label: "10"},
 		{value: 25, label: "25"},
@@ -58,6 +71,7 @@ const Index = () => {
 		{value: 1000, label: "1000"},
 	]
 
+	// Function to handle search query changes
 	const handleSearch = (e) => {
 		let name = e.target.name;
 		let value = e.target.value;
@@ -65,17 +79,22 @@ const Index = () => {
 		setSearchQuery(prevState => ({
 			...prevState,
 			[name]: value
-		}));
+		}))
 
-		// TODO: Reset page to 1 when search query is changed
-		//  - Currently doesn't change because using defaultValue instead of value
-		// setCurrentPage(1)
-		// document.getElementById("pageInput").value = 1
-		// console.log(document.getElementById("pageInput"))
+		// Also resets current page to page 1
+		setCurrentPage(1)
 	};
 
-	let URL, authHeaders, builtSearchQuery, builtSortQuery, builtLimitQuery, builtPageQuery
+	// Initialising variables needed for filtered HTTP request
+	let URL,
+		authHeaders,
+		builtSearchQuery,
+		builtSortQuery,
+		builtLimitQuery,
+		builtPageQuery
 
+	// If user is authenticated, set URL to /api/games & authHeaders to token
+	// Else if user is not authenticated, set URL to /api/games/names & authHeaders to null
 	if(token){
 		URL = 'https://fruity-steam.vercel.app/api/games'
 		authHeaders = { headers: { "Authorization": `Bearer ${token}`}}
@@ -84,6 +103,8 @@ const Index = () => {
 		authHeaders = ''
 	}
 
+	// If the filter is active, build the search query
+	// Else if the filter is not active, set the search queries to null (except for page)
 	if(filterActive){
 		builtLimitQuery = `?limit=${limit}`
 		builtSearchQuery = `&by=${searchBy}&query=${searchQuery.query}`
@@ -96,45 +117,55 @@ const Index = () => {
 		builtPageQuery = `?page=${currentPage}`
 	}
 
-	// TODO: Figure out fix / error message for when MongoDB memory limit reached
-	//  - Could also reduce available limits to 25ish max
+	// Games GET request
 	useEffect(() => {
 		// console.log(`Built Query: ${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`)
+		// Async function to handle HTTP request
 		const fetchData = async () => {
+			// Await the response from the HTTP request
 			await axios.get(`${URL}${builtLimitQuery}${builtSearchQuery}${builtSortQuery}${builtPageQuery}`, authHeaders)
 				.then((response) => {
-					// TODO: While loading show hourglass animation
 					// console.log("Full response data: ",response.data)
+					// Initialise data variable to response data
 					let data = response.data.data
+					// Initialise totalGames variable to total number of games
 					let totalGames = Number.parseInt(response.data.total)
-					console.log("Total games: ", totalGames)
-					console.log("Limit: ", limit)
-					console.log("Max pages: ", Math.ceil(totalGames / limit))
+					// console.log("Total games: ", totalGames)
+					// console.log("Limit: ", limit)
+					// console.log("Max pages: ", Math.ceil(totalGames / limit))
+					// Set totalGames state to total number of games
 					setTotalGames(totalGames)
+					// Set totalPages state to max number of pages based on totalGames and limit
 					setTotalPages(Math.ceil(totalGames / limit))
+					// If the adult filter is active, filter out games with adult content
+					// (These all have the "Notes" field)
 					if (adultFilter) {
 						/*
-											if(data.filter(game => game.Notes).length > 0) {
-												let count = 0
-												let i
-												console.group("Games with adult content:")
-												for (i in data) {
-													if (data[i].Notes) {
-														count++
-														console.log(count, "-", data[i].Name, ":", data[i].Notes)
-													}
-												}
-												console.groupEnd()
-												console.log("Filtered array", data.filter(game => !game.Notes))
-											}
+						if(data.filter(game => game.Notes).length > 0) {
+							let count = 0
+							let i
+							console.group("Games with adult content:")
+							for (i in data) {
+								if (data[i].Notes) {
+									count++
+									console.log(count, "-", data[i].Name, ":", data[i].Notes)
+								}
+							}
+							console.groupEnd()
+							console.log("Filtered array", data.filter(game => !game.Notes))
+						}
 						*/
+						// Set games state to filtered array
 						setGames(data.filter(game => !game.Notes))
-						console.log(data.filter(game => !game.Notes))
+						// console.log(data.filter(game => !game.Notes))
 					} else {
+						// Set games state to data
 						setGames(data);
-						console.log(data);
+						// console.log(data);
 					}
+					// Set isLoaded state to true
 					setIsLoaded(true)
+					// Set searchError state to null
 					setSearchError(null)
 					// setPage(Number(page))
 				})
@@ -145,15 +176,18 @@ const Index = () => {
 				});
 		}
 
+		// Initialising a 250ms timer to prevent too many requests
 		const timer = setTimeout(() => {
 			setIsLoaded(false)
 			fetchData()
 		}, 250)
 
+		// Clearing the timer on unmount
 		return () => clearTimeout(timer)
 
 	}, [URL, currentPage, builtSearchQuery, builtSortQuery, adultFilter, limit]);
 
+	// If there are no games, display loading animation
 	if (!games) return (
 		<div style={{display: "flex", justifyContent: 'center'}}>
 			<Window style={{width: "250px"}}>
@@ -171,12 +205,16 @@ const Index = () => {
 		</div>
 	)
 
+	// If there are games, map them as GameCard components
 	const gamesList = games.map((game) => {
 		return <GameCard game={game} key={game._id} games={games} setGames={setGames}/>;
 	});
 
 	// Creating list of options for select box
 	let searchByOptions, sortByOptions
+
+	// If user is authenticated, show all options
+	// If user is not authenticated, only show AppID & Name options
 	if(token){
 		searchByOptions = authenticatedOptions
 		sortByOptions = authenticatedOptions
@@ -185,6 +223,7 @@ const Index = () => {
 		sortByOptions = unauthenticatedOptions
 	}
 
+	// Defining the sortDirection options
 	let sortDirectionOptions = [
 		{
 			"value" : "Ascending",
@@ -196,6 +235,7 @@ const Index = () => {
 		}
 	]
 
+	// If user is not authenticated, show a message
 	let unauthenticatedMessage
 	if(!token){
 		unauthenticatedMessage = (
@@ -207,6 +247,7 @@ const Index = () => {
 		)
 	}
 
+	// If user is authenticated, include the view table header
 	let authenticatedTableHeaders
 	if(token){
 		authenticatedTableHeaders = (
@@ -216,6 +257,7 @@ const Index = () => {
 		)
 	}
 
+	// If user is an admin, include edit and delete table headers
 	let adminTableHeaders
 	if(role==='admin'){
 		adminTableHeaders = (
@@ -226,6 +268,7 @@ const Index = () => {
 			)
 	}
 
+	// Function to confirm user wishes to disable adult content filter
 	const adultFilterConfirm = () => {
 		if(adultFilter){
 			if (window.confirm("Do you confirm that you are over 18 years of age?") === true){
@@ -237,28 +280,51 @@ const Index = () => {
 		}
 	}
 
+	// Container style variables
 	const halfSizeGroupParent = {
 		display: "flex",
 		justifyContent: 'space-between'
 	}
-
 	const halfSizeGroupLeft = {
 		marginBottom: '1rem',
 		marginRight: '0.5rem',
 		width: '100%'
 	}
-
 	const halfSizeGroupMiddle = {
 		marginBottom: '1rem',
 		marginRight: '0.25rem',
 		marginLeft: '0.25rem',
 		width: '100%'
 	}
-
 	const halfSizeGroupRight = {
 		marginBottom: '1rem',
 		marginLeft: '0.5rem',
 		width: '100%'
+	}
+
+	// Custom styles to mimic the Windows 95 input field
+	const numInputFrame = {
+		padding: 1,
+		width: '100%',
+		height: '2.2rem',
+	}
+	const numInputStyles = {
+		width: '90%',
+		height: '1.5rem',
+		marginTop: 1,
+		marginLeft: 8,
+		border: 'none',
+		outline: 'none',
+		fontSize: '1rem',
+		font: 'unset',
+		backgroundColor: 'white',
+	}
+
+	// Function to enforce a number input
+	const onlyAllowNumber = (input) => {
+		const regex = new RegExp("^[0-9]*$");
+		if (input.data != null && !regex.test(input.data))
+			input.preventDefault();
 	}
 
 	return (
@@ -360,15 +426,17 @@ const Index = () => {
 									</GroupBox>
 									<GroupBox label={'Page'} style={halfSizeGroupRight}>
 										<div style={{display: 'flex', justifyContent: 'space-between'}}>
-											<NumberInput
-												width={150}
-												defaultValue={currentPage}
-												ref={ref}
-												id={'pageInput'}
-												onChange={e => {setCurrentPage(e)}}
-												min={1}
-												max={totalPages}
-												/>
+											<Frame variant={"field"} style={numInputFrame}>
+												<input
+													width={150}
+													value={currentPage}
+													min={1}
+													max={totalPages}
+													onChange={e => setCurrentPage(e.target.value)}
+													onBeforeInput={onlyAllowNumber}
+													style={numInputStyles}
+													/>
+											</Frame>
 										</div>
 									</GroupBox>
 								</div>
@@ -383,8 +451,8 @@ const Index = () => {
 							{/* Previous Block*/}
 							<div>
 								{/* If page is greater than 1, activate back button */}
-								{currentPage > 1 ? (
-									<Button size='sm' onClick={() => setCurrentPage(currentPage - 1)}> {"<<"} </Button>
+								{Number(currentPage) > 1 ? (
+									<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) - 1)}> {"<<"} </Button>
 								) : (
 									<Button size='sm' disabled> {"<<"} </Button>
 								)
@@ -393,31 +461,35 @@ const Index = () => {
 							{/* Numeric Block*/}
 							<div>
 								{/* 2 before */}
-								{currentPage === 2 &&
-									<Button size='sm' onClick={() => setCurrentPage(currentPage - 1)}>{currentPage - 1}</Button>
+								{Number(currentPage) === 2 &&
+									<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) - 1)}>{Number(currentPage) - 1}</Button>
 								}
-								{currentPage > 2 &&
+								{Number(currentPage) > 2 &&
 									<>
-										<Button size='sm' onClick={() => setCurrentPage(currentPage - 2)}>{currentPage - 2}</Button>
-										<Button size='sm' onClick={() => setCurrentPage(currentPage - 1)}>{currentPage - 1}</Button>
+										<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) - 2)}>{Number(currentPage) - 2}</Button>
+										<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) - 1)}>{Number(currentPage) - 1}</Button>
 									</>
 								}
 								{/* Current page */}
-								<Button size='sm' active>{currentPage}</Button>
+								{Number(currentPage) > 0 ?
+									<Button size='sm' active>{currentPage}</Button>
+									:
+									null
+								}
 
 								{/* 2 after */}
-								{currentPage < totalPages &&
-									<Button size='sm' onClick={() => setCurrentPage(currentPage + 1)}>{currentPage + 1}</Button>
+								{Number(currentPage) < totalPages &&
+									<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) + 1)}>{Number(currentPage) + 1}</Button>
 								}
-								{currentPage < totalPages - 1 &&
-									<Button size='sm' onClick={() => setCurrentPage(currentPage + 2)}>{currentPage + 2}</Button>
+								{Number(currentPage) < totalPages - 1 &&
+									<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) + 2)}>{Number(currentPage) + 2}</Button>
 								}
 							</div>
 							{/* Next Block */}
 							<div>
 								{/* If page is less than total games / limit, activate forward button */}
-								{currentPage < totalPages ? (
-									<Button size='sm' onClick={() => setCurrentPage(currentPage + 1)}> {">>"} </Button>
+								{Number(currentPage) < totalPages ? (
+									<Button size='sm' onClick={() => setCurrentPage(Number(currentPage) + 1)}> {">>"} </Button>
 								) : (
 									<Button size='sm' disabled> {">>"} </Button>
 								)
