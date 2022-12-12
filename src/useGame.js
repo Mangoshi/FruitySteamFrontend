@@ -8,7 +8,7 @@ export const useGame = () => {
 
     // Defining function to update game state
     const updateGameState = (game) => {
-        console.log('updateGame: ', game)
+        // console.log('updateGame: ', game)
         // Set game to data passed
         setGame(game)
     }

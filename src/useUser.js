@@ -8,7 +8,7 @@ export const useUser = () => {
 
 	// Defining function to update user state
 	const updateUserState = (user) => {
-		console.log('updateUser: ', user)
+		// console.log('updateUser: ', user)
 		// Set user to data passed
 		setUser(user)
 	}

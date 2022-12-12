@@ -70,7 +70,7 @@ export const useAuth = () => {
 		axios
 			.post('https://fruity-steam.vercel.app/register', {username, email, password})
 			.then((res)=> {
-				console.log(res.data)
+				// console.log(res.data)
 				axios
 					.post('https://fruity-steam.vercel.app/login', {email, password})
 					.then((res)=> {
