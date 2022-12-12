@@ -1,11 +1,18 @@
+// UI imports
 import {Anchor, Button, Frame, GroupBox, Window, WindowContent, WindowHeader} from 'react95';
-import {useNavigate} from "react-router-dom";
+import ResponsiveWrapper from "./ResponsiveWrapper";
 import Carousel from "nuka-carousel";
 import ReactPlayer from 'react-player'
-import ResponsiveWrapper from "./ResponsiveWrapper";
+
+// React Router imports
+import {useNavigate} from "react-router-dom";
+
+// HTTP request imports
+import axios from "axios";
+
+// State imports
 import {AuthContext} from "../AuthContext";
 import {useContext, useEffect, useState} from "react";
-import axios from "axios";
 import {useGame} from "../useGame";
 
 const GameCardDetailed = (props) => {
@@ -233,218 +240,183 @@ const GameCardDetailed = (props) => {
 						<Button style={{marginTop: '0.2rem'}} onClick={() => navigate(-1)}>X</Button>
 					</WindowHeader>
 					<WindowContent>
-						{props.game['Header image'] &&
 						<Frame variant='inside' style={{ margin: '1rem', padding: '1rem', width: '94%'}}>
-							<a href={`https://store.steampowered.com/app/${props.game['AppID']}`}>
-								<img src={props.game['Header image']} alt='Game header' width='100%'/>
-							</a>
+							{props.game['Header image'] ?
+								<a href={`https://store.steampowered.com/app/${props.game['AppID']}`}>
+									<img src={props.game['Header image']} alt='Game header' width='100%'/>
+								</a>
+							: <p style={{fontSize: '1.2rem'}}>No header image!</p>}
 						</Frame>
-						}
+
 						<Frame variant='inside' style={{
 							margin: '1rem',
 							padding: '1rem',
 							width: '94%'
 						}}>
-							{props.game.Screenshots &&
 							<GroupBox label='Screenshots' style={{marginBottom: '1rem'}}>
-								{screenshot_slider}
+								{props.game.Screenshots ? screenshot_slider
+								: <p style={{fontSize: '1.2rem'}}>No screenshots!</p>}
 							</GroupBox>
-							}
-							{props.game.Movies &&
-							<GroupBox label='Movies' style={{marginBottom: '1rem'}}>
-								{movies_slider}
+							<GroupBox label='Videos' style={{marginBottom: '1rem'}}>
+								{props.game.Movies ? movies_slider
+								: <p style={{fontSize: '1.2rem'}}>No videos!</p>}
 							</GroupBox>
-							}
 							<div style={halfSizeGroupParent}>
 								<GroupBox label='Release date' style={halfSizeGroupLeft}>
-								<span style={{fontSize: '1.2rem'}}>
-									{date}
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										{props.game['Release date'] ? date : 'Not provided!'}
+									</span>
 								</GroupBox>
 								<GroupBox label='Price' style={halfSizeGroupRight}>
-								<span style={{fontSize: '1.2rem'}}>
-									$ {props.game['Price']}
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										{props.game.Price ? '$ ' + props.game['Price'] : 'Not provided!'}
+									</span>
 								</GroupBox>
 							</div>
 							<GroupBox label='About The Game' style={{marginBottom: '1rem'}}>
-								<span style={{fontSize: '1rem'}}>
-									{props.game['About the game']}
-								</span>
+								{props.game['About the game'] ?
+									<span style={{fontSize: '1rem'}}>
+										{props.game['About the game']}
+									</span>
+									: <span style={{fontSize: '1.2rem'}}>Not provided!</span>}
 							</GroupBox>
 							<GroupBox label='Developers' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Developers']}
+									{props.game.Developers ? props.game['Developers'] : 'Not provided!'}
 								</span>
 							</GroupBox>
 							<GroupBox label='Publishers' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Publishers']}
+									{props.game.Publishers ? props.game['Publishers'] : 'Not provided!'}
 								</span>
 							</GroupBox>
 							<GroupBox label='Website' style={{marginBottom: '1rem'}}>
+								{props.game.Website ?
 								<span style={{fontSize: '1.2rem'}}>
 									<Anchor href={props.game['Website']}>{props.game['Website']}</Anchor>
 								</span>
+									:
+								<span style={{fontSize: '1.2rem'}}>
+									Not provided!
+								</span>
+								}
 							</GroupBox>
-							{ props.game['Required age'] ? (
-								<GroupBox label='Required age' style={{marginBottom: '1rem'}}>
-									<span style={{fontSize: '1.2rem'}}>
-										{props.game['Required age']}
-									</span>
-								</GroupBox>
-							) : (
-								<GroupBox label='Required age' style={{marginBottom: '1rem'}}>
-									<span style={{fontSize: '1.2rem'}}>
-										Unknown
-									</span>
-								</GroupBox>
-							)}
+							<GroupBox label='Required age' style={{marginBottom: '1rem'}}>
+								<span style={{fontSize: '1.2rem'}}>
+									{props.game['Required age'] ? props.game['Required age'] : 'Unknown'}
+								</span>
+							</GroupBox>
 							<GroupBox label='Categories' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									{categories_array}
+									{props.game.Categories ? categories_array : 'Not provided!'}
 								</span>
 							</GroupBox>
 							<GroupBox label='Tags' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									{tags_array}
+									{props.game.Tags ? tags_array : 'Not provided!'}
 								</span>
 							</GroupBox>
 							<GroupBox label='Genres' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									{genres_array}
+									{props.game.Genres ? genres_array : 'Not provided!'}
 								</span>
 							</GroupBox>
-							{ props.game['DLC Count'] ? (
-								<GroupBox label='DLC Count' style={{marginBottom: '1rem'}}>
-									<span style={{fontSize: '1.2rem'}}>
-										{props.game['DLC count']}
-									</span>
-								</GroupBox>
-							) : (
-								<GroupBox label='DLC Count' style={{marginBottom: '1rem'}}>
-									<span style={{fontSize: '1.2rem'}}>
-										None
-									</span>
-								</GroupBox>
-							)}
-							{ props.game['Achievements'] ? (
-								<GroupBox label='Achievements' style={{marginBottom: '1rem'}}>
-									<span style={{fontSize: '1.2rem'}}>
-										{props.game['Achievements']}
-									</span>
-								</GroupBox>
-							) : (
-								<GroupBox label='Achievements' style={{marginBottom: '1rem'}}>
-									<span style={{fontSize: '1.2rem'}}>
-										None
-									</span>
-								</GroupBox>
-							)}
+							<GroupBox label='DLC Count' style={{marginBottom: '1rem'}}>
+								<span style={{fontSize: '1.2rem'}}>
+									{props.game['DLC count'] ? props.game['DLC count'] : 'None'}
+								</span>
+							</GroupBox>
+							<GroupBox label='Achievements' style={{marginBottom: '1rem'}}>
+								<span style={{fontSize: '1.2rem'}}>
+									{props.game['Achievements'] ? props.game['Achievements'] : 'None'}
+								</span>
+							</GroupBox>
 							<GroupBox label='Supported Languages' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									{languages_array}
+									{props.game['Supported languages'] ? languages_array : 'None / Unknown'}
 								</span>
 							</GroupBox>
 							<GroupBox label='Full Audio Languages' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									{ audioLanguagesArray ? ({audioLanguagesArray}) : ("None / Unknown") }
+									{audioLanguagesArray ? audioLanguagesArray : "None / Unknown"}
 								</span>
 							</GroupBox>
 							<GroupBox label='Metacritic Score' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem', display: "flex", justifyContent:'space-between'}}>
+									{props.game['Metacritic score'] ?
 									<Anchor href={props.game['Metacritic url']}>{props.game['Metacritic score']}</Anchor>
+									: 'Not provided!' }
 								</span>
 							</GroupBox>
-							{props.game['User score'] &&
-							<GroupBox label='User Score (Broken?)' style={{marginBottom: '1rem'}}>
+							<GroupBox label='User Score' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									{props.game['User score'] ? (
-										props.game['User score']
-									) : (
-										"None"
-									)}
+									{props.game['User score'] ? props.game['User score'] : 'Not provided!'}
 								</span>
 							</GroupBox>
-							}
 							<div style={halfSizeGroupParent}>
-								{props.game['Positive'] &&
-									<GroupBox label='Positive Reviews' style={halfSizeGroupLeft}>
+								<GroupBox label='Positive Reviews' style={halfSizeGroupLeft}>
 									<span style={{fontSize: '1.2rem'}}>
-										{props.game['Positive']}
+										{props.game['Positive'] ? props.game['Positive'] : 'None yet!'}
 									</span>
-									</GroupBox>
-								}
-								{props.game['Negative'] &&
-								<GroupBox label='Negative Reviews' style={halfSizeGroupRight}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Negative']}
-								</span>
 								</GroupBox>
-								}
+								<GroupBox label='Negative Reviews' style={halfSizeGroupRight}>
+									<span style={{fontSize: '1.2rem'}}>
+										{props.game['Negative'] ? props.game['Negative'] : 'None yet!'}
+									</span>
+								</GroupBox>
 							</div>
-							{props.game['Recommendations'] &&
 							<GroupBox label='Curator Recommendations' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Recommendations']}
+									{props.game['Recommendations'] ? props.game['Recommendations'] : 'None yet!'}
 								</span>
 							</GroupBox>
-							}
-							{props.game['Estimated owners'] &&
 							<GroupBox label='Estimated Owners' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Estimated owners']}
+									{props.game['Estimated owners'] ? props.game['Estimated owners'] : 'Unknown'}
 								</span>
 							</GroupBox>
-							}
-							{props.game['Peak CCU'] &&
 							<GroupBox label='Peak CCU' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Peak CCU']}
+									{props.game['Peak CCU'] ? props.game['Peak CCU'] : 'Unknown'}
 								</span>
 							</GroupBox>
-							}
 							<div style={halfSizeGroupParent}>
-								{props.game['Average playtime forever'] &&
 								<GroupBox label='Average playtime (forever)' style={halfSizeGroupLeft}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Average playtime forever']} hours
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										{props.game['Average playtime forever'] ? props.game['Average playtime forever'] + 'hours' : 'Unknown'}
+									</span>
 								</GroupBox>
-								}
-								{props.game['Median playtime forever'] &&
 								<GroupBox label='Median playtime (forever)' style={halfSizeGroupRight}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Median playtime forever']} hours
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										{props.game['Median playtime forever'] ? props.game['Median playtime forever'] + 'hours' : 'Unknown'}
+									</span>
 								</GroupBox>
-								}
 							</div>
 							<div style={halfSizeGroupParent}>
-								{props.game['Average playtime two weeks'] &&
 								<GroupBox label='Average playtime (2 weeks)' style={halfSizeGroupLeft}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Average playtime two weeks']} hours
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										{props.game['Average playtime two weeks'] ? props.game['Average playtime two weeks'] + 'hours' : 'Unknown'}
+									</span>
 								</GroupBox>
-								}
-								{props.game['Median playtime two weeks'] &&
 								<GroupBox label='Median playtime (2 weeks)' style={halfSizeGroupRight}>
-								<span style={{fontSize: '1.2rem'}}>
-									{props.game['Median playtime two weeks']} hours
-								</span>
+									<span style={{fontSize: '1.2rem'}}>
+										{props.game['Median playtime two weeks'] ? props.game['Median playtime two weeks'] + 'hours' : 'Unknown'}
+									</span>
 								</GroupBox>
-								}
 							</div>
 							<GroupBox label='Support Link' style={{marginBottom: '1rem'}}>
 								<span style={{fontSize: '1.2rem'}}>
+									{props.game['Support url'] ?
 									<Anchor href={props.game['Support url']}>{props.game['Support url']}</Anchor>
+									: 'Not provided!' }
 								</span>
 							</GroupBox>
 							<GroupBox label='Support Email' style={{marginBottom: '1rem'}}>
+								{props.game['Support email'] ?
 								<span style={{fontSize: '1.2rem'}}>
 									{props.game['Support email'] ? (props.game['Support email']) : ("N/A")}
 								</span>
+								: <span style={{fontSize: '1.2rem'}}>Not provided!</span> }
 							</GroupBox>
 							<div style={{display: 'flex', justifyContent: 'space-around'}}>
 								<Button onClick={() => navigate(-1)}>BACK</Button>
