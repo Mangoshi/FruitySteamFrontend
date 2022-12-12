@@ -359,6 +359,13 @@ const Index = () => {
 						{/* Search div */}
 						{filterActive &&
 							<>
+								<GroupBox label='Note' style={{marginBottom: '1rem', fontSize: '0.8rem', textAlign: 'center'}}>
+									<p>
+										If your results appear as "undefined", you may have hit MongoDBs memory limit!
+									<hr/>
+										To fix this, try reducing the limit, or use a search query to narrow down your results.
+									</p>
+								</GroupBox>
 								<GroupBox label='Search' style={{display: 'flex', marginBottom: '1rem'}}>
 									<TextInput
 										placeholder='Type here...'
