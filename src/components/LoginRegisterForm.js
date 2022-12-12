@@ -9,14 +9,23 @@ const LoginRegisterForm = () => {
 	const { login, register } = useAuth()
 
 	// Initialising error message state
-	// TODO: Get errors from stateful login/register functions
-	const [errorMessage, setErrorMessage] = useState("");
+	const [usernameError, setUsernameError] = useState("");
+	const [emailError, setEmailError] = useState("");
+	const [passwordError, setPasswordError] = useState("");
 
 	// Initialising form type to switch form conditionally
 	const [formType, setFormType] = useState("login")
 
 	// Defining error message CSS style
-	const errorStyle = { color: "red", backgroundColor:"white" };
+	const errorStyle = {
+		color: "red",
+		backgroundColor:"white",
+		borderRadius: 10,
+		padding: 5,
+		display: 'flex',
+		justifyContent: 'center',
+		marginTop: '0.5rem'
+	};
 
 	// Initialising form state as an empty form
 	const [form, setForm] = useState({
@@ -36,23 +45,67 @@ const LoginRegisterForm = () => {
 		}));
 	};
 
+	const formRulesPassed = (form) => {
+		let name = form.username;
+		let email = form.email;
+		let password = form.password;
+
+		let nameRule = /^[a-zA-Z0-9]+$/
+		let emailRule = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/
+		let passwordRule = password.length >= 5
+
+		let nameRulePassed = false
+		let emailRulePassed = false
+		let passwordRulePassed = false
+
+		if(!nameRule.test(name)){
+			setUsernameError("Username must be alphanumeric!")
+		} else {
+			setUsernameError("")
+			nameRulePassed = true
+		}
+
+		if (!emailRule.test(email)) {
+			setEmailError("Email must be in the correct format!")
+		} else {
+			setEmailError("")
+			emailRulePassed = true
+		}
+
+		if (!passwordRule) {
+			setPasswordError("Password must be at least 5 characters long!")
+		} else {
+			setPasswordError("")
+			passwordRulePassed = true
+		}
+
+		if(formType === 'login' && emailRulePassed && passwordRulePassed){
+			return true
+		}
+		else if (formType === 'register' && nameRulePassed && emailRulePassed && passwordRulePassed){
+			return true
+		}
+	}
+
 	// Login function from useAuth
 	const submitLoginRequest = () => {
-		// TODO: Form error messages!
-		login({
+		if(formRulesPassed(form)){
+			login({
 				email: form.email,
 				password: form.password
-		})
+			})
+		}
 	};
 
 	// Register function from useAuth
 	const submitRegisterRequest = () => {
-		// TODO: Form error messages!
-		register({
-			username: form.username,
-			email: form.email,
-			password: form.password
-		})
+		if(formRulesPassed(form)){
+			register({
+				username: form.username,
+				email: form.email,
+				password: form.password
+			})
+		}
 	};
 
 	// If/else to decide how the form is rendered, based on formType
@@ -62,12 +115,23 @@ const LoginRegisterForm = () => {
 			<>
 				<GroupBox label='Email'>
 					<TextInput type="text" name="email" value={form.email} onChange={handleForm} />
+					{emailError && <p style={errorStyle}>{emailError}</p>}
 				</GroupBox>
 				<br/>
 				<GroupBox label='Password' style={{marginBottom: '1rem'}}>
 					<TextInput type="password" name="password" value={form.password} onChange={handleForm} />
+					{passwordError && <p style={errorStyle}>{passwordError}</p>}
 				</GroupBox>
-				<Anchor style={{cursor: 'pointer'}} onClick={() => setFormType('register')}>Don't have an account?</Anchor>
+				<Anchor
+					style={{cursor: 'pointer'}}
+					onClick={() =>
+						setFormType('register')
+						& setPasswordError('')
+						& setEmailError('')
+						& setUsernameError('')}
+				>
+					Don't have an account?
+				</Anchor>
 				<div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '1rem'}}>
 					<Button onClick={submitLoginRequest}>Submit</Button>
 				</div>
@@ -78,16 +142,28 @@ const LoginRegisterForm = () => {
 			<>
 				<GroupBox label='Username'>
 					<TextInput type="text" name="username" value={form.username} onChange={handleForm} />
+					{usernameError && <p style={errorStyle}>{usernameError}</p>}
 				</GroupBox>
 				<br/>
 				<GroupBox label='Email'>
 					<TextInput type="text" name="email" value={form.email} onChange={handleForm} />
+					{emailError && <p style={errorStyle}>{emailError}</p>}
 				</GroupBox>
 				<br/>
 				<GroupBox label='Password' style={{marginBottom: '1rem'}}>
 					<TextInput type="password" name="password" value={form.password} onChange={handleForm} />
+					{passwordError && <p style={errorStyle}>{passwordError}</p>}
 				</GroupBox>
-				<Anchor style={{cursor: 'pointer'}} onClick={() => setFormType('login')}>Back to login</Anchor>
+				<Anchor
+					style={{cursor: 'pointer'}}
+					onClick={() =>
+						setFormType('login')
+						& setPasswordError('')
+						& setEmailError('')
+						& setUsernameError('')}
+				>
+					Back to login
+				</Anchor>
 				<div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '1rem'}}>
 					<Button onClick={submitRegisterRequest}>Submit</Button>
 				</div>
@@ -99,7 +175,6 @@ const LoginRegisterForm = () => {
 	return (
 		<>
 			{formElements}
-			<p style={errorStyle}>{errorMessage}</p>
 		</>
 	);
 };
